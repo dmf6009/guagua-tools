@@ -3,9 +3,9 @@ main = "worker-proxy.js"
 compatibility_date = "2026-07-28"
 
 [[routes]]
-pattern = "guagua-alvin.top"
-custom_domain = true
+pattern = "guagua-alvin.top/*"
+zone_name = "guagua-alvin.top"
 
 [[routes]]
-pattern = "www.guagua-alvin.top"
-custom_domain = true
+pattern = "www.guagua-alvin.top/*"
+zone_name = "guagua-alvin.top"

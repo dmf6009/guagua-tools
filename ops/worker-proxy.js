@@ -3,6 +3,10 @@ const UPSTREAM = "https://guagua-tools.pages.dev";
 export default {
   async fetch(request) {
     const incoming = new URL(request.url);
+    if (incoming.hostname === "www.guagua-alvin.top") {
+      incoming.hostname = "guagua-alvin.top";
+      return Response.redirect(incoming.toString(), 301);
+    }
     const upstream = new URL(incoming.pathname + incoming.search, UPSTREAM);
     const headers = new Headers(request.headers);
     headers.delete("host");
