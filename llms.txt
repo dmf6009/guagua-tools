@@ -1,0 +1,14 @@
+# Guagua Tools
+
+> A free, lightweight collection of browser tools for developers, AI agent users, and creators.
+
+- Home: https://guagua-alvin.top/
+- Privacy: https://guagua-alvin.top/privacy
+- PrintSpec Lab: https://printspeclab.guagua-alvin.top/
+- MCP Config Lab: https://mcp.guagua-alvin.top/
+- MCP Config Guard: https://mcpcheck.guagua-alvin.top/
+- MCP OAuth Lab: https://mcpoauth.guagua-alvin.top/
+- AgentFile Check: https://agentslint.guagua-alvin.top/
+- Agent Skill Guard: https://skillguard.guagua-alvin.top/
+
+The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.

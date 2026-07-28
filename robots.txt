@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://guagua-alvin.top/sitemap.xml
