@@ -15,5 +15,6 @@
 - Agent Skill Guard: https://skillguard.guagua-alvin.top/
 - RegistryReady: https://mcpregistry.guagua-alvin.top/
 - CrawlerPolicy: https://aipolicy.guagua-alvin.top/
+- ARD Catalog Lab: https://ard.guagua-alvin.top/
 
 The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.

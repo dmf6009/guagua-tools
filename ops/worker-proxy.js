@@ -1,5 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
-const BUILD_REVISION = "a79e9ae";
+const BUILD_REVISION = "20260729-ard";
 
 export default {
   async fetch(request) {
