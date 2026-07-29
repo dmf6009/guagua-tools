@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Guagua Tools — Free, Lightweight, Privacy-First Web Tools</title>
-  <meta name="description" content="A curated collection of free, lightweight web tools for MCP configuration, AI agent security, AGENTS.md, SKILL.md, and print preparation. No account required.">
+  <meta name="description" content="A curated collection of free web tools for MCP configuration and Registry publishing, AI crawler policy, agent security, AGENTS.md, SKILL.md, and print preparation.">
   <meta name="theme-color" content="#f7f5ed">
   <link rel="canonical" href="https://guagua-alvin.top/">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -23,7 +23,9 @@
     {"@type":"WebApplication","name":"MCP Config Guard","url":"https://mcpcheck.guagua-alvin.top/","applicationCategory":"SecurityApplication"},
     {"@type":"WebApplication","name":"MCP OAuth Lab","url":"https://mcpoauth.guagua-alvin.top/","applicationCategory":"DeveloperApplication"},
     {"@type":"WebApplication","name":"AgentFile Check","url":"https://agentslint.guagua-alvin.top/","applicationCategory":"DeveloperApplication"},
-    {"@type":"WebApplication","name":"Agent Skill Guard","url":"https://skillguard.guagua-alvin.top/","applicationCategory":"SecurityApplication"}]}
+    {"@type":"WebApplication","name":"Agent Skill Guard","url":"https://skillguard.guagua-alvin.top/","applicationCategory":"SecurityApplication"},
+    {"@type":"WebApplication","name":"RegistryReady","url":"https://mcpregistry.guagua-alvin.top/","applicationCategory":"DeveloperApplication"},
+    {"@type":"WebApplication","name":"CrawlerPolicy","url":"https://aipolicy.guagua-alvin.top/","applicationCategory":"WebApplication"}]}
   </script>
 </head>
 <body>
@@ -40,7 +42,7 @@
         <h1 id="hero-title">Make small,<br><em>complex things simple.</em></h1>
         <p class="intro">Free, lightweight tools for developers, AI agent users, and creators. Built for tasks that do not deserve another app, but do deserve a thoughtful solution.</p>
       </div>
-      <div class="hero-stamp" aria-hidden="true"><span>FREE TO USE</span><strong>06</strong><small>TOOLS &amp; COUNTING</small></div>
+      <div class="hero-stamp" aria-hidden="true"><span>FREE TO USE</span><strong>08</strong><small>TOOLS &amp; COUNTING</small></div>
     </section>
 
     <section class="tool-section" id="tools" aria-labelledby="tools-title">
@@ -49,9 +51,10 @@
         <label class="search-box"><span class="sr-only">Search tools</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 5 5"></path></svg><input id="tool-search" type="search" placeholder="Search tools…" autocomplete="off"><kbd>/</kbd></label>
       </div>
       <div class="filters" role="group" aria-label="Filter by category">
-        <button class="filter active" type="button" data-filter="all">All <span>06</span></button>
-        <button class="filter" type="button" data-filter="agent">AI Agent <span>05</span></button>
+        <button class="filter active" type="button" data-filter="all">All <span>08</span></button>
+        <button class="filter" type="button" data-filter="agent">AI Agent <span>07</span></button>
         <button class="filter" type="button" data-filter="security">Security <span>03</span></button>
+        <button class="filter" type="button" data-filter="seo">SEO &amp; Web <span>01</span></button>
         <button class="filter" type="button" data-filter="creative">Creative <span>01</span></button>
       </div>
 
@@ -79,6 +82,14 @@
         <a class="tool-card lime" data-categories="agent security" data-search="skill md agent skill guard security scanner frontmatter permissions supply chain" href="https://skillguard.guagua-alvin.top/">
           <div class="card-top"><span class="number">06</span><span class="tag">Security</span><span class="arrow">↗</span></div><div class="card-icon skill-icon" aria-hidden="true"><span>◆</span></div>
           <h3>Agent Skill Guard</h3><p>Scan SKILL.md structure, permissions, instruction overrides, and supply-chain risks.</p><small>Structure score · Safety score</small>
+        </a>
+        <a class="tool-card registry-card" data-categories="agent" data-search="mcp registry server json validator generator publish mcp-publisher schema package remote" href="https://mcpregistry.guagua-alvin.top/">
+          <div class="card-top"><span class="number">07</span><span class="tag">MCP Registry</span><span class="arrow">↗</span></div><div class="card-icon registry-icon" aria-hidden="true"><span>R/</span></div>
+          <h3>RegistryReady</h3><p>Validate and generate server.json metadata for the official MCP Registry.</p><small>2025-12-11 schema · 4 KB check</small>
+        </a>
+        <a class="tool-card policy-card" data-categories="agent seo" data-search="ai robots txt checker content signal generator crawler policy seo gptbot claude training" href="https://aipolicy.guagua-alvin.top/">
+          <div class="card-top"><span class="number">08</span><span class="tag">SEO &amp; Web</span><span class="arrow">↗</span></div><div class="card-icon policy-icon" aria-hidden="true"><span></span></div>
+          <h3>CrawlerPolicy</h3><p>Analyze AI crawler access and generate Content-Signal policies for search, answers, and training.</p><small>Access matrix · Policy builder</small>
         </a>
       </div>
       <p class="empty-state" id="empty-state" hidden>No matching tool found. Try another keyword.</p>
