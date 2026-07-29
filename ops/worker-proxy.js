@@ -1,4 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
+const BUILD_REVISION = "a79e9ae";
 
 export default {
   async fetch(request) {
@@ -8,6 +9,7 @@ export default {
       return Response.redirect(incoming.toString(), 301);
     }
     const upstream = new URL(incoming.pathname + incoming.search, UPSTREAM);
+    upstream.searchParams.set("__build", BUILD_REVISION);
     const headers = new Headers(request.headers);
     headers.delete("host");
     const response = await fetch(new Request(upstream, {
