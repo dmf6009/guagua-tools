@@ -17,5 +17,6 @@
 - CrawlerPolicy: https://aipolicy.guagua-alvin.top/
 - ARD Catalog Lab: https://ard.guagua-alvin.top/
 - A2UI Stream Lab: https://a2ui.guagua-alvin.top/
+- AG-UI Event Lab: https://agui.guagua-alvin.top/
 
 The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.
