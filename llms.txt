@@ -22,4 +22,13 @@
 - MCP Task Trace: https://mcptasks.guagua-alvin.top/
 - MCP 2026 Stateless Check: https://mcp2026.guagua-alvin.top/
 
+## MCP field notes
+
+- Migrate an MCP server to 2026-07-28: https://guagua-alvin.top/guides/migrate-mcp-2026
+- Convert Claude Desktop MCP JSON to Codex TOML: https://guagua-alvin.top/guides/claude-mcp-to-codex
+- Debug an MCP OAuth 401: https://guagua-alvin.top/guides/debug-mcp-oauth-401
+- Fix a blank MCP App panel: https://guagua-alvin.top/guides/fix-mcp-app-blank-ui
+- Debug an MCP Task stuck in working: https://guagua-alvin.top/guides/debug-mcp-task-polling
+- Prepare server.json for the MCP Registry: https://guagua-alvin.top/guides/publish-mcp-registry-server
+
 The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.

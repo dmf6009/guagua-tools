@@ -64,6 +64,18 @@
       </div>
     </section>
 
+    <section class="case-section" aria-labelledby="case-title">
+      <div class="case-heading"><div><p class="section-kicker">MCP field notes</p><h2 id="case-title">Start with the failure you can see.</h2></div><p>Short, reproducible walkthroughs built around the config, response, or deployment symptom in front of you. Each one ends in a browser tool you can use on your own data.</p></div>
+      <div class="case-grid">
+        <a href="/guides/migrate-mcp-2026"><small>Protocol upgrade · 8 min</small><h3>Remove the handshake without breaking older clients</h3><p>A two-path migration from <code>initialize</code> and session IDs to MCP 2026 stateless requests.</p><b>Follow the migration →</b></a>
+        <a href="/guides/claude-mcp-to-codex"><small>Configuration · 6 min</small><h3>Move a working Claude MCP server into Codex</h3><p>Translate the JSON, keep environment variables intact, then scan the TOML before saving it.</p><b>Convert a real config →</b></a>
+        <a href="/guides/debug-mcp-oauth-401"><small>Authentication · 7 min</small><h3>Trace a remote MCP server that only returns 401</h3><p>Check protected-resource metadata, issuer linkage, scopes and PKCE in the order the client sees them.</p><b>Debug the metadata chain →</b></a>
+        <a href="/guides/fix-mcp-app-blank-ui"><small>MCP Apps · 7 min</small><h3>Fix an MCP App that opens as a blank panel</h3><p>Follow the tool result to its <code>ui://</code> resource, MIME type, CSP and visibility metadata.</p><b>Inspect the app contract →</b></a>
+        <a href="/guides/debug-mcp-task-polling"><small>Long-running tools · 6 min</small><h3>Find why an MCP Task never leaves “working”</h3><p>Capture successive snapshots and look for timestamp regressions, missing results and terminal-state mistakes.</p><b>Read the task trace →</b></a>
+        <a href="/guides/publish-mcp-registry-server"><small>Distribution · 8 min</small><h3>Prepare server.json before the Registry rejects it</h3><p>Check package identity, transport fields, version alignment and the document size before publishing.</p><b>Prepare the listing →</b></a>
+      </div>
+    </section>
+
     <section class="tool-section" id="tools" aria-labelledby="tools-title">
       <div class="section-head">
         <div><p class="section-kicker">Tool directory</p><h2 id="tools-title">Pick one. Use it now.</h2></div>
