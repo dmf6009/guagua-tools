@@ -20,5 +20,6 @@
 - AG-UI Event Lab: https://agui.guagua-alvin.top/
 - MCP App Ready: https://mcpapps.guagua-alvin.top/
 - MCP Task Trace: https://mcptasks.guagua-alvin.top/
+- MCP 2026 Stateless Check: https://mcp2026.guagua-alvin.top/
 
 The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.
