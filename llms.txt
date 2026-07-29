@@ -4,6 +4,9 @@
 
 - Home: https://guagua-alvin.top/
 - Privacy: https://guagua-alvin.top/privacy
+- MCP tools collection: https://guagua-alvin.top/mcp-tools
+- AI agent tools collection: https://guagua-alvin.top/ai-agent-tools
+- Web utilities collection: https://guagua-alvin.top/web-utilities
 - PrintSpec Lab: https://printspeclab.guagua-alvin.top/
 - MCP Config Lab: https://mcp.guagua-alvin.top/
 - MCP Config Guard: https://mcpcheck.guagua-alvin.top/
