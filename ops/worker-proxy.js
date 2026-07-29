@@ -1,5 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
-const BUILD_REVISION = "20260729-mcpapps";
+const BUILD_REVISION = "20260729-mcptasks";
 
 export default {
   async fetch(request) {
