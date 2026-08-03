@@ -44,3 +44,11 @@ The directory requires no account. Individual tools describe their own local-pro
 - Technical Documentation Engineer: https://guagua-alvin.top/agents/technical-documentation-engineer
 - App Store Optimization Expert: https://guagua-alvin.top/agents/app-store-optimization-expert
 - Reddit Community Builder: https://guagua-alvin.top/agents/reddit-community-builder
+- API Testing Expert: https://guagua-alvin.top/agents/api-testing-expert
+- Database Optimization Expert: https://guagua-alvin.top/agents/database-optimization-expert
+- UX Researcher: https://guagua-alvin.top/agents/user-experience-researcher
+- AI Meeting Notes Extractor: https://guagua-alvin.top/agents/ai-meeting-notes
+- Code Review Expert: https://guagua-alvin.top/agents/code-review-expert
+- Backend Architect: https://guagua-alvin.top/agents/backend-architect
+- Developer Advocate: https://guagua-alvin.top/agents/developer-evangelist
+- A/B Experiment Analyst: https://guagua-alvin.top/agents/ab-experiment-analyst

@@ -23,9 +23,9 @@ Agents tied to China-only platforms, private corporate systems, personalities, l
 7. App Store Optimization Expert
 8. Reddit Community Builder
 
-## Phase 2 — testing, data, and product research
+## Phase 2 — testing, data, and product research (published)
 
-API Testing Expert, Database Optimization Expert, UX Researcher, AI Meeting Notes, Code Review Expert, Backend Architect, Developer Evangelist, and A/B Experiment Analyst.
+API Testing Expert, Database Optimization Expert, UX Researcher, AI Meeting Notes, Code Review Expert, Backend Architect, Developer Advocate, and A/B Experiment Analyst.
 
 ## Phase 3 — creator and small-business workflows
 
