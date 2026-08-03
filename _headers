@@ -8,3 +8,7 @@
 
 /assets/*
   Cache-Control: public, max-age=604800
+/downloads/*
+  Cache-Control: public, max-age=3600
+  X-Content-Type-Options: nosniff
+  X-Robots-Tag: noindex, nofollow

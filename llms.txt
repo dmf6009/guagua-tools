@@ -7,6 +7,7 @@
 - MCP tools collection: https://guagua-alvin.top/mcp-tools
 - AI agent tools collection: https://guagua-alvin.top/ai-agent-tools
 - Expert agent blueprint library: https://guagua-alvin.top/agents/
+- Agent plugin download catalog: https://guagua-alvin.top/downloads/agent-plugins.json
 - Web utilities collection: https://guagua-alvin.top/web-utilities
 - PrintSpec Lab: https://printspeclab.guagua-alvin.top/
 - MCP Config Lab: https://mcp.guagua-alvin.top/

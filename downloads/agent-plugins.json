@@ -1,0 +1,294 @@
+{
+  "generated": "2026-08-03",
+  "count": 32,
+  "plugins": [
+    {
+      "slug": "ab-experiment-analyst",
+      "title": "A/B Experiment Analyst",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/ab-experiment-analyst-agent-plugin.zip",
+      "skill": "/downloads/skills/ab-experiment-analyst/SKILL.md",
+      "bytes": 3879,
+      "sha256": "2ce0ebf350733290d478d3da4bf07cee1218ad26c4211241a7177df1d6e92afb"
+    },
+    {
+      "slug": "accessibility-auditor",
+      "title": "Accessibility Auditor",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/accessibility-auditor-agent-plugin.zip",
+      "skill": "/downloads/skills/accessibility-auditor/SKILL.md",
+      "bytes": 3663,
+      "sha256": "b4ec1cd8c9de508ffc15b8121889323e737ae513f958eefaf8ef84a955a373bb"
+    },
+    {
+      "slug": "ai-meeting-notes",
+      "title": "AI Meeting Notes Extractor",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/ai-meeting-notes-agent-plugin.zip",
+      "skill": "/downloads/skills/ai-meeting-notes/SKILL.md",
+      "bytes": 3682,
+      "sha256": "51d3e174528f8b9f6c5912220d764a2338006cb0cf863daa88d1b941556b03a8"
+    },
+    {
+      "slug": "api-development-expert",
+      "title": "API Development Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/api-development-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/api-development-expert/SKILL.md",
+      "bytes": 3828,
+      "sha256": "71ef6a460e143398a07f27fd9c69113763c6a0fb9c3005e2177ffc964b2c7fcc"
+    },
+    {
+      "slug": "api-testing-expert",
+      "title": "API Testing Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/api-testing-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/api-testing-expert/SKILL.md",
+      "bytes": 3694,
+      "sha256": "8c980e298125e2ad0e12cd5e8c33cf034a6a83b0697aa15d59600b13ab35e52c"
+    },
+    {
+      "slug": "app-store-optimization-expert",
+      "title": "App Store Optimization Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/app-store-optimization-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/app-store-optimization-expert/SKILL.md",
+      "bytes": 3890,
+      "sha256": "7c091621d9a0945588712afd8d9251a5503cf34428d9ffac1feabc9db027fd44"
+    },
+    {
+      "slug": "backend-architect",
+      "title": "Backend Architect",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/backend-architect-agent-plugin.zip",
+      "skill": "/downloads/skills/backend-architect/SKILL.md",
+      "bytes": 3707,
+      "sha256": "42185298db19c2bd99f46c1f0161c76ee686d12b5b414e25d9fbeb20dac5c0d1"
+    },
+    {
+      "slug": "brand-guardian",
+      "title": "Brand Guardian",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/brand-guardian-agent-plugin.zip",
+      "skill": "/downloads/skills/brand-guardian/SKILL.md",
+      "bytes": 3530,
+      "sha256": "064f1b129ff3b4b3c14fb5570b101f06fdd5c56941d7680ac0f9796c1d8c90e0"
+    },
+    {
+      "slug": "code-review-expert",
+      "title": "Code Review Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/code-review-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/code-review-expert/SKILL.md",
+      "bytes": 3707,
+      "sha256": "ef893c83ce5d69b37e063082c71e8bad3dc2311cdd819588e7e95d575aeb5ccc"
+    },
+    {
+      "slug": "content-distribution-strategist",
+      "title": "Content Distribution Strategist",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/content-distribution-strategist-agent-plugin.zip",
+      "skill": "/downloads/skills/content-distribution-strategist/SKILL.md",
+      "bytes": 4066,
+      "sha256": "f3a21d97673fdbb1514499d969027a371fd8135037254acdb1dbff4f938b3f0e"
+    },
+    {
+      "slug": "customer-support-expert",
+      "title": "Customer Support Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/customer-support-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/customer-support-expert/SKILL.md",
+      "bytes": 3786,
+      "sha256": "8b2e39d8893ccdc68e9c3e4067b6f6ed13db206a8389726b546b5bba819645ee"
+    },
+    {
+      "slug": "data-engineer",
+      "title": "Data Engineer",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/data-engineer-agent-plugin.zip",
+      "skill": "/downloads/skills/data-engineer/SKILL.md",
+      "bytes": 3608,
+      "sha256": "1dd742e31ef4ed9b4f63307a6accb71e51ba4a7ec9a9551ef98b54be5ac4a948"
+    },
+    {
+      "slug": "database-optimization-expert",
+      "title": "Database Optimization Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/database-optimization-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/database-optimization-expert/SKILL.md",
+      "bytes": 3984,
+      "sha256": "d3865c8e51ed841fb77a30f09ed5d07f9c3ae78551dac5dc238c1b00bbc8a10d"
+    },
+    {
+      "slug": "developer-evangelist",
+      "title": "Developer Advocate",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/developer-evangelist-agent-plugin.zip",
+      "skill": "/downloads/skills/developer-evangelist/SKILL.md",
+      "bytes": 3743,
+      "sha256": "7d0f346c3c7fa9b6dd161f48e6ebba713c7bd28f33a3ce9eb7fe9d4671fc8109"
+    },
+    {
+      "slug": "devops-automation-engineer",
+      "title": "DevOps Automation Engineer",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/devops-automation-engineer-agent-plugin.zip",
+      "skill": "/downloads/skills/devops-automation-engineer/SKILL.md",
+      "bytes": 3952,
+      "sha256": "b15a81dc8f6e2bdd45d9183199c812798973bb19d174a15a5324a091fefd4a36"
+    },
+    {
+      "slug": "dockerfile-generator",
+      "title": "Dockerfile Generator",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/dockerfile-generator-agent-plugin.zip",
+      "skill": "/downloads/skills/dockerfile-generator/SKILL.md",
+      "bytes": 3812,
+      "sha256": "e6c45a0cfe80a7c8d9e212ef46f8f58b44bbfafb4446790e392e5f4f083454fc"
+    },
+    {
+      "slug": "frontend-developer",
+      "title": "Frontend Developer",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/frontend-developer-agent-plugin.zip",
+      "skill": "/downloads/skills/frontend-developer/SKILL.md",
+      "bytes": 3771,
+      "sha256": "c0e3c550853ac3f18be6b5fae5155534be8717f7739f2d5be0299cae92138c48"
+    },
+    {
+      "slug": "git-workflow-expert",
+      "title": "Git Workflow Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/git-workflow-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/git-workflow-expert/SKILL.md",
+      "bytes": 3712,
+      "sha256": "d14f246d1209f90f1f3923245e7f625c6c395836703b5920005bdf6e415b8815"
+    },
+    {
+      "slug": "incident-response-commander",
+      "title": "Incident Response Commander",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/incident-response-commander-agent-plugin.zip",
+      "skill": "/downloads/skills/incident-response-commander/SKILL.md",
+      "bytes": 3776,
+      "sha256": "7f1aed29cd14436016e6646d9b28b096a7e159687eda52c027d3921c081314b6"
+    },
+    {
+      "slug": "market-researcher",
+      "title": "Market Researcher",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/market-researcher-agent-plugin.zip",
+      "skill": "/downloads/skills/market-researcher/SKILL.md",
+      "bytes": 3657,
+      "sha256": "3f4c6d238a6caa44e6d7375fbfd9abe8531fd88a8bf3e4ef8235b9a8c4506335"
+    },
+    {
+      "slug": "proposal-strategist",
+      "title": "Proposal Strategist",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/proposal-strategist-agent-plugin.zip",
+      "skill": "/downloads/skills/proposal-strategist/SKILL.md",
+      "bytes": 3719,
+      "sha256": "01a5e9c3743a8eebb8dfebec00a4352b7b8a3c8a63cc2e0758f6353509a4bf6d"
+    },
+    {
+      "slug": "reddit-community-builder",
+      "title": "Reddit Community Builder",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/reddit-community-builder-agent-plugin.zip",
+      "skill": "/downloads/skills/reddit-community-builder/SKILL.md",
+      "bytes": 3730,
+      "sha256": "9f1505ac48235f8d2e55c2d64738c4a8be51609054fc9d9d4c0b47c007e7ce39"
+    },
+    {
+      "slug": "security-engineer",
+      "title": "Security Engineer",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/security-engineer-agent-plugin.zip",
+      "skill": "/downloads/skills/security-engineer/SKILL.md",
+      "bytes": 3521,
+      "sha256": "342cf1378fa50083946524a74f746e4c2e058c9af5d8810fe47a327ecde3c7fb"
+    },
+    {
+      "slug": "site-reliability-engineer",
+      "title": "Site Reliability Engineer",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/site-reliability-engineer-agent-plugin.zip",
+      "skill": "/downloads/skills/site-reliability-engineer/SKILL.md",
+      "bytes": 3765,
+      "sha256": "4f3e9b6a0df3d4c3959a759d41ca0e8b22938536a3f4a6e9f2fc2807386abfa4"
+    },
+    {
+      "slug": "software-architect",
+      "title": "Software Architect",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/software-architect-agent-plugin.zip",
+      "skill": "/downloads/skills/software-architect/SKILL.md",
+      "bytes": 3726,
+      "sha256": "1829beffebf19d8d554b5a90758164e53056c342dd477c51a3873191a9746e82"
+    },
+    {
+      "slug": "sprint-priority-manager",
+      "title": "Sprint Priority Manager",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/sprint-priority-manager-agent-plugin.zip",
+      "skill": "/downloads/skills/sprint-priority-manager/SKILL.md",
+      "bytes": 3701,
+      "sha256": "8d044810b3b0fd07d44a755ef750002b9e4d435aacc89b5487e4faf5493a16c1"
+    },
+    {
+      "slug": "study-planner",
+      "title": "Study Planner",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/study-planner-agent-plugin.zip",
+      "skill": "/downloads/skills/study-planner/SKILL.md",
+      "bytes": 3590,
+      "sha256": "e8f2b721c606c4524cc4af796a89ed4a3aafe249ba8ecfdb79022273ac32cbb2"
+    },
+    {
+      "slug": "supply-chain-strategist",
+      "title": "Supply Chain Strategist",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/supply-chain-strategist-agent-plugin.zip",
+      "skill": "/downloads/skills/supply-chain-strategist/SKILL.md",
+      "bytes": 3850,
+      "sha256": "e692a8b03a992241ce4539021dc702ccb124fa90d4f49cd8bbdd633120e137e0"
+    },
+    {
+      "slug": "technical-documentation-engineer",
+      "title": "Technical Documentation Engineer",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/technical-documentation-engineer-agent-plugin.zip",
+      "skill": "/downloads/skills/technical-documentation-engineer/SKILL.md",
+      "bytes": 3922,
+      "sha256": "90c3180483c246892633b20d2413ecafaca1a318dddf8f4ca8a58cce655d46b3"
+    },
+    {
+      "slug": "tool-evaluation-expert",
+      "title": "Tool Evaluation Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/tool-evaluation-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/tool-evaluation-expert/SKILL.md",
+      "bytes": 3832,
+      "sha256": "eb826f4040175716365d2f51e19e77bce515cd74b50df3d58fa748f507a8b474"
+    },
+    {
+      "slug": "user-experience-researcher",
+      "title": "UX Researcher",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/user-experience-researcher-agent-plugin.zip",
+      "skill": "/downloads/skills/user-experience-researcher/SKILL.md",
+      "bytes": 3903,
+      "sha256": "fc35f7016885404c1e2f8ffcc631eeca37ecff0dbf528e793382b7f77555c852"
+    },
+    {
+      "slug": "web-app-testing-expert",
+      "title": "Web App Testing Expert",
+      "version": "1.0.0",
+      "file": "/downloads/agent-plugins/web-app-testing-expert-agent-plugin.zip",
+      "skill": "/downloads/skills/web-app-testing-expert/SKILL.md",
+      "bytes": 3952,
+      "sha256": "3dea192e3b7b5034da37d63b8fb11384ae75cbced2a281155e179ef6d0dd6025"
+    }
+  ]
+}
