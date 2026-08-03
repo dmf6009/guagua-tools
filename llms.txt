@@ -6,6 +6,7 @@
 - Privacy: https://guagua-alvin.top/privacy
 - MCP tools collection: https://guagua-alvin.top/mcp-tools
 - AI agent tools collection: https://guagua-alvin.top/ai-agent-tools
+- Expert agent blueprint library: https://guagua-alvin.top/agents/
 - Web utilities collection: https://guagua-alvin.top/web-utilities
 - PrintSpec Lab: https://printspeclab.guagua-alvin.top/
 - MCP Config Lab: https://mcp.guagua-alvin.top/
@@ -32,3 +33,14 @@
 - Prepare server.json for the MCP Registry: https://guagua-alvin.top/guides/publish-mcp-registry-server
 
 The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.
+
+## Expert agent blueprints
+
+- Accessibility Auditor: https://guagua-alvin.top/agents/accessibility-auditor
+- Incident Response Commander: https://guagua-alvin.top/agents/incident-response-commander
+- Security Engineer: https://guagua-alvin.top/agents/security-engineer
+- Site Reliability Engineer: https://guagua-alvin.top/agents/site-reliability-engineer
+- Sprint Priority Manager: https://guagua-alvin.top/agents/sprint-priority-manager
+- Technical Documentation Engineer: https://guagua-alvin.top/agents/technical-documentation-engineer
+- App Store Optimization Expert: https://guagua-alvin.top/agents/app-store-optimization-expert
+- Reddit Community Builder: https://guagua-alvin.top/agents/reddit-community-builder
