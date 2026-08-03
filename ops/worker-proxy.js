@@ -1,5 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
-const BUILD_REVISION = "20260803-agent-blueprints-phase2";
+const BUILD_REVISION = "20260803-agent-blueprints-phase3";
 
 export default {
   async fetch(request) {

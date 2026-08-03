@@ -27,7 +27,7 @@ Agents tied to China-only platforms, private corporate systems, personalities, l
 
 API Testing Expert, Database Optimization Expert, UX Researcher, AI Meeting Notes, Code Review Expert, Backend Architect, Developer Advocate, and A/B Experiment Analyst.
 
-## Phase 3 — creator and small-business workflows
+## Phase 3 — creator and small-business workflows (published)
 
 Brand Guardian, Content Distribution Strategist, Customer Support Expert, Study Planner, Market Researcher, Proposal Strategist, Supply Chain Strategist, and Tool Evaluation Expert.
 

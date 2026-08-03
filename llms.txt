@@ -52,3 +52,11 @@ The directory requires no account. Individual tools describe their own local-pro
 - Backend Architect: https://guagua-alvin.top/agents/backend-architect
 - Developer Advocate: https://guagua-alvin.top/agents/developer-evangelist
 - A/B Experiment Analyst: https://guagua-alvin.top/agents/ab-experiment-analyst
+- Brand Guardian: https://guagua-alvin.top/agents/brand-guardian
+- Content Distribution Strategist: https://guagua-alvin.top/agents/content-distribution-strategist
+- Customer Support Expert: https://guagua-alvin.top/agents/customer-support-expert
+- Study Planner: https://guagua-alvin.top/agents/study-planner
+- Market Researcher: https://guagua-alvin.top/agents/market-researcher
+- Proposal Strategist: https://guagua-alvin.top/agents/proposal-strategist
+- Supply Chain Strategist: https://guagua-alvin.top/agents/supply-chain-strategist
+- Tool Evaluation Expert: https://guagua-alvin.top/agents/tool-evaluation-expert
