@@ -31,6 +31,10 @@ API Testing Expert, Database Optimization Expert, UX Researcher, AI Meeting Note
 
 Brand Guardian, Content Distribution Strategist, Customer Support Expert, Study Planner, Market Researcher, Proposal Strategist, Supply Chain Strategist, and Tool Evaluation Expert.
 
+## Phase 4 — developer engineering workflows (published)
+
+Dockerfile Generator, Git Workflow Expert, DevOps Automation Engineer, API Development Expert, Data Engineer, Frontend Developer, Software Architect, and Web App Testing Expert.
+
 ## Publishing requirements
 
 Each page includes original English copy, a task-oriented title, use cases, inputs, workflow, output contract, guardrails, worked example, starter prompt, FAQ, and related links. AdSense code is present globally, while interactive copy controls and prompt blocks remain ad-free zones. Pages are added to the XML sitemap only after editorial and link checks pass.

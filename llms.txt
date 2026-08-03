@@ -60,3 +60,11 @@ The directory requires no account. Individual tools describe their own local-pro
 - Proposal Strategist: https://guagua-alvin.top/agents/proposal-strategist
 - Supply Chain Strategist: https://guagua-alvin.top/agents/supply-chain-strategist
 - Tool Evaluation Expert: https://guagua-alvin.top/agents/tool-evaluation-expert
+- Dockerfile Generator: https://guagua-alvin.top/agents/dockerfile-generator
+- Git Workflow Expert: https://guagua-alvin.top/agents/git-workflow-expert
+- DevOps Automation Engineer: https://guagua-alvin.top/agents/devops-automation-engineer
+- API Development Expert: https://guagua-alvin.top/agents/api-development-expert
+- Data Engineer: https://guagua-alvin.top/agents/data-engineer
+- Frontend Developer: https://guagua-alvin.top/agents/frontend-developer
+- Software Architect: https://guagua-alvin.top/agents/software-architect
+- Web App Testing Expert: https://guagua-alvin.top/agents/web-app-testing-expert
