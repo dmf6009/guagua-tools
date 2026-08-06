@@ -1,7 +1,108 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Debug an MCP OAuth 401: Metadata, Scopes and PKCE</title><meta name="description" content="Trace a remote MCP server 401 through protected resource metadata, authorization server discovery, scopes and PKCE S256."><link rel="canonical" href="https://guagua-alvin.top/guides/debug-mcp-oauth-401"><link rel="stylesheet" href="/styles.css"><link rel="icon" href="/assets/favicon.svg"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/">Directory</a></nav></header><main class="guide-page"><p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/mcp-tools">MCP tools</a> / OAuth</p><header class="guide-head"><p class="eyebrow"><span></span> Field note 03</p><h1>The MCP endpoint returns 401. Follow the client, not your guess.</h1><p class="guide-deck">A login page working in a browser says little about MCP OAuth. The useful evidence is the challenge and the metadata chain the client is expected to discover.</p><p class="guide-meta">Remote MCP OAuth · Updated July 29, 2026 · 7 min</p></header><div class="guide-layout"><aside class="guide-aside"><strong>Tool used</strong><a href="https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a></aside><article class="guide-body"><h2>Capture the first 401</h2><p>Send an unauthenticated request to the MCP resource and save the response headers. You are looking for a Bearer challenge that points the client toward protected-resource metadata. Do not begin at the authorization server dashboard; begin where the client failed.</p><h2>Open the protected-resource document</h2><p>Fetch the advertised metadata URL directly. Confirm that its resource identifier describes the MCP endpoint you called and that its authorization server list contains the issuer you intend to use.</p><pre>{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content=
+  "width=device-width,initial-scale=1">
+  <title>MCP OAuth 401 Troubleshooting: Metadata, Scopes &amp; PKCE</title>
+  <meta name="description" content=
+  "Fix an MCP server 401 by checking WWW-Authenticate, protected resource metadata, authorization server discovery, resource audiences, scopes, and PKCE S256.">
+  <meta name="robots" content="index,follow,max-snippet:-1">
+  <link rel="canonical" href=
+  "https://guagua-alvin.top/guides/debug-mcp-oauth-401">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/favicon.svg">
+  <script async src=
+  "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000"
+  crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/"><span class=
+    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
+    <nav>
+      <a href="/mcp-tools">MCP tools</a><a href="/">Directory</a>
+    </nav>
+  </header>
+  <main class="guide-page">
+    <p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href=
+    "/mcp-tools">MCP tools</a> / OAuth</p>
+    <header class="guide-head">
+      <p class="eyebrow">Field note 03</p>
+      <h1>Fix an MCP OAuth 401 from the first broken link.</h1>
+      <p class="guide-deck">A working login page does not prove that an MCP client can discover authorization. Capture the challenge, follow the protected-resource metadata, and verify every identifier before changing application code.</p>
+      <p class="guide-meta">Remote MCP OAuth · Updated August 6, 2026 · 12 min</p>
+    </header>
+    <div class="guide-layout">
+      <aside class="guide-aside">
+        <strong>Tool used</strong><a href=
+        "https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a>
+      </aside>
+      <article class="guide-body">
+        <div class="guide-answer"><strong>Start here</strong><p>An unauthenticated MCP request should return <code>401 Unauthorized</code> with a Bearer challenge whose <code>resource_metadata</code> value points to protected-resource metadata. If that pointer is absent or unreachable, later OAuth settings cannot repair discovery.</p><a href="https://mcpoauth.guagua-alvin.top/">Open the MCP OAuth metadata validator →</a></div>
+        <h2>Capture the first 401</h2>
+        <p>Send an unauthenticated request to the MCP resource and
+        save the response headers. You are looking for a Bearer
+        challenge that points the client toward protected-resource
+        metadata. Do not begin at the authorization server
+        dashboard; begin where the client failed.</p>
+        <h2>Open the protected-resource document</h2>
+        <p>Fetch the advertised metadata URL directly. Confirm that
+        its resource identifier describes the MCP endpoint you
+        called and that its authorization server list contains the
+        issuer you intend to use.</p>
+        <pre>{
   "resource": "https://api.example.com/mcp",
   "authorization_servers": [
     "https://login.example.com"
   ],
   "scopes_supported": ["mcp:tools"]
-}</pre><h2>Follow the issuer</h2><p>Open the authorization-server metadata and compare issuer, authorization endpoint and token endpoint origins. Redirects and proxy hostnames often produce the subtle mismatch: every document loads, but the identifiers disagree.</p><h2>Check what the client can actually do</h2><p>For a public client, require PKCE with S256. Confirm the requested scope is both advertised and accepted. A token minted for the wrong resource or audience may be perfectly valid and still receive 401 from the MCP server.</p><div class="guide-callout"><p>Do not paste client secrets or live tokens into a validator. Metadata URLs and redacted documents are enough for this check.</p></div><h2>Use the chain view</h2><p>Enter the resource URL and metadata in <a href="https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a>. Work from the first broken edge. Fixing later fields while the resource-to-issuer link is wrong only creates noise.</p><div class="guide-next"><h3>Expected result</h3><p>The unauthenticated challenge leads to the correct resource document, that document names the correct issuer, and a PKCE authorization produces a token accepted for the MCP resource.</p><a href="https://mcpoauth.guagua-alvin.top/">Trace the OAuth metadata →</a></div></article></div></main><footer><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Independent MCP field notes.</p><div><a href="/about">About</a><a href="/privacy">Privacy</a></div></footer></body></html>
+}</pre>
+        <h2>Follow the issuer</h2>
+        <p>Open the authorization-server metadata and compare
+        issuer, authorization endpoint and token endpoint origins.
+        Redirects and proxy hostnames often produce the subtle
+        mismatch: every document loads, but the identifiers
+        disagree.</p>
+        <h2>Read the chain as five separate checks</h2><div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Checkpoint</th><th>Evidence</th><th>Common failure</th></tr></thead><tbody><tr><td>Challenge</td><td><code>WWW-Authenticate</code></td><td>Missing pointer</td></tr><tr><td>Resource</td><td><code>resource</code></td><td>Host mismatch</td></tr><tr><td>Issuer</td><td><code>authorization_servers</code></td><td>Wrong tenant</td></tr><tr><td>Client flow</td><td>PKCE methods</td><td>S256 unavailable</td></tr><tr><td>Token</td><td>Audience, scope</td><td>Wrong resource</td></tr></tbody></table></div>
+        <h2>Check what the client can actually do</h2>
+        <p>For a public client, require PKCE with S256. Confirm the
+        requested scope is both advertised and accepted. A token
+        minted for the wrong resource or audience may be perfectly
+        valid and still receive 401 from the MCP server.</p>
+        <div class="guide-callout">
+          <p>Do not paste client secrets or live tokens into a
+          validator. Metadata URLs and redacted documents are
+          enough for this check.</p>
+        </div>
+        <h2>Use the chain view</h2>
+        <p>Enter the resource URL and metadata in <a href=
+        "https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a>.
+        Work from the first broken edge. Fixing later fields while
+        the resource-to-issuer link is wrong only creates
+        noise.</p>
+        <h2>Symptom-to-fix matrix</h2><h3>The client never opens a browser</h3><p>Inspect the initial 401. The client probably never discovered the authorization server because the metadata pointer is missing, malformed, or blocked.</p><h3>Login succeeds, then the call still returns 401</h3><p>Compare token audience, issuer, expiry, and granted scopes with the resource metadata. Authentication may have succeeded for the wrong resource.</p><h3>It works locally but fails behind a proxy</h3><p>Compare externally visible URLs with generated values. Forwarded host and protocol handling often advertises an internal hostname or <code>http</code> URL.</p>
+        <h2>Safe debugging checklist</h2><ul class="guide-checklist"><li>Save headers and public metadata, not live tokens.</li><li>Resolve the earliest failing URL first.</li><li>Compare identifiers exactly.</li><li>Require PKCE S256 for public clients.</li><li>Retry after correcting cached metadata.</li></ul>
+        <h2>Related MCP tools</h2><p>If client configuration is wrong, use the <a href="/guides/claude-mcp-to-codex">Claude-to-Codex conversion guide</a>. Before publishing, validate the listing with the <a href="/guides/publish-mcp-registry-server">server.json Registry guide</a>.</p>
+        <div class="guide-next">
+          <h3>Expected result</h3>
+          <p>The unauthenticated challenge leads to the correct
+          resource document, that document names the correct
+          issuer, and a PKCE authorization produces a token
+          accepted for the MCP resource.</p><a href=
+          "https://mcpoauth.guagua-alvin.top/">Trace the OAuth
+          metadata →</a>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <a class="brand" href="/"><span class=
+    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
+    <p>Independent MCP field notes.</p>
+    <div>
+      <a href="/about">About</a><a href="/privacy">Privacy</a>
+    </div>
+  </footer>
+</body>
+</html>

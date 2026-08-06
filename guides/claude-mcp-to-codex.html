@@ -1,4 +1,49 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Convert a Claude Desktop MCP Config to Codex TOML</title><meta name="description" content="Move a working Claude Desktop MCP JSON entry to Codex TOML, preserve arguments and environment variables, and scan the result for secrets."><link rel="canonical" href="https://guagua-alvin.top/guides/claude-mcp-to-codex"><link rel="stylesheet" href="/styles.css"><link rel="icon" href="/assets/favicon.svg"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/">Directory</a></nav></header><main class="guide-page"><p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/mcp-tools">MCP tools</a> / Config conversion</p><header class="guide-head"><p class="eyebrow"><span></span> Field note 02</p><h1>Move one working Claude MCP server into Codex.</h1><p class="guide-deck">The server already runs in Claude Desktop. The risky part is not TOML punctuation; it is quietly changing the command, argument order, working directory, or secret handling.</p><p class="guide-meta">Configuration case · Updated July 29, 2026 · 6 min</p></header><div class="guide-layout"><aside class="guide-aside"><strong>Tools used</strong><a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a><br><a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a></aside><article class="guide-body"><h2>Start from the smallest working entry</h2><pre>{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content=
+  "width=device-width,initial-scale=1">
+  <title>Claude Desktop MCP Config to Codex TOML Converter Guide</title>
+  <meta name="description" content=
+  "Convert Claude Desktop MCP JSON to Codex config.toml without changing commands, arguments, environment variables, or remote server URLs. Includes examples and fixes.">
+  <meta name="robots" content="index,follow,max-snippet:-1">
+  <link rel="canonical" href=
+  "https://guagua-alvin.top/guides/claude-mcp-to-codex">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/favicon.svg">
+  <script async src=
+  "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000"
+  crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/"><span class=
+    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
+    <nav>
+      <a href="/mcp-tools">MCP tools</a><a href="/">Directory</a>
+    </nav>
+  </header>
+  <main class="guide-page">
+    <p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href=
+    "/mcp-tools">MCP tools</a> / Config conversion</p>
+    <header class="guide-head">
+      <p class="eyebrow">Field note 02</p>
+      <h1>Convert a Claude Desktop MCP config to Codex TOML.</h1>
+      <p class="guide-deck">Use the browser converter for the mechanical rewrite, then verify commands, arguments, environment variables, remote URLs, and the config path Codex actually reads.</p>
+      <p class="guide-meta">Configuration guide · Tested August 6, 2026 · 10 min</p>
+    </header>
+    <div class="guide-layout">
+      <aside class="guide-aside">
+        <strong>Tools used</strong><a href=
+        "https://mcp.guagua-alvin.top/">MCP Config Lab</a><br>
+        <a href="https://mcpcheck.guagua-alvin.top/">MCP Config
+        Guard</a>
+      </aside>
+      <article class="guide-body">
+        <div class="guide-answer"><strong>Short answer</strong><p>Claude Desktop stores local MCP servers below <code>mcpServers</code> in JSON. Codex stores them below <code>[mcp_servers.&lt;name&gt;]</code> in TOML. Preserve the server name, command, argument order, environment keys, and URL exactly; only the container syntax should change.</p><a href="https://mcp.guagua-alvin.top/">Open the free MCP config converter →</a></div>
+        <h2>Start from the smallest working entry</h2>
+        <pre>{
   "mcpServers": {
     "tickets": {
       "command": "npx",
@@ -6,9 +51,70 @@
       "env": {"TICKET_TOKEN": "${TICKET_TOKEN}"}
     }
   }
-}</pre><p>Copy one server, not the entire desktop configuration. That makes it obvious which warning belongs to this move.</p><h2>Convert, then compare meaning</h2><p>Paste the JSON into <a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a> and choose Codex TOML. Before saving, compare four things: server name, executable, argument order and environment keys. Quoting may change; behavior must not.</p><pre>[mcp_servers.tickets]
+}</pre>
+        <p>Copy one server, not the entire desktop configuration.
+        That makes it obvious which warning belongs to this
+        move.</p>
+        <h2>Map the fields before converting</h2>
+        <div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Claude JSON</th><th>Codex TOML</th><th>Keep unchanged</th></tr></thead><tbody><tr><td><code>mcpServers.tickets</code></td><td><code>[mcp_servers.tickets]</code></td><td>Server ID</td></tr><tr><td><code>command</code></td><td><code>command</code></td><td>Executable</td></tr><tr><td><code>args</code></td><td><code>args</code></td><td>Order</td></tr><tr><td><code>env</code></td><td><code>[...env]</code></td><td>Key names</td></tr><tr><td><code>url</code></td><td><code>url</code></td><td>Endpoint</td></tr></tbody></table></div>
+        <h2>Convert, then compare meaning</h2>
+        <p>Paste the JSON into <a href=
+        "https://mcp.guagua-alvin.top/">MCP Config Lab</a> and
+        choose Codex TOML. Before saving, compare four things:
+        server name, executable, argument order and environment
+        keys. Quoting may change; behavior must not.</p>
+        <pre>[mcp_servers.tickets]
 command = "npx"
 args = ["-y", "@example/ticket-server"]
 
 [mcp_servers.tickets.env]
-TICKET_TOKEN = "${TICKET_TOKEN}"</pre><h2>Do not “fix” the placeholder into a token</h2><p>A common migration mistake is replacing the placeholder with the real credential just to get the first launch working. The config then lands in shell history, backups or Git. Keep the reference and provide the value through the environment or the secret mechanism supported by your setup.</p><h2>Scan before installation</h2><p>Run the TOML through <a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a>. Review unpinned packages, shell wrappers, broad filesystem paths and anything that resembles a secret. A warning is a prompt to inspect, not an automatic verdict.</p><div class="guide-callout"><p>If Codex cannot start the server, run the exact command and arguments in a clean terminal. This separates a process problem from a TOML problem.</p></div><h2>Confirm the actual runtime</h2><p>Restart Codex, list the server, and invoke one read-only tool. Check that the process receives the intended environment variable without printing its value.</p><div class="guide-next"><h3>Expected result</h3><p>The same package starts with the same arguments, the token stays outside the committed file, and a read-only tool call succeeds.</p><a href="https://mcp.guagua-alvin.top/">Convert your MCP config →</a></div></article></div></main><footer><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Independent MCP field notes.</p><div><a href="/about">About</a><a href="/privacy">Privacy</a></div></footer></body></html>
+TICKET_TOKEN = "${TICKET_TOKEN}"</pre>
+        <h2>Do not “fix” the placeholder into a token</h2>
+        <p>A common migration mistake is replacing the placeholder
+        with the real credential just to get the first launch
+        working. The config then lands in shell history, backups or
+        Git. Keep the reference and provide the value through the
+        environment or the secret mechanism supported by your
+        setup.</p>
+        <h2>Scan before installation</h2>
+        <p>Run the TOML through <a href=
+        "https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a>.
+        Review unpinned packages, shell wrappers, broad filesystem
+        paths and anything that resembles a secret. A warning is a
+        prompt to inspect, not an automatic verdict.</p>
+        <div class="guide-callout">
+          <p>If Codex cannot start the server, run the exact
+          command and arguments in a clean terminal. This separates
+          a process problem from a TOML problem.</p>
+        </div>
+        <h2>Confirm the actual runtime</h2>
+        <p>Restart Codex, list the server, and invoke one read-only
+        tool. Check that the process receives the intended
+        environment variable without printing its value.</p>
+        <h2>Three failures that look like conversion bugs</h2>
+        <h3>Codex cannot find the executable</h3><p>The desktop app and your shell may have different <code>PATH</code> values. Run the exact executable in the same environment that starts Codex.</p>
+        <h3>The JSON used a real token</h3><p>Conversion preserves values; it cannot make an exposed secret safe. Rotate it, replace it with an environment reference, and scan the TOML before committing.</p>
+        <h3>The server starts but no tools appear</h3><p>Run the command outside the client and inspect stderr. A startup exit, missing working directory, or protocol output written to the wrong stream can look like an empty connection.</p>
+        <h2>Conversion checklist</h2><ul class="guide-checklist"><li>Convert one known-working server first.</li><li>Compare command and arguments character for character.</li><li>Keep credentials outside committed TOML.</li><li>Restart Codex after changing its config.</li><li>Invoke one read-only tool before migrating the next server.</li></ul>
+        <h2>Related MCP configuration help</h2><p>After conversion, use the <a href="https://mcpcheck.guagua-alvin.top/">MCP config security scanner</a>. If a remote server returns an authorization error, continue with the <a href="/guides/debug-mcp-oauth-401">MCP OAuth 401 troubleshooting guide</a>.</p>
+        <div class="guide-next">
+          <h3>Expected result</h3>
+          <p>The same package starts with the same arguments, the
+          token stays outside the committed file, and a read-only
+          tool call succeeds.</p><a href=
+          "https://mcp.guagua-alvin.top/">Convert your MCP config
+          →</a>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <a class="brand" href="/"><span class=
+    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
+    <p>Independent MCP field notes.</p>
+    <div>
+      <a href="/about">About</a><a href="/privacy">Privacy</a>
+    </div>
+  </footer>
+</body>
+</html>
