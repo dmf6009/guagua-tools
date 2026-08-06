@@ -1,5 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
-const BUILD_REVISION = "20260803-downloadable-agent-plugins";
+const BUILD_REVISION = "20260806-high-intent-mcp-seo";
 
 export default {
   async fetch(request) {
