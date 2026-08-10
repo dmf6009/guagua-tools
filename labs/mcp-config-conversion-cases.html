@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Six MCP Config Conversion Test Cases: Claude JSON to Codex TOML</title>
+  <meta name="description" content="Six reproducible MCP configuration fixtures covering stdio, remote URLs, bearer tokens, environment headers, quoted server names, and invalid transports.">
+  <meta name="robots" content="index,follow,max-snippet:-1">
+  <link rel="canonical" href="https://guagua-alvin.top/labs/mcp-config-conversion-cases">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/favicon.svg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/testing-methodology">Testing method</a><a href="/about">About</a></nav></header>
+  <main class="guide-page">
+    <p class="breadcrumbs"><a href="/">Home</a> / <a href="/testing-methodology">Testing method</a> / Config fixtures</p>
+    <header class="guide-head"><p class="eyebrow"><span></span> Reproducible lab note</p><h1>Six conversion cases worth checking before you trust the output.</h1><p class="guide-deck">A config converter is useful only if it preserves behavior. These fixtures exercise the field mappings and failure paths implemented by MCP Config Lab, without relying on a private server or a live credential.</p><p class="guide-meta">Implementation review · August 10, 2026 · Source revision b17219d</p></header>
+    <div class="guide-layout">
+      <aside class="guide-aside"><strong>Run the cases</strong><a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a><br><a href="https://github.com/dmf6009/mcp-config-lab">Source repository</a></aside>
+      <article class="guide-body">
+        <div class="guide-answer"><strong>What was inspected</strong><p>The cases follow the converter's JSON parser, server normalization, diagnostics, and Codex TOML serializer. They test preservation, intentional field renaming, and errors the UI should surface.</p></div>
+        <h2>Case 1: stdio command, arguments, and environment</h2>
+        <pre>{"mcpServers":{"docs":{"command":"npx","args":["-y","@example/docs"],"env":{"DOCS_MODE":"read-only"}}}}</pre>
+        <p>The Codex output must retain the executable, argument order, and environment key. The environment object becomes its own TOML table.</p>
+        <pre>[mcp_servers.docs]
+command = "npx"
+args = ["-y", "@example/docs"]
+
+[mcp_servers.docs.env]
+DOCS_MODE = "read-only"</pre>
+        <h2>Case 2: remote server with a bearer-token reference</h2>
+        <pre>{"mcpServers":{"tickets":{"url":"https://api.example.com/mcp","headers":{"Authorization":"Bearer ${TICKET_TOKEN}"}}}}</pre>
+        <p>The serializer recognizes an environment-backed Bearer header and emits Codex's dedicated <code>bearer_token_env_var</code> field. It does not copy a token value into TOML.</p>
+        <pre>[mcp_servers.tickets]
+url = "https://api.example.com/mcp"
+bearer_token_env_var = "TICKET_TOKEN"</pre>
+        <h2>Case 3: an environment-backed custom header</h2>
+        <pre>{"mcpServers":{"search":{"url":"https://search.example.com/mcp","headers":{"X-Workspace":"${WORKSPACE_ID}"}}}}</pre>
+        <p>A custom header whose entire value is an environment placeholder belongs in <code>env_http_headers</code>. The TOML value is the environment-variable name, not the placeholder syntax.</p>
+        <pre>[mcp_servers.search]
+url = "https://search.example.com/mcp"
+
+[mcp_servers.search.env_http_headers]
+X-Workspace = "WORKSPACE_ID"</pre>
+        <h2>Case 4: a server name that needs quoting</h2>
+        <pre>{"mcpServers":{"support tickets":{"command":"node","args":["server.js"]}}}</pre>
+        <p>Spaces are not valid in a bare TOML key. The converter should quote the table name rather than silently replacing characters and changing the server ID.</p>
+        <pre>[mcp_servers."support tickets"]
+command = "node"
+args = ["server.js"]</pre>
+        <h2>Case 5: conflicting transports</h2>
+        <pre>{"mcpServers":{"broken":{"command":"node","url":"https://api.example.com/mcp"}}}</pre>
+        <p>This is not a choice the converter should make for the user. The diagnostic path reports an error because each server must define exactly one local command or remote URL. Correct the source before using any generated result.</p>
+        <h2>Case 6: the wrong wrapper</h2>
+        <pre>{"servers":{"docs":{"command":"npx"}}}</pre>
+        <p>When the selected source format is Claude Desktop, the parser expects <code>mcpServers</code>. A VS Code-style <code>servers</code> wrapper should stop conversion instead of being guessed. Selecting the correct source format is part of the input contract.</p>
+        <h2>What these cases do not prove</h2>
+        <p>They do not prove that a package exists, a command is safe, a remote endpoint is reachable, or the target client supports every optional field. After conversion, scan the config, restart the target client, and call one read-only tool.</p>
+        <div class="guide-next"><h3>Try the same fixtures</h3><p>Paste each input into the converter, inspect the diagnostic state, and compare the generated TOML with the expected field mapping above.</p><a href="https://mcp.guagua-alvin.top/">Open MCP Config Lab →</a></div>
+      </article>
+    </div>
+  </main>
+  <footer><a href="/about">About the maintainer</a><a href="/testing-methodology">Testing method</a><a href="/privacy">Privacy</a></footer>
+</body>
+</html>

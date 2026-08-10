@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reproducible MCP OAuth 401 Metadata Fixture</title>
+  <meta name="description" content="A copyable MCP OAuth 401 fixture showing WWW-Authenticate discovery, protected resource metadata, issuer linkage, PKCE, scopes, and token audience failures.">
+  <meta name="robots" content="index,follow,max-snippet:-1">
+  <link rel="canonical" href="https://guagua-alvin.top/labs/mcp-oauth-401-fixture">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/favicon.svg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/testing-methodology">Testing method</a><a href="/about">About</a></nav></header>
+  <main class="guide-page">
+    <p class="breadcrumbs"><a href="/">Home</a> / <a href="/testing-methodology">Testing method</a> / OAuth fixture</p>
+    <header class="guide-head"><p class="eyebrow"><span></span> Reproducible lab note</p><h1>An MCP OAuth 401 fixture you can debug from left to right.</h1><p class="guide-deck">This fictional example isolates discovery and identifier failures without exposing a real tenant, token, or private endpoint. Each mutation breaks one edge in the chain.</p><p class="guide-meta">Metadata fixture · August 10, 2026 · No live credentials</p></header>
+    <div class="guide-layout">
+      <aside class="guide-aside"><strong>Tools and context</strong><a href="https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a><br><a href="/guides/debug-mcp-oauth-401">401 field guide</a></aside>
+      <article class="guide-body">
+        <div class="guide-answer"><strong>Debugging rule</strong><p>Stop at the first broken edge. A valid token endpoint cannot compensate for a missing challenge, and a successful login cannot compensate for a token minted for another resource.</p></div>
+        <h2>Step 1: the unauthenticated challenge</h2>
+        <pre>HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Bearer resource_metadata="https://api.example.com/.well-known/oauth-protected-resource"</pre>
+        <p>The first failure mutation is to remove <code>resource_metadata</code>. Expected result: the client has no advertised path to protected-resource metadata and may never open an authorization flow.</p>
+        <h2>Step 2: protected-resource metadata</h2>
+        <pre>{
+  "resource": "https://api.example.com/mcp",
+  "authorization_servers": ["https://login.example.com"],
+  "scopes_supported": ["mcp:tools"]
+}</pre>
+        <p>The second mutation changes <code>resource</code> to an internal host such as <code>http://mcp:3000</code>. Expected result: the public endpoint and advertised resource identifier no longer agree.</p>
+        <h2>Step 3: authorization-server metadata</h2>
+        <pre>{
+  "issuer": "https://login.example.com",
+  "authorization_endpoint": "https://login.example.com/authorize",
+  "token_endpoint": "https://login.example.com/token",
+  "code_challenge_methods_supported": ["S256"]
+}</pre>
+        <p>The third mutation changes the issuer to <code>https://login.example.com/tenant-a</code> while the resource document names the root issuer. Expected result: documents remain reachable but their identifiers describe different authorization servers.</p>
+        <h2>Step 4: requested authorization</h2>
+        <pre>response_type=code
+resource=https%3A%2F%2Fapi.example.com%2Fmcp
+scope=mcp%3Atools
+code_challenge_method=S256</pre>
+        <p>The fourth mutation requests <code>mcp:admin</code>, which the fixture does not advertise. Expected result: the authorization server rejects the scope or omits it from the grant.</p>
+        <h2>Step 5: token acceptance</h2>
+        <div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Claim</th><th>Expected</th><th>Failure mutation</th></tr></thead><tbody><tr><td><code>iss</code></td><td><code>https://login.example.com</code></td><td>Different tenant</td></tr><tr><td><code>aud</code></td><td><code>https://api.example.com/mcp</code></td><td>API homepage</td></tr><tr><td><code>scope</code></td><td><code>mcp:tools</code></td><td>Missing scope</td></tr><tr><td><code>exp</code></td><td>Future timestamp</td><td>Expired token</td></tr></tbody></table></div>
+        <p>Do not paste a live token into a public tool. Decode synthetic or redacted claims locally, then compare identifiers exactly. A cryptographically valid token with the wrong audience should still be rejected by the MCP resource.</p>
+        <h2>Proxy-specific check</h2>
+        <p>If the fixture works locally but the deployment fails, inspect the URLs generated behind the proxy. A missing forwarded protocol or host can turn every public HTTPS identifier into an internal HTTP address even though all application routes return 200.</p>
+        <div class="guide-next"><h3>Validate the chain</h3><p>Use the fictional values above in the metadata validator, then apply one mutation at a time and confirm the first failing edge changes as expected.</p><a href="https://mcpoauth.guagua-alvin.top/">Open MCP OAuth Lab →</a></div>
+      </article>
+    </div>
+  </main>
+  <footer><a href="/about">About the maintainer</a><a href="/testing-methodology">Testing method</a><a href="/privacy">Privacy</a></footer>
+</body>
+</html>

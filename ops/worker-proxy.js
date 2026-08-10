@@ -1,5 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
-const BUILD_REVISION = "20260806-high-intent-mcp-seo";
+const BUILD_REVISION = "20260810-adsense-content-quality";
 
 export default {
   async fetch(request) {

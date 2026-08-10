@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Testing and Editorial Methodology | Guagua Tools</title>
+  <meta name="description" content="How Guagua Tools tests MCP converters and validators, writes examples, records limitations, handles updates, and corrects errors.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://guagua-alvin.top/testing-methodology">
+  <link rel="stylesheet" href="/styles.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="policy-header"><a href="/" class="policy-brand">Guagua Tools</a><nav><a href="/mcp-tools">MCP tools</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></nav></header>
+  <main class="policy-page">
+    <p class="policy-kicker">TESTING &amp; EDITORIAL METHOD</p>
+    <h1>What we test, and what we do not claim.</h1>
+    <p>A useful validator should make its boundary visible. This page records how Guagua Tools separates deterministic checks from judgment, how examples are constructed, and what evidence supports a field note.</p>
+    <h2>1. Start with a reproducible fixture</h2>
+    <p>Every example begins with a complete, copyable input. Hostnames use reserved or fictional examples, credentials use environment-variable placeholders, and expected output is shown beside the input. A fixture should be small enough that a reader can identify the exact field responsible for a result.</p>
+    <h2>2. Trace the implementation</h2>
+    <p>Converter claims are checked against the parser, normalization, validation, and serialization paths in source. Validator claims are classified as schema errors, protocol requirements, interoperability warnings, or security review prompts. Project-specific warnings are not described as requirements from an external standard.</p>
+    <h2>3. Test failure paths, not only the happy path</h2>
+    <p>Examples include malformed wrappers, conflicting transports, unsafe literal credentials, mismatched identifiers, missing discovery links, and unsupported values. The expected behavior includes whether conversion stops, produces a warning, or preserves an unknown field.</p>
+    <h2>4. Keep sensitive material out</h2>
+    <p>No live API key, OAuth token, internal hostname, customer configuration, or private repository is used in a published fixture. Browser-local processing reduces collection risk, but readers are still told not to paste production secrets into any tool.</p>
+    <h2>5. Record the boundary</h2>
+    <p>A static check cannot prove that a remote service is reachable, a package is trustworthy, an OAuth issuer will mint the intended audience, or a generated config works in every client version. Each guide ends with a runtime verification step because syntax is only one part of interoperability.</p>
+    <h2>6. Date and correct the material</h2>
+    <p>Substantive guides display a reviewed or tested date. When protocol behavior changes, the implementation and the related field note should be updated together. Corrections are accepted through the public repository or the contact page; safety and compatibility errors take priority over stylistic edits.</p>
+    <h2>Current evidence notes</h2>
+    <ul><li><a href="/labs/mcp-config-conversion-cases">MCP config conversion cases</a>: field preservation, remote bearer tokens, invalid wrappers, and conflicting transports.</li><li><a href="/labs/mcp-oauth-401-fixture">MCP OAuth 401 fixture</a>: challenge discovery, protected-resource metadata, issuer linkage, and audience checks.</li></ul>
+    <p class="updated">Method version 1.0 · Published August 10, 2026</p>
+  </main>
+  <footer class="policy-footer"><a href="/">Home</a><a href="https://github.com/dmf6009/guagua-tools">View source</a></footer>
+</body>
+</html>
