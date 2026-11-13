@@ -9,3 +9,8 @@ zone_name = "guagua-alvin.top"
 [[routes]]
 pattern = "www.guagua-alvin.top/*"
 zone_name = "guagua-alvin.top"
+
+# Needs a proxied DNS record for "games" (for example AAAA games 100::) before this route receives traffic.
+[[routes]]
+pattern = "games.guagua-alvin.top/*"
+zone_name = "guagua-alvin.top"

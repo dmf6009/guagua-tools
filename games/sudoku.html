@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Online Sudoku: Easy to Expert, Notes &amp; Hints | Guagua Games</title>
+<meta name="description" content="Play free Sudoku online in your browser. Four difficulty levels, pencil notes, hints, undo and automatic saving. No download, no sign-up, works on phone and desktop.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/games/sudoku">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Free Online Sudoku: Easy to Expert, Notes &amp; Hints | Guagua Games">
+<meta property="og:description" content="Play free Sudoku online in your browser. Four difficulty levels, pencil notes, hints, undo and automatic saving. No download, no sign-up, works on phone and desktop.">
+<meta property="og:url" content="https://guagua-alvin.top/games/sudoku">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Sudoku", "url": "https://guagua-alvin.top/games/sudoku", "description": "Play free Sudoku online in your browser. Four difficulty levels, pencil notes, hints, undo and automatic saving. No download, no sign-up, works on phone and desktop.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-13", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://guagua-alvin.top/games/"}, {"@type": "ListItem", "position": 2, "name": "Sudoku", "item": "https://guagua-alvin.top/games/sudoku"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is this Sudoku free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every puzzle is free, with no account and no download. The game runs entirely in your browser."}}, {"@type": "Question", "name": "Does every puzzle have only one solution?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess."}}, {"@type": "Question", "name": "Is my progress saved?", "acceptedAnswer": {"@type": "Answer", "text": "The current puzzle, your notes and the timer are saved in this browser's local storage. They stay on your device and are cleared if you clear site data."}}, {"@type": "Question", "name": "Can I play Sudoku on my phone?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The grid and number pad are sized for touch screens, and the page works offline once loaded."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku" aria-current="page">Sudoku</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="https://guagua-alvin.top/">Developer tools ↗</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / Sudoku</p>
+<h1>Sudoku</h1>
+<p class="deck">A new puzzle every time, each with exactly one solution. Four levels, pencil notes, hints and undo.</p>
+<section class="game" aria-label="Sudoku game">
+<div class="bar"><div class="seg" id="levels" role="group" aria-label="Difficulty"><button type="button" data-level="easy">Easy</button><button type="button" data-level="medium">Medium</button><button type="button" data-level="hard">Hard</button><button type="button" data-level="expert">Expert</button></div>
+<div class="stats"><span>Time <b id="time">00:00</b></span><span>Mistakes <b id="errors">0</b></span></div></div>
+<div class="sdk-wrap"><div class="sdk-grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
+<div class="sdk-side"><div class="pad" id="pad" role="group" aria-label="Number pad"></div>
+<div class="tools"><button type="button" class="btn" id="notes" aria-pressed="false">Notes</button><button type="button" class="btn" id="erase">Erase</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="hint">Hint</button></div>
+<button type="button" class="btn primary" id="new">New puzzle</button></div></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>How to play Sudoku</h2>
+<p>A Sudoku grid has 81 cells arranged in nine rows, nine columns and nine 3×3 boxes. Some cells are filled in at the start; these are the givens and cannot be changed. Your job is to fill every empty cell so that <strong>each row, each column and each box contains the digits 1 to 9 exactly once</strong>.</p>
+<p>There is no arithmetic involved. The digits are just nine different symbols, and every puzzle here has exactly one solution that can be reached by logic.</p>
+<h2>Controls</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Mouse or touch</th>
+<th>Keyboard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Select a cell</td>
+<td>Click or tap it</td>
+<td>Arrow keys</td>
+</tr>
+<tr>
+<td>Enter a digit</td>
+<td>Use the number pad</td>
+<td><kbd>1</kbd>–<kbd>9</kbd></td>
+</tr>
+<tr>
+<td>Clear a cell</td>
+<td>Erase</td>
+<td><kbd>Backspace</kbd> or <kbd>Delete</kbd></td>
+</tr>
+<tr>
+<td>Switch pencil notes on or off</td>
+<td>Notes</td>
+<td><kbd>N</kbd></td>
+</tr>
+<tr>
+<td>Undo</td>
+<td>Undo</td>
+<td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td>
+</tr>
+</tbody>
+</table></div>
+<p>A wrong digit turns orange and adds one to the mistake counter; it is not removed for you, so you can decide whether to erase it. When you place a correct digit, matching pencil notes in the same row, column and box are cleared automatically. The small number under each pad button shows how many of that digit are still missing. Your puzzle is saved in this browser, so you can close the tab and continue later.</p>
+<h2>Difficulty levels</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Givens</th>
+<th>What to expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Easy</td>
+<td>About 40</td>
+<td>Solvable by scanning rows, columns and boxes</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>About 33</td>
+<td>Needs pencil notes in a few places</td>
+</tr>
+<tr>
+<td>Hard</td>
+<td>About 28</td>
+<td>Regular use of pairs and box-line interactions</td>
+</tr>
+<tr>
+<td>Expert</td>
+<td>About 24</td>
+<td>Long chains of deductions; notes are essential</td>
+</tr>
+</tbody>
+</table></div>
+<p>Difficulty here is set by how many givens are removed while the puzzle still has a single solution. Fewer givens usually means a harder puzzle, though not always: two puzzles with the same number of clues can feel quite different.</p>
+<h2>Solving techniques, from first to last resort</h2>
+<p><strong>Scanning.</strong> Pick a digit and look at one 3×3 box where it is missing. Rows and columns that already contain the digit rule out cells in that box. If only one cell is left, the digit goes there. This alone solves most easy puzzles.</p>
+<p><strong>Single candidate.</strong> Look at one empty cell and list which digits are still possible given its row, column and box. If only one digit remains, place it.</p>
+<p><strong>Pencil notes.</strong> When scanning stops working, switch on Notes and write the candidates into cells that have two or three possibilities. Notes turn guesses into facts you can see.</p>
+<p><strong>Pairs.</strong> If two cells in the same row, column or box can each only hold the same two digits, those two digits are used up by those cells. Remove them from every other cell in that unit.</p>
+<p><strong>Box-line reduction.</strong> If, inside a box, a digit can only go in one row, then that digit cannot appear anywhere else along that row outside the box. The same holds for columns.</p>
+<p><strong>Do not guess.</strong> A puzzle with one solution never requires it. If you are stuck, a missed single or pair is almost always the reason. The Hint button fills the selected cell, or a random empty one, and is counted in your result.</p>
+<h2>A little background</h2>
+<p>The modern puzzle was published in 1979 by the American magazine publisher Dell under the name <em>Number Place</em>; it is generally credited to Howard Garns. The Japanese publisher Nikoli introduced it in 1984 and gave it the name that stuck, an abbreviation of a phrase meaning roughly "the digits must remain single". It became a worldwide newspaper feature in 2004 and 2005.</p>
+<p>Two numbers are worth knowing. There are 6,670,903,752,021,072,936,960 valid completed grids. And in 2012 an exhaustive computer search showed that no puzzle with only 16 givens has a unique solution: 17 is the minimum.</p>
+<h2>Frequently asked questions</h2>
+<h3>Is this Sudoku free?</h3><p>Yes. Every puzzle is free, with no account and no download. The game runs entirely in your browser.</p><h3>Does every puzzle have only one solution?</h3><p>Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess.</p><h3>Is my progress saved?</h3><p>The current puzzle, your notes and the timer are saved in this browser&#x27;s local storage. They stay on your device and are cleared if you clear site data.</p><h3>Can I play Sudoku on my phone?</h3><p>Yes. The grid and number pad are sized for touch screens, and the page works offline once loaded.</p>
+<h2>More games</h2>
+<div class="more"><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 13, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/sudoku.js" defer></script>
+</body>
+</html>

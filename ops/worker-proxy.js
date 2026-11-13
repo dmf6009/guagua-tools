@@ -1,4 +1,5 @@
 const UPSTREAM = "https://guagua-tools.pages.dev";
+const GAMES_HOST = "games.guagua-alvin.top";
 const BUILD_REVISION = "20260810-adsense-content-quality-v2";
 
 export default {
@@ -8,7 +9,10 @@ export default {
       incoming.hostname = "guagua-alvin.top";
       return Response.redirect(incoming.toString(), 301);
     }
-    const upstream = new URL(incoming.pathname + incoming.search, UPSTREAM);
+    // games.guagua-alvin.top/<path> is served from the /games/ directory of the same Pages project.
+    const isGames = incoming.hostname === GAMES_HOST;
+    const path = isGames ? "/games" + incoming.pathname : incoming.pathname;
+    const upstream = new URL(path + incoming.search, UPSTREAM);
     upstream.searchParams.set("__build", BUILD_REVISION);
     const headers = new Headers(request.headers);
     headers.delete("host");
@@ -21,7 +25,13 @@ export default {
     const responseHeaders = new Headers(response.headers);
     responseHeaders.set("x-guagua-tools-origin", "cloudflare-pages");
     const location = responseHeaders.get("location");
-    if (location?.startsWith(UPSTREAM)) responseHeaders.set("location", location.replace(UPSTREAM, incoming.origin));
+    if (location) {
+      let target = location.startsWith(UPSTREAM) ? location.slice(UPSTREAM.length) : location;
+      if (target.startsWith("/")) {
+        if (isGames && target.startsWith("/games")) target = target.slice("/games".length) || "/";
+        responseHeaders.set("location", incoming.origin + target);
+      }
+    }
     return new Response(response.body, {status: response.status, statusText: response.statusText, headers: responseHeaders});
   }
 };

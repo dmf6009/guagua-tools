@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Online Minesweeper: Beginner, Intermediate &amp; Expert | Guagua Games</title>
+<meta name="description" content="Play classic Minesweeper online for free. Beginner, Intermediate and Expert boards, safe first click, chording, flag mode for touch screens and best times. No download.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/games/minesweeper">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Free Online Minesweeper: Beginner, Intermediate &amp; Expert | Guagua Games">
+<meta property="og:description" content="Play classic Minesweeper online for free. Beginner, Intermediate and Expert boards, safe first click, chording, flag mode for touch screens and best times. No download.">
+<meta property="og:url" content="https://guagua-alvin.top/games/minesweeper">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Minesweeper", "url": "https://guagua-alvin.top/games/minesweeper", "description": "Play classic Minesweeper online for free. Beginner, Intermediate and Expert boards, safe first click, chording, flag mode for touch screens and best times. No download.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-13", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://guagua-alvin.top/games/"}, {"@type": "ListItem", "position": 2, "name": "Minesweeper", "item": "https://guagua-alvin.top/games/minesweeper"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is the first click always safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Mines are placed after your first click, and never on that square or the eight around it, so the first click always opens an area."}}, {"@type": "Question", "name": "How do I place a flag on a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Press and hold a square for about half a second, or turn on Flag mode and tap. Tap Flag mode again to go back to uncovering."}}, {"@type": "Question", "name": "Can every Minesweeper board be solved without guessing?", "acceptedAnswer": {"@type": "Answer", "text": "No. Boards are random, and some reach a position where the numbers cannot tell two squares apart. The article below explains how to make the best guess."}}, {"@type": "Question", "name": "What is chording in Minesweeper?", "acceptedAnswer": {"@type": "Answer", "text": "Clicking an uncovered number that already has the matching number of flags around it opens all its other neighbours at once. It is the main way experienced players save time."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku">Sudoku</a><a href="minesweeper" aria-current="page">Minesweeper</a><a href="solitaire">Solitaire</a><a href="https://guagua-alvin.top/">Developer tools ↗</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / Minesweeper</p>
+<h1>Minesweeper</h1>
+<p class="deck">The classic three boards with a safe first click, chording, and a flag mode for touch screens.</p>
+<section class="game" aria-label="Minesweeper game">
+<div class="bar"><div class="seg" id="levels" role="group" aria-label="Board size"><button type="button" data-level="beginner">Beginner</button><button type="button" data-level="intermediate">Intermediate</button><button type="button" data-level="expert">Expert</button></div>
+<div class="stats"><span>Mines <b id="left">10</b></span><span>Time <b id="time">0</b></span><span>Best <b id="best">—</b></span></div>
+<div class="bar-group"><button type="button" class="btn" id="flagmode" aria-pressed="false">⚑ Flag mode</button><button type="button" class="btn primary" id="new">New game</button></div></div>
+<div class="ms-scroll"><div class="ms-grid" id="grid" role="grid" aria-label="Minesweeper board"></div></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>How to play Minesweeper</h2>
+<p>The board hides a fixed number of mines. Uncover every square that does <strong>not</strong> contain a mine and you win; uncover a mine and the game ends.</p>
+<p>Each uncovered square shows a number: the count of mines in the eight squares touching it. A blank square has no mines around it, so the game opens its neighbours for you, which is why one click can clear a large area. Your first click is always safe, and in this version it always lands on a blank square so you get an opening to work from.</p>
+<h2>Controls</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Mouse</th>
+<th>Touch</th>
+<th>Keyboard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uncover a square</td>
+<td>Left click</td>
+<td>Tap</td>
+<td><kbd>Enter</kbd> or <kbd>Space</kbd></td>
+</tr>
+<tr>
+<td>Place or remove a flag</td>
+<td>Right click</td>
+<td>Long press, or turn on Flag mode and tap</td>
+<td><kbd>F</kbd></td>
+</tr>
+<tr>
+<td>Open around a number (chord)</td>
+<td>Click the number</td>
+<td>Tap the number</td>
+<td><kbd>Enter</kbd> on the number</td>
+</tr>
+<tr>
+<td>Move</td>
+<td>—</td>
+<td>—</td>
+<td>Arrow keys</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Chording</strong> saves most of your clicks. When a number already has that many flags next to it, clicking the number opens all its other neighbours at once. If one of your flags is wrong, chording will set off a mine, so flag carefully.</p>
+<p>The counter on the left shows mines minus flags. The timer starts on your first click, and your best time for each level is stored in this browser.</p>
+<h2>Levels</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Board</th>
+<th>Mines</th>
+<th>Mine density</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beginner</td>
+<td>9 × 9</td>
+<td>10</td>
+<td>12%</td>
+</tr>
+<tr>
+<td>Intermediate</td>
+<td>16 × 16</td>
+<td>40</td>
+<td>16%</td>
+</tr>
+<tr>
+<td>Expert</td>
+<td>30 × 16</td>
+<td>99</td>
+<td>21%</td>
+</tr>
+</tbody>
+</table></div>
+<p>These are the classic sizes. Density matters more than board size: at 21%, Expert boards contain many more situations that need careful counting.</p>
+<h2>Basic logic</h2>
+<p>Two rules solve the majority of every board.</p>
+<ol>
+<li><strong>If a number equals its count of unopened neighbours, they are all mines.</strong> A <code>1</code> touching exactly one covered square has found its mine. Flag it.</li>
+<li><strong>If a number already has that many flags, every other neighbour is safe.</strong> Open them, or chord.</li>
+</ol>
+<p>Apply the two rules back and forth: each flag makes some other number "satisfied", which opens squares, which reveals new numbers.</p>
+<h2>Patterns worth memorising</h2>
+<p>Along a straight wall of covered squares, some number sequences always mean the same thing.</p>
+<ul>
+<li><strong>1-2-1</strong>: the mines are under the two <code>1</code>s and the square under the <code>2</code> is safe.</li>
+<li><strong>1-2-2-1</strong>: the mines are under the two <code>2</code>s and the squares under the <code>1</code>s are safe.</li>
+<li><strong>1-1 starting at an edge</strong>: the third square along, beside the second <code>1</code>, is safe, because the first <code>1</code> already accounts for the mine shared by both.</li>
+</ul>
+<p>These come from a more general idea: compare two neighbouring numbers. If one number's covered neighbours are a subset of the other's, the difference between the numbers tells you how many mines are in the leftover squares.</p>
+<h2>When logic runs out</h2>
+<p>Minesweeper does not guarantee a solvable board. Sometimes two squares remain and the numbers give no way to tell which holds the mine. When you must guess:</p>
+<ul>
+<li>Prefer the guess that, if it succeeds, opens the most new information.</li>
+<li>Count remaining mines. Near the end, the counter often settles a position that the numbers alone cannot.</li>
+<li>An untouched square far from any number has roughly the board's average density, which is often safer than a 50/50 next to a number.</li>
+<li>If a guess is unavoidable and nothing can change the odds, take it early rather than after ten more minutes of work.</li>
+</ul>
+<h2>Where it comes from</h2>
+<p>Mine-hunting grid games appeared on mainframes and home computers in the 1960s to 1980s. The version most people know was written by Robert Donner and Curt Johnson and shipped with Windows 3.1 in 1992, which is where the three classic board sizes became standard.</p>
+<h2>Frequently asked questions</h2>
+<h3>Is the first click always safe?</h3><p>Yes. Mines are placed after your first click, and never on that square or the eight around it, so the first click always opens an area.</p><h3>How do I place a flag on a phone?</h3><p>Press and hold a square for about half a second, or turn on Flag mode and tap. Tap Flag mode again to go back to uncovering.</p><h3>Can every Minesweeper board be solved without guessing?</h3><p>No. Boards are random, and some reach a position where the numbers cannot tell two squares apart. The article below explains how to make the best guess.</p><h3>What is chording in Minesweeper?</h3><p>Clicking an uncovered number that already has the matching number of flags around it opens all its other neighbours at once. It is the main way experienced players save time.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 13, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/minesweeper.js" defer></script>
+</body>
+</html>

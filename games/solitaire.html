@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Online Solitaire (Klondike): Draw 1 or Draw 3 | Guagua Games</title>
+<meta name="description" content="Play classic Klondike Solitaire online for free. Draw 1 or Draw 3, tap or drag to move, unlimited undo, hints and auto-finish. No download or sign-up, works on mobile.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/games/solitaire">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Free Online Solitaire (Klondike): Draw 1 or Draw 3 | Guagua Games">
+<meta property="og:description" content="Play classic Klondike Solitaire online for free. Draw 1 or Draw 3, tap or drag to move, unlimited undo, hints and auto-finish. No download or sign-up, works on mobile.">
+<meta property="og:url" content="https://guagua-alvin.top/games/solitaire">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Klondike Solitaire", "url": "https://guagua-alvin.top/games/solitaire", "description": "Play classic Klondike Solitaire online for free. Draw 1 or Draw 3, tap or drag to move, unlimited undo, hints and auto-finish. No download or sign-up, works on mobile.", "genre": "Card", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-13", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://guagua-alvin.top/games/"}, {"@type": "ListItem", "position": 2, "name": "Klondike Solitaire", "item": "https://guagua-alvin.top/games/solitaire"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is this Solitaire free to play?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It is free, needs no account or download, and runs entirely in your browser."}}, {"@type": "Question", "name": "What is the difference between Draw 1 and Draw 3?", "acceptedAnswer": {"@type": "Answer", "text": "In Draw 1 you turn one stock card at a time, so every card is reachable on each pass. In Draw 3 you turn three and can only play the top one, which makes the game harder and the order of play more important."}}, {"@type": "Question", "name": "Can every Solitaire game be won?", "acceptedAnswer": {"@type": "Answer", "text": "No. Deals are random and some cannot be solved. Analysis of Klondike with all cards visible suggests roughly four in five deals are solvable in principle, and real win rates are lower."}}, {"@type": "Question", "name": "How do I move cards on a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Tap a card to send it to the best legal position, or press and drag it to a column or foundation of your choice."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku">Sudoku</a><a href="minesweeper">Minesweeper</a><a href="solitaire" aria-current="page">Solitaire</a><a href="https://guagua-alvin.top/">Developer tools ↗</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / Klondike Solitaire</p>
+<h1>Klondike Solitaire</h1>
+<p class="deck">The classic patience game. Tap a card to move it, or drag it where you want. Draw 1 or Draw 3, unlimited undo.</p>
+<section class="game" aria-label="Klondike Solitaire game">
+<div class="bar"><div class="seg" id="draw" role="group" aria-label="Draw mode"><button type="button" data-draw="1">Draw 1</button><button type="button" data-draw="3">Draw 3</button></div>
+<div class="stats"><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<div class="bar-group"><button type="button" class="btn" id="auto" hidden>Auto-finish</button><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div>
+<div class="sol-table" id="table"></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>How to play Klondike Solitaire</h2>
+<p>Klondike is the game most people mean when they say "Solitaire". It uses one standard 52-card deck. The goal is to move every card to the four <strong>foundations</strong> at the top right, one per suit, built upward from Ace to King.</p>
+<p>The layout has four parts:</p>
+<ul>
+<li><strong>Tableau</strong>: seven columns holding 28 cards. The first column has one card, the second two, and so on up to seven. Only the last card of each column starts face up.</li>
+<li><strong>Stock</strong>: the remaining 24 cards, face down at the top left.</li>
+<li><strong>Waste</strong>: cards turned over from the stock. Only its top card can be played.</li>
+<li><strong>Foundations</strong>: four empty spaces that you fill by suit, starting with the Aces.</li>
+</ul>
+<h2>The rules</h2>
+<ol>
+<li>In the tableau, build <strong>downward in alternating colours</strong>: a red 6 goes on a black 7, a black Queen on a red King.</li>
+<li>You can move a face-up run of cards as a unit, as long as the top card of the run fits where it lands.</li>
+<li>When a face-down card is exposed, it turns face up.</li>
+<li>Only a <strong>King</strong>, or a run starting with a King, may be moved into an empty column.</li>
+<li>Foundations are built <strong>upward by suit</strong>, Ace first. A card on a foundation can be brought back to the tableau if it fits.</li>
+<li>When the stock runs out, click the empty stock space to turn the waste pile over and go through it again. There is no limit on passes here.</li>
+</ol>
+<h2>Controls</h2>
+<p><strong>Tap or click a card</strong> to send it to the best legal place: a foundation if it fits, otherwise a tableau column. <strong>Drag</strong> a card or a run when you want to choose the destination yourself. Click the stock to draw. Undo takes back any number of moves (<kbd>Ctrl</kbd>+<kbd>Z</kbd> also works), and Hint outlines a card that can move. When the stock and waste are empty and every card is face up, an Auto-finish button appears, since the game is won from there. The game in progress is saved in this browser.</p>
+<h2>Draw 1 or Draw 3</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>How the stock works</th>
+<th>Difficulty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Draw 1</td>
+<td>One card is turned at a time; every stock card is reachable on every pass</td>
+<td>Easier, good for learning</td>
+</tr>
+<tr>
+<td>Draw 3</td>
+<td>Three cards are turned and only the top one is playable</td>
+<td>The traditional game; order matters</td>
+</tr>
+</tbody>
+</table></div>
+<p>In Draw 3, playing one card from the waste shifts which cards come up on the next pass. Sometimes the right move is to <em>not</em> play a card yet, so that a more useful one becomes reachable next time round.</p>
+<h2>Strategy that actually changes results</h2>
+<ul>
+<li><strong>Turn up face-down cards first.</strong> Given a choice, make the move that exposes a hidden card, and prefer the longest columns: they hide the most.</li>
+<li><strong>Do not empty a column without a King ready.</strong> An empty column that nothing can fill is wasted space.</li>
+<li><strong>Choose which King with care.</strong> A red King needs a black Queen next. Look at which Queens and Jacks you can already see before deciding.</li>
+<li><strong>Aces and Twos go up immediately.</strong> Nothing can be built on them in the tableau, so they are never useful there.</li>
+<li><strong>Slow down with higher cards.</strong> Moving a 6 to its foundation is permanent in effect; you may need it to hold a 5 of the opposite colour. A useful rule is to keep the foundations within about two ranks of each other.</li>
+<li><strong>Look at the stock before committing.</strong> In Draw 1 especially, one full pass tells you what is available and costs nothing.</li>
+<li><strong>Use undo to explore.</strong> When two moves look equal, try one, see what turns up, and take it back if the other was better.</li>
+</ul>
+<h2>Can every deal be won?</h2>
+<p>No. Deals here are shuffled at random, and some are impossible from the first card. Computer analysis of Klondike played with every card visible suggests roughly four in five deals can be solved in principle. In real play, with hidden cards, experienced players win a much smaller share, and Draw 3 is harder than Draw 1. A run of losses is normal and not a sign you are doing something wrong.</p>
+<h2>About the name</h2>
+<p>Klondike became popular in North America in the late nineteenth century and is usually said to be named after the Klondike region of Canada, the site of the 1890s gold rush. In Britain the game is traditionally called Patience. A digital version included with Windows 3.0 in 1990 made it one of the most played computer games in the world.</p>
+<h2>Frequently asked questions</h2>
+<h3>Is this Solitaire free to play?</h3><p>Yes. It is free, needs no account or download, and runs entirely in your browser.</p><h3>What is the difference between Draw 1 and Draw 3?</h3><p>In Draw 1 you turn one stock card at a time, so every card is reachable on each pass. In Draw 3 you turn three and can only play the top one, which makes the game harder and the order of play more important.</p><h3>Can every Solitaire game be won?</h3><p>No. Deals are random and some cannot be solved. Analysis of Klondike with all cards visible suggests roughly four in five deals are solvable in principle, and real win rates are lower.</p><h3>How do I move cards on a phone?</h3><p>Tap a card to send it to the best legal position, or press and drag it to a column or foundation of your choice.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 13, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/solitaire.js" defer></script>
+</body>
+</html>

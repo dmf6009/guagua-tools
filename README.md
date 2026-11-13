@@ -30,3 +30,13 @@ python3 scripts/sync-chrome.py    # only after changing the shared header/footer
 ```
 
 Commit the generated HTML: the Pages build command is `exit 0`, so nothing is built on deploy.
+
+## Games
+
+`/games/` holds three browser games (Sudoku, Minesweeper, Klondike Solitaire). Game logic is in `games/assets/*.js`; the pages are generated from `content/games/*.md` and the markup in `scripts/build-games.py`:
+
+```bash
+python3 scripts/build-games.py && python3 scripts/build-guides.py
+```
+
+Links inside `/games/` are relative so the same files can be served at `games.guagua-alvin.top`. `ops/worker-proxy.js` already maps that host to the `/games/` directory; it takes effect after a proxied DNS record for `games` exists and the worker is redeployed (`cd ops && npx wrangler deploy`). After that, change `BASE` in `build-games.py` to the subdomain and rebuild so canonical URLs move.

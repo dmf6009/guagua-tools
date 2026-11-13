@@ -5,5 +5,9 @@
  "/web-utilities": "2026-11-13",
  "/privacy": "2026-11-13",
  "/contact": "2026-11-13",
- "/about": "2026-11-13"
+ "/about": "2026-11-13",
+ "/games/": "2026-11-13",
+ "/games/sudoku": "2026-11-13",
+ "/games/minesweeper": "2026-11-13",
+ "/games/solitaire": "2026-11-13"
 }
