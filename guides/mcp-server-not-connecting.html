@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP Server Not Connecting? Fix spawn ENOENT, Timeouts &amp; Disconnects</title>
+<meta name="description" content="Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/mcp-server-not-connecting">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP Server Not Connecting? Fix spawn ENOENT, Timeouts &amp; Disconnects">
+<meta property="og:description" content="Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/mcp-server-not-connecting">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/mcp-server-not-connecting#article", "headline": "Fix an MCP server that will not connect", "description": "Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, 'server disconnected', startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/mcp-server-not-connecting", "wordCount": 1082, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Fix an MCP server that will not connect", "item": "https://guagua-alvin.top/guides/mcp-server-not-connecting"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does 'spawn npx ENOENT' mean?", "acceptedAnswer": {"@type": "Answer", "text": "The client tried to start the program named in command and the operating system could not find it. ENOENT is 'no such file or directory'. The config syntax is fine; the executable is not on the PATH that the client process sees. Use the absolute path to the executable, or on Windows wrap the command with cmd /c."}}, {"@type": "Question", "name": "Why does my MCP server work in the terminal but not in Claude Desktop?", "acceptedAnswer": {"@type": "Answer", "text": "A desktop application launched from the Dock or Start menu does not load your shell profile, so tools installed through nvm, fnm, pyenv, Homebrew or uv may be missing from its PATH. It also starts servers from a different working directory, so relative paths break. Absolute paths for both the command and its file arguments fix both problems."}}, {"@type": "Question", "name": "Can I use console.log in an MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "Not in a stdio server. On the stdio transport, stdout carries the JSON-RPC messages, so any other text written there corrupts the stream and the client reports a parse error or disconnects. Write logs to stderr instead: console.error in Node.js, or print(..., file=sys.stderr) and the logging module in Python."}}, {"@type": "Question", "name": "How do I see the logs for an MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "Claude Desktop writes one log file per server under ~/Library/Logs/Claude/ on macOS and %APPDATA%\\Claude\\logs\\ on Windows. Cursor and VS Code show server output in their MCP or Output panels. For any client, you can also run the exact command from the config in a terminal and read stderr directly."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Troubleshooting</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Troubleshooting</p>
+<h1>Fix an MCP server that will not connect</h1>
+<p class="guide-deck">Almost every failed MCP connection is one of six problems, and each leaves a recognisable message. Find your error below, confirm it with one command, and apply the fix that matches.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 5 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#start-with-the-one-test-that-splits-the-problem">Start with the one test that splits the problem</a></li><li><a href="#error-spawn-npx-enoent-or-spawn-uvx-node-python">Error: spawn npx ENOENT (or spawn uvx, node, python)</a></li><li><a href="#windows-npx-does-nothing-or-fails-with-enoent">Windows: npx does nothing or fails with ENOENT</a></li><li><a href="#error-json-parse-errors-unexpected-token-or-instant-disconnect">Error: JSON parse errors, "Unexpected token", or instant disconnect</a></li><li><a href="#error-server-disconnected-or-it-connects-and-then-drops">Error: server disconnected, or it connects and then drops</a></li><li><a href="#error-request-timed-out-or-the-server-never-becomes-ready">Error: request timed out, or the server never becomes ready</a></li><li><a href="#the-server-is-connected-but-shows-no-tools">The server is connected but shows no tools</a></li><li><a href="#remote-servers-401-404-and-405">Remote servers: 401, 404 and 405</a></li><li><a href="#a-checklist-that-catches-most-cases">A checklist that catches most cases</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a><a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a></div></aside>
+<article class="guide-body">
+<h2 id="start-with-the-one-test-that-splits-the-problem">Start with the one test that splits the problem</h2>
+<p>Before changing anything, take the server out of the client. Copy the <code>command</code> and <code>args</code> from your config and run them in a terminal exactly as written:</p>
+<pre><code>npx -y @example/ticket-server
+</code></pre>
+<p>A healthy stdio server prints nothing (or only log lines on stderr) and waits. That tells you which half of the system is broken:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>What happens in the terminal</th>
+<th>Where the problem is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"command not found" or a crash with a stack trace</td>
+<td>The server or your runtime. Fix it here first.</td>
+</tr>
+<tr>
+<td>It waits silently</td>
+<td>The server is fine. The problem is how the client launches it: PATH, working directory, environment or config.</td>
+</tr>
+<tr>
+<td>It prints text and waits</td>
+<td>It may be logging to stdout. See the JSON parse error section.</td>
+</tr>
+</tbody>
+</table></div>
+<p>For a closer look, the official inspector connects to the same command and shows the handshake, the tool list and every message:</p>
+<pre><code>npx @modelcontextprotocol/inspector npx -y @example/ticket-server
+</code></pre>
+<p>If the inspector lists your tools, the server implementation is correct and the remaining work is entirely in the client configuration.</p>
+<h2 id="error-spawn-npx-enoent-or-spawn-uvx-node-python">Error: spawn npx ENOENT (or spawn uvx, node, python)</h2>
+<p>This is the most common MCP error. The client could not find the executable. It is a PATH problem, not a JSON problem.</p>
+<p><strong>Find the real path</strong> and put it in the config:</p>
+<pre><code>which npx        # macOS / Linux  → /Users/you/.nvm/versions/node/v22.11.0/bin/npx
+where npx        # Windows        → C:\Program Files\nodejs\npx.cmd
+</code></pre>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;: {
+      &quot;command&quot;: &quot;/Users/you/.nvm/versions/node/v22.11.0/bin/npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;]
+    }
+  }
+}
+</code></pre>
+<p>With version managers such as nvm, <code>npx</code> itself runs <code>node</code> through <code>env</code>, so a full path to <code>npx</code> may still fail with <code>env: node: No such file or directory</code>. In that case add the directory to PATH for the server:</p>
+<pre><code>&quot;env&quot;: { &quot;PATH&quot;: &quot;/Users/you/.nvm/versions/node/v22.11.0/bin:/usr/local/bin:/usr/bin:/bin&quot; }
+</code></pre>
+<p>The cleaner long-term fix is to install Node.js or uv somewhere system-wide (the official installer or Homebrew), so that desktop applications can see it without help.</p>
+<h2 id="windows-npx-does-nothing-or-fails-with-enoent">Windows: npx does nothing or fails with ENOENT</h2>
+<p>On Windows, <code>npx</code> is a <code>.cmd</code> script rather than an executable, and many clients spawn processes without a shell. The process cannot be started directly. Run it through <code>cmd</code>:</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;: {
+      &quot;command&quot;: &quot;cmd&quot;,
+      &quot;args&quot;: [&quot;/c&quot;, &quot;npx&quot;, &quot;-y&quot;, &quot;@example/ticket-server&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Two more Windows details: escape backslashes in JSON paths (<code>"C:\\Users\\you\\server.js"</code>) or use forward slashes, and remember that <code>%APPDATA%</code> and similar variables are not expanded inside the config file.</p>
+<h2 id="error-json-parse-errors-unexpected-token-or-instant-disconnect">Error: JSON parse errors, "Unexpected token", or instant disconnect</h2>
+<p>If the client log shows something like <code>Unexpected token 'S', "Server sta"... is not valid JSON</code>, the server is writing ordinary text to stdout. On the stdio transport, <strong>stdout is reserved for protocol messages</strong>. One banner line is enough to break the connection.</p>
+<pre><code>// breaks a stdio server
+console.log(&quot;Server started&quot;);
+
+// correct: stderr is for logs
+console.error(&quot;Server started&quot;);
+</code></pre>
+<pre><code>import sys, logging
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)   # not stdout
+print(&quot;Server started&quot;, file=sys.stderr)
+</code></pre>
+<p>Check your dependencies too. A library that prints a deprecation warning, a progress bar or a "new version available" notice to stdout will cause intermittent failures that are hard to reproduce.</p>
+<h2 id="error-server-disconnected-or-it-connects-and-then-drops">Error: server disconnected, or it connects and then drops</h2>
+<p>A server that starts and then exits is crashing. The reason is in the server's stderr, which the client stores in its log. For Claude Desktop:</p>
+<pre><code># macOS
+tail -n 50 -f ~/Library/Logs/Claude/mcp-server-tickets.log
+# Windows (PowerShell)
+Get-Content &quot;$env:APPDATA\Claude\logs\mcp-server-tickets.log&quot; -Tail 50 -Wait
+</code></pre>
+<p>The usual causes, in order of frequency:</p>
+<ul>
+<li><strong>A missing environment variable.</strong> The server reads an API key at startup and throws. The client does not pass your shell's variables to the server; only a small default set is inherited. Declare everything the server needs in the entry's <code>env</code> block.</li>
+<li><strong>A relative path.</strong> <code>"args": ["./build/index.js"]</code> is resolved against the client's working directory, which is not your project. Use an absolute path.</li>
+<li><strong>An unbuilt project.</strong> For a TypeScript server run from source, <code>build/index.js</code> does not exist until you run the build.</li>
+<li><strong>A wrong runtime version.</strong> The client found a different, older <code>node</code> or <code>python</code> than your terminal does.</li>
+</ul>
+<h2 id="error-request-timed-out-or-the-server-never-becomes-ready">Error: request timed out, or the server never becomes ready</h2>
+<p>The first run of <code>npx -y</code> or <code>uvx</code> downloads the package, which can take longer than the client's startup timeout. Run the command once in a terminal to fill the cache, then restart the client. If the server is slow for real reasons, such as opening a database or loading a model, raise the limit where the client allows it. Codex, for example, reads <code>startup_timeout_sec</code> (default 10) and <code>tool_timeout_sec</code> (default 60) per server.</p>
+<p>A related symptom is a server that hangs because it is waiting for input: a login prompt, a "proceed? (y/n)" question from <code>npx</code> without <code>-y</code>, or an interactive OAuth flow. A stdio server must be able to start with no terminal attached.</p>
+<h2 id="the-server-is-connected-but-shows-no-tools">The server is connected but shows no tools</h2>
+<p>Connection succeeded, discovery did not. Check three things:</p>
+<ol>
+<li>The server actually registers tools at startup. The inspector's <strong>Tools</strong> tab shows exactly what <code>tools/list</code> returns.</li>
+<li>The client has not disabled them. Several clients let you switch individual tools off, and some cap the total number of tools across all servers.</li>
+<li>Tool names and schemas are valid. A tool whose <code>inputSchema</code> is not a JSON Schema object can cause a client to drop the whole list.</li>
+</ol>
+<h2 id="remote-servers-401-404-and-405">Remote servers: 401, 404 and 405</h2>
+<p>For a server reached by URL, the failures are HTTP failures:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Status</th>
+<th>Likely cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>401</td>
+<td>Authorization is required or the token is wrong. Work through the <a href="/guides/debug-mcp-oauth-401">OAuth 401 guide</a>.</td>
+</tr>
+<tr>
+<td>404</td>
+<td>The URL is missing the MCP path. Most servers listen on <code>/mcp</code>, not the site root.</td>
+</tr>
+<tr>
+<td>405</td>
+<td>The client and server disagree about transport, typically a Streamable HTTP client pointed at an old SSE endpoint. See <a href="/guides/mcp-stdio-vs-streamable-http">stdio vs Streamable HTTP</a>.</td>
+</tr>
+<tr>
+<td>400</td>
+<td>A header the server requires, such as the protocol version, is missing or unsupported.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="a-checklist-that-catches-most-cases">A checklist that catches most cases</h2>
+<ul>
+<li>Run the exact command in a terminal. Does it start and wait?</li>
+<li>Use absolute paths for the command and for any file arguments.</li>
+<li>On Windows, wrap <code>npx</code> with <code>cmd /c</code>.</li>
+<li>Put every required variable in <code>env</code>. Do not rely on your shell.</li>
+<li>Send logs to stderr, never stdout.</li>
+<li>Validate the JSON, then fully quit and reopen the client.</li>
+<li>Read the server's log file before changing anything else.</li>
+</ul>
+<div class="guide-callout">
+<p>When you ask for help, share the redacted config entry and the last twenty lines of the server log. Remove tokens first: a config pasted into an issue tracker is a common way credentials leak.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>What does &#x27;spawn npx ENOENT&#x27; mean?</h3><p>The client tried to start the program named in <code>command</code> and the operating system could not find it. <code>ENOENT</code> is 'no such file or directory'. The config syntax is fine; the executable is not on the PATH that the client process sees. Use the absolute path to the executable, or on Windows wrap the command with <code>cmd /c</code>.</p><h3>Why does my MCP server work in the terminal but not in Claude Desktop?</h3><p>A desktop application launched from the Dock or Start menu does not load your shell profile, so tools installed through nvm, fnm, pyenv, Homebrew or uv may be missing from its PATH. It also starts servers from a different working directory, so relative paths break. Absolute paths for both the command and its file arguments fix both problems.</p><h3>Can I use console.log in an MCP server?</h3><p>Not in a stdio server. On the stdio transport, stdout carries the JSON-RPC messages, so any other text written there corrupts the stream and the client reports a parse error or disconnects. Write logs to stderr instead: <code>console.error</code> in Node.js, or <code>print(..., file=sys.stderr)</code> and the <code>logging</code> module in Python.</p><h3>How do I see the logs for an MCP server?</h3><p>Claude Desktop writes one log file per server under <code>~/Library/Logs/Claude/</code> on macOS and <code>%APPDATA%\Claude\logs\</code> on Windows. Cursor and VS Code show server output in their MCP or Output panels. For any client, you can also run the exact command from the config in a terminal and read stderr directly.</p></section>
+<div class="guide-next"><h3>Check the config before you restart again</h3><p>Scan an MCP configuration for malformed entries, risky commands and exposed secrets. The check runs in your browser.</p><a href="https://mcpcheck.guagua-alvin.top/">Open MCP Config Guard →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/docs/tools/debugging" rel="noopener">Model Context Protocol: debugging</a></li><li><a href="https://modelcontextprotocol.io/docs/tools/inspector" rel="noopener">Model Context Protocol: MCP Inspector</a></li><li><a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports" rel="noopener">Model Context Protocol specification: transports</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-config-file-locations">Where every MCP client keeps its config file</a><span>Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.</span></li><li><a href="/guides/mcp-stdio-vs-streamable-http">MCP transports: stdio, Streamable HTTP and the old SSE transport</a><span>How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.</span></li><li><a href="/guides/debug-mcp-oauth-401">Fix an MCP OAuth 401 from the first broken link</a><span>Debug a remote MCP server that returns 401: read the WWW-Authenticate challenge, check RFC 9728 protected-resource metadata, authorization-server discovery, the resource parameter, token audience, scopes and PKCE S256.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published November 12, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

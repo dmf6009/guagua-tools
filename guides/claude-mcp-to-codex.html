@@ -1,120 +1,241 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content=
-  "width=device-width,initial-scale=1">
-  <title>Claude Desktop MCP Config to Codex TOML Converter Guide</title>
-  <meta name="description" content=
-  "Convert Claude Desktop MCP JSON to Codex config.toml without changing commands, arguments, environment variables, or remote server URLs. Includes examples and fixes.">
-  <meta name="robots" content="index,follow,max-snippet:-1">
-  <link rel="canonical" href=
-  "https://guagua-alvin.top/guides/claude-mcp-to-codex">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" href="/assets/favicon.svg">
-  <script async src=
-  "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000"
-  crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Convert Claude Desktop MCP Config to Codex TOML (config.toml)</title>
+<meta name="description" content="Map claude_desktop_config.json to Codex&#x27;s ~/.codex/config.toml: field-by-field mapping for mcpServers to [mcp_servers], env tables, remote URLs, bearer tokens, timeouts and the errors that follow a bad conversion.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/claude-mcp-to-codex">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="Convert Claude Desktop MCP Config to Codex TOML (config.toml)">
+<meta property="og:description" content="Map claude_desktop_config.json to Codex&#x27;s ~/.codex/config.toml: field-by-field mapping for mcpServers to [mcp_servers], env tables, remote URLs, bearer tokens, timeouts and the errors that follow a bad conversion.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/claude-mcp-to-codex">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-07-29">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/claude-mcp-to-codex#article", "headline": "Convert a Claude Desktop MCP config to Codex TOML", "description": "Map claude_desktop_config.json to Codex's ~/.codex/config.toml: field-by-field mapping for mcpServers to [mcp_servers], env tables, remote URLs, bearer tokens, timeouts and the errors that follow a bad conversion.", "datePublished": "2026-07-29", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/claude-mcp-to-codex", "wordCount": 1050, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Convert a Claude Desktop MCP config to Codex TOML", "item": "https://guagua-alvin.top/guides/claude-mcp-to-codex"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where is the Codex MCP config file?", "acceptedAnswer": {"@type": "Answer", "text": "Codex reads ~/.codex/config.toml. The CLI, the IDE extension and the desktop app share it. A trusted project can also provide .codex/config.toml for servers that belong to that repository."}}, {"@type": "Question", "name": "Does Codex use mcpServers like Claude Desktop?", "acceptedAnswer": {"@type": "Answer", "text": "No. Codex uses TOML tables named [mcp_servers.&lt;name&gt;], with an underscore and lower case. A table called [mcpServers.name] is valid TOML but Codex does not read it, so the server simply never appears."}}, {"@type": "Question", "name": "How do I pass an API key to an MCP server in Codex?", "acceptedAnswer": {"@type": "Answer", "text": "For a local stdio server, set it in the [mcp_servers.&lt;name&gt;.env] table, or list the variable name in env_vars to forward it from your own environment without writing the value in the file. For a remote server, use bearer_token_env_var to name the environment variable that holds the token."}}, {"@type": "Question", "name": "Can I add an MCP server to Codex without editing TOML?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. codex mcp add &lt;name&gt; -- &lt;command&gt; writes a stdio entry and codex mcp add &lt;name&gt; --url &lt;url&gt; writes a remote one. codex mcp list shows what is configured, and /mcp inside the terminal UI shows which servers are active."}}]}]}</script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="/"><span class=
-    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <nav>
-      <a href="/mcp-tools">MCP tools</a><a href="/">Directory</a>
-    </nav>
-  </header>
-  <main class="guide-page">
-    <p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href=
-    "/mcp-tools">MCP tools</a> / Config conversion</p>
-    <header class="guide-head">
-      <p class="eyebrow">Field note 02</p>
-      <h1>Convert a Claude Desktop MCP config to Codex TOML.</h1>
-      <p class="guide-deck">Use the browser converter for the mechanical rewrite, then verify commands, arguments, environment variables, remote URLs, and the config path Codex actually reads.</p>
-      <p class="guide-meta">Configuration guide · Tested August 6, 2026 · 10 min</p>
-    </header>
-    <div class="guide-layout">
-      <aside class="guide-aside">
-        <strong>Tools used</strong><a href=
-        "https://mcp.guagua-alvin.top/">MCP Config Lab</a><br>
-        <a href="https://mcpcheck.guagua-alvin.top/">MCP Config
-        Guard</a>
-      </aside>
-      <article class="guide-body">
-        <div class="guide-answer"><strong>Short answer</strong><p>Claude Desktop stores local MCP servers below <code>mcpServers</code> in JSON. Codex stores them below <code>[mcp_servers.&lt;name&gt;]</code> in TOML. Preserve the server name, command, argument order, environment keys, and URL exactly; only the container syntax should change.</p><a href="https://mcp.guagua-alvin.top/">Open the free MCP config converter →</a></div>
-        <h2>Start from the smallest working entry</h2>
-        <pre>{
-  "mcpServers": {
-    "tickets": {
-      "command": "npx",
-      "args": ["-y", "@example/ticket-server"],
-      "env": {"TICKET_TOKEN": "${TICKET_TOKEN}"}
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Config conversion</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Config conversion</p>
+<h1>Convert a Claude Desktop MCP config to Codex TOML</h1>
+<p class="guide-deck">Claude Desktop describes MCP servers in JSON; Codex reads TOML. The translation is mechanical, but four details — the table name, the env table, remote authentication and timeouts — decide whether the server actually starts.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 5 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#the-short-answer">The short answer</a></li><li><a href="#field-mapping">Field mapping</a></li><li><a href="#convert-one-server-at-a-time">Convert one server at a time</a></li><li><a href="#toml-details-that-break-a-correct-looking-file">TOML details that break a correct-looking file</a></li><li><a href="#environment-variables-and-secrets">Environment variables and secrets</a></li><li><a href="#remote-servers-and-oauth">Remote servers and OAuth</a></li><li><a href="#when-the-server-does-not-start-in-codex">When the server does not start in Codex</a></li><li><a href="#before-you-save-scan-the-result">Before you save: scan the result</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a><a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a></div></aside>
+<article class="guide-body">
+<h2 id="the-short-answer">The short answer</h2>
+<p>Claude Desktop stores servers as properties of a <code>mcpServers</code> object in <code>claude_desktop_config.json</code>. Codex stores each server as a TOML table named <code>[mcp_servers.&lt;name&gt;]</code> in <code>~/.codex/config.toml</code>. Keep the server name, the command, the order of the arguments and the names of the environment variables exactly the same. Only the container syntax changes.</p>
+<p>Claude Desktop JSON:</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;],
+      &quot;env&quot;: { &quot;TICKET_TOKEN&quot;: &quot;tok_placeholder&quot; }
     }
   }
-}</pre>
-        <p>Copy one server, not the entire desktop configuration.
-        That makes it obvious which warning belongs to this
-        move.</p>
-        <h2>Map the fields before converting</h2>
-        <div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Claude JSON</th><th>Codex TOML</th><th>Keep unchanged</th></tr></thead><tbody><tr><td><code>mcpServers.tickets</code></td><td><code>[mcp_servers.tickets]</code></td><td>Server ID</td></tr><tr><td><code>command</code></td><td><code>command</code></td><td>Executable</td></tr><tr><td><code>args</code></td><td><code>args</code></td><td>Order</td></tr><tr><td><code>env</code></td><td><code>[...env]</code></td><td>Key names</td></tr><tr><td><code>url</code></td><td><code>url</code></td><td>Endpoint</td></tr></tbody></table></div>
-        <h2>Convert, then compare meaning</h2>
-        <p>Paste the JSON into <a href=
-        "https://mcp.guagua-alvin.top/">MCP Config Lab</a> and
-        choose Codex TOML. Before saving, compare four things:
-        server name, executable, argument order and environment
-        keys. Quoting may change; behavior must not.</p>
-        <pre>[mcp_servers.tickets]
-command = "npx"
-args = ["-y", "@example/ticket-server"]
+}
+</code></pre>
+<p>Codex TOML:</p>
+<pre><code>[mcp_servers.tickets]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;@example/ticket-server&quot;]
 
 [mcp_servers.tickets.env]
-TICKET_TOKEN = "${TICKET_TOKEN}"</pre>
-        <h2>Do not “fix” the placeholder into a token</h2>
-        <p>A common migration mistake is replacing the placeholder
-        with the real credential just to get the first launch
-        working. The config then lands in shell history, backups or
-        Git. Keep the reference and provide the value through the
-        environment or the secret mechanism supported by your
-        setup.</p>
-        <h2>Scan before installation</h2>
-        <p>Run the TOML through <a href=
-        "https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a>.
-        Review unpinned packages, shell wrappers, broad filesystem
-        paths and anything that resembles a secret. A warning is a
-        prompt to inspect, not an automatic verdict.</p>
-        <div class="guide-callout">
-          <p>If Codex cannot start the server, run the exact
-          command and arguments in a clean terminal. This separates
-          a process problem from a TOML problem.</p>
-        </div>
-        <h2>Confirm the actual runtime</h2>
-        <p>Restart Codex, list the server, and invoke one read-only
-        tool. Check that the process receives the intended
-        environment variable without printing its value.</p>
-        <h2>Three failures that look like conversion bugs</h2>
-        <h3>Codex cannot find the executable</h3><p>The desktop app and your shell may have different <code>PATH</code> values. Run the exact executable in the same environment that starts Codex.</p>
-        <h3>The JSON used a real token</h3><p>Conversion preserves values; it cannot make an exposed secret safe. Rotate it, replace it with an environment reference, and scan the TOML before committing.</p>
-        <h3>The server starts but no tools appear</h3><p>Run the command outside the client and inspect stderr. A startup exit, missing working directory, or protocol output written to the wrong stream can look like an empty connection.</p>
-        <h2>Conversion checklist</h2><ul class="guide-checklist"><li>Convert one known-working server first.</li><li>Compare command and arguments character for character.</li><li>Keep credentials outside committed TOML.</li><li>Restart Codex after changing its config.</li><li>Invoke one read-only tool before migrating the next server.</li></ul>
-        <h2>Related MCP configuration help</h2><p>After conversion, use the <a href="https://mcpcheck.guagua-alvin.top/">MCP config security scanner</a>. If a remote server returns an authorization error, continue with the <a href="/guides/debug-mcp-oauth-401">MCP OAuth 401 troubleshooting guide</a>.</p>
-        <div class="guide-next">
-          <h3>Expected result</h3>
-          <p>The same package starts with the same arguments, the
-          token stays outside the committed file, and a read-only
-          tool call succeeds.</p><a href=
-          "https://mcp.guagua-alvin.top/">Convert your MCP config
-          →</a>
-        </div>
-      </article>
-    </div>
-  </main>
-  <footer>
-    <a class="brand" href="/"><span class=
-    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <p>Independent MCP field notes.</p>
-    <div>
-      <a href="/about">About</a><a href="/privacy">Privacy</a>
-    </div>
-  </footer>
+TICKET_TOKEN = &quot;tok_placeholder&quot;
+</code></pre>
+<h2 id="field-mapping">Field mapping</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Claude Desktop JSON</th>
+<th>Codex TOML</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mcpServers.&lt;name&gt;</code></td>
+<td><code>[mcp_servers.&lt;name&gt;]</code></td>
+<td>Underscore, lower case. Quote names with dots or spaces: <code>[mcp_servers."my.server"]</code></td>
+</tr>
+<tr>
+<td><code>command</code></td>
+<td><code>command</code></td>
+<td>Unchanged string</td>
+</tr>
+<tr>
+<td><code>args</code></td>
+<td><code>args</code></td>
+<td>Same array, same order</td>
+</tr>
+<tr>
+<td><code>env</code> (object)</td>
+<td><code>[mcp_servers.&lt;name&gt;.env]</code> table, or inline <code>env = { KEY = "value" }</code></td>
+<td>Keys are case-sensitive</td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>env_vars = ["NAME"]</code></td>
+<td>Codex only: forward a variable from your environment instead of storing its value</td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>cwd</code></td>
+<td>Codex only: working directory for the process</td>
+</tr>
+<tr>
+<td><code>url</code> (in clients that support remote entries)</td>
+<td><code>url</code></td>
+<td>Streamable HTTP endpoint</td>
+</tr>
+<tr>
+<td><code>headers.Authorization</code></td>
+<td><code>bearer_token_env_var = "NAME"</code></td>
+<td>Names the variable holding the token</td>
+</tr>
+<tr>
+<td>other static headers</td>
+<td><code>http_headers = { "X-Key" = "value" }</code></td>
+<td>Use <code>env_http_headers</code> to read values from variables</td>
+</tr>
+</tbody>
+</table></div>
+<p>Codex adds several per-server settings that have no Claude Desktop equivalent. They are optional, but two are worth knowing during a migration:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>startup_timeout_sec</code></td>
+<td><code>10</code></td>
+<td>How long Codex waits for the server to start and list its tools</td>
+</tr>
+<tr>
+<td><code>tool_timeout_sec</code></td>
+<td><code>60</code></td>
+<td>How long one tool call may run</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td><code>true</code></td>
+<td>Set <code>false</code> to keep an entry without loading it</td>
+</tr>
+<tr>
+<td><code>enabled_tools</code> / <code>disabled_tools</code></td>
+<td>all tools</td>
+<td>Allow list and deny list for individual tools</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="convert-one-server-at-a-time">Convert one server at a time</h2>
+<p>Copy a single entry rather than the whole file. If the server fails to start afterwards, you know which change caused it.</p>
+<ol>
+<li>Open the Claude Desktop config (<strong>Settings → Developer → Edit Config</strong>) and copy one server.</li>
+<li>Convert it, by hand using the table above or with <a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a>.</li>
+<li>Append the result to <code>~/.codex/config.toml</code>. Tables can appear in any order, but a table name may only be defined once.</li>
+<li>Run <code>codex mcp list</code> and confirm the server is present with the command and arguments you expect.</li>
+<li>Start Codex, run <code>/mcp</code>, and call one read-only tool.</li>
+</ol>
+<h2 id="toml-details-that-break-a-correct-looking-file">TOML details that break a correct-looking file</h2>
+<p><strong>Strings and backslashes.</strong> TOML basic strings use the same backslash escapes as JSON, so a Windows path needs doubled backslashes or a literal string in single quotes:</p>
+<pre><code>args = [&quot;C:\\Users\\you\\server\\index.js&quot;]
+args = ['C:\Users\you\server\index.js']      # literal string, no escaping
+</code></pre>
+<p><strong>Table placement.</strong> Everything after a <code>[table]</code> header belongs to that table until the next header. If you paste a top-level setting such as <code>model = "..."</code> below an <code>[mcp_servers.x]</code> header, it becomes a field of that server and stops working as a global setting. Keep global keys at the top of the file.</p>
+<p><strong>Duplicate tables.</strong> Defining <code>[mcp_servers.tickets]</code> twice is a TOML error and Codex will refuse to load the file. Search for the name before appending.</p>
+<p><strong>Booleans and numbers are not strings.</strong> Write <code>enabled = false</code> and <code>startup_timeout_sec = 30</code>, without quotes. Environment values, by contrast, must always be strings: <code>PORT = "8080"</code>.</p>
+<h2 id="environment-variables-and-secrets">Environment variables and secrets</h2>
+<p>A common Claude Desktop habit is to paste a real token into the <code>env</code> object. Converting that faithfully puts the same token into a second plain-text file. The migration is a good moment to stop doing that.</p>
+<p>Codex gives you two better options. <code>env_vars</code> forwards a variable that already exists in the environment Codex was started from:</p>
+<pre><code>[mcp_servers.tickets]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;@example/ticket-server&quot;]
+env_vars = [&quot;TICKET_TOKEN&quot;]
+</code></pre>
+<p>For a remote server, <code>bearer_token_env_var</code> names the variable instead of containing the secret:</p>
+<pre><code>[mcp_servers.docs]
+url = &quot;https://mcp.example.com/mcp&quot;
+bearer_token_env_var = &quot;DOCS_MCP_TOKEN&quot;
+</code></pre>
+<p>Watch for <code>${VAR}</code> placeholders in the source file. Some clients expand them and some pass the literal text to the server, so a value such as <code>"${TICKET_TOKEN}"</code> may never have worked the way it looks. Decide where the real value comes from rather than copying the placeholder across.</p>
+<h2 id="remote-servers-and-oauth">Remote servers and OAuth</h2>
+<p>A Claude Desktop config often reaches remote servers through a local bridge such as <code>mcp-remote</code>, because the app adds remote servers through its Connectors settings rather than through the JSON file. Codex speaks Streamable HTTP directly, so the bridge is usually unnecessary:</p>
+<pre><code># instead of: command = &quot;npx&quot;, args = [&quot;-y&quot;, &quot;mcp-remote&quot;, &quot;https://mcp.example.com/mcp&quot;]
+[mcp_servers.docs]
+url = &quot;https://mcp.example.com/mcp&quot;
+</code></pre>
+<p>If the server requires OAuth, run <code>codex mcp login docs</code> once to complete the browser flow. A server that only returns 401 after that needs the checks in the <a href="/guides/debug-mcp-oauth-401">OAuth 401 guide</a>.</p>
+<h2 id="when-the-server-does-not-start-in-codex">When the server does not start in Codex</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Server missing from <code>codex mcp list</code></td>
+<td>Table named <code>mcpServers</code> or <code>mcp-servers</code>, or the file has a TOML syntax error</td>
+<td>Rename to <code>mcp_servers</code>; validate the TOML</td>
+</tr>
+<tr>
+<td>Listed, but times out at startup</td>
+<td>First <code>npx</code> download is slower than 10 seconds</td>
+<td>Run the command once in a terminal, or raise <code>startup_timeout_sec</code></td>
+</tr>
+<tr>
+<td>Starts, then authentication errors</td>
+<td>Env key renamed or lower-cased during conversion; <code>env_vars</code> names a variable that is not set</td>
+<td>Compare key names character by character</td>
+</tr>
+<tr>
+<td>"No such file or directory"</td>
+<td>Relative path in <code>args</code>, or the executable is not on Codex's PATH</td>
+<td>Use absolute paths; set <code>cwd</code> if the server expects one</td>
+</tr>
+<tr>
+<td>Works in Claude Desktop, tools missing in Codex</td>
+<td><code>enabled_tools</code> set too narrowly, or the argument order changed</td>
+<td>Remove the filter; diff the <code>args</code> arrays</td>
+</tr>
+</tbody>
+</table></div>
+<p>If none of those match, run the exact command and arguments in a clean terminal. That separates a process problem from a configuration problem, and the <a href="/guides/mcp-server-not-connecting">connection troubleshooting guide</a> covers the process side.</p>
+<h2 id="before-you-save-scan-the-result">Before you save: scan the result</h2>
+<p>A converted file is a list of programs that will run with your permissions every time Codex starts. Read it once as a reviewer: are packages pinned to a version, does any command pipe a download into a shell, does any argument grant a whole home directory, does any value look like a live credential? <a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a> runs those checks locally and explains each finding. A warning is a prompt to look, not a verdict.</p>
+<div class="guide-callout">
+<p>Examples on this page use a fictional package and placeholder tokens. Replace them with your own server, and never paste a production credential into any online tool, including this site's.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Where is the Codex MCP config file?</h3><p>Codex reads <code>~/.codex/config.toml</code>. The CLI, the IDE extension and the desktop app share it. A trusted project can also provide <code>.codex/config.toml</code> for servers that belong to that repository.</p><h3>Does Codex use mcpServers like Claude Desktop?</h3><p>No. Codex uses TOML tables named <code>[mcp_servers.&lt;name&gt;]</code>, with an underscore and lower case. A table called <code>[mcpServers.name]</code> is valid TOML but Codex does not read it, so the server simply never appears.</p><h3>How do I pass an API key to an MCP server in Codex?</h3><p>For a local stdio server, set it in the <code>[mcp_servers.&lt;name&gt;.env]</code> table, or list the variable name in <code>env_vars</code> to forward it from your own environment without writing the value in the file. For a remote server, use <code>bearer_token_env_var</code> to name the environment variable that holds the token.</p><h3>Can I add an MCP server to Codex without editing TOML?</h3><p>Yes. <code>codex mcp add &lt;name&gt; -- &lt;command&gt;</code> writes a stdio entry and <code>codex mcp add &lt;name&gt; --url &lt;url&gt;</code> writes a remote one. <code>codex mcp list</code> shows what is configured, and <code>/mcp</code> inside the terminal UI shows which servers are active.</p></section>
+<div class="guide-next"><h3>Let the converter do the rewrite</h3><p>Paste Claude Desktop JSON and copy Codex TOML. The conversion happens in your browser and nothing is uploaded.</p><a href="https://mcp.guagua-alvin.top/">Open the free MCP config converter →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://developers.openai.com/codex/mcp" rel="noopener">Codex documentation: Model Context Protocol</a></li><li><a href="https://modelcontextprotocol.io/docs/develop/connect-local-servers" rel="noopener">Model Context Protocol: connect to local MCP servers</a></li><li><a href="https://toml.io/en/v1.0.0" rel="noopener">TOML v1.0.0 specification</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-config-file-locations">Where every MCP client keeps its config file</a><span>Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.</span></li><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/mcp-stdio-vs-streamable-http">MCP transports: stdio, Streamable HTTP and the old SSE transport</a><span>How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published July 29, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
 </body>
 </html>

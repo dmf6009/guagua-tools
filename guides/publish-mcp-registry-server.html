@@ -1,113 +1,280 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content=
-  "width=device-width,initial-scale=1">
-  <title>MCP server.json Validator &amp; Registry Publishing Guide</title>
-  <meta name="description" content=
-  "Validate MCP Registry server.json metadata before publishing. Check namespace, package identity, versions, remote transports, repository links, and document size.">
-  <meta name="robots" content="index,follow,max-snippet:-1">
-  <link rel="canonical" href=
-  "https://guagua-alvin.top/guides/publish-mcp-registry-server">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" href="/assets/favicon.svg">
-  <script async src=
-  "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000"
-  crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Publish to the MCP Registry: server.json, mcpName &amp; mcp-publisher</title>
+<meta name="description" content="A complete walkthrough for the official MCP Registry: write a valid server.json, choose a namespace, pass ownership verification for npm, PyPI, NuGet, Cargo, Docker and MCPB packages, and fix the errors mcp-publisher returns.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/publish-mcp-registry-server">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="Publish to the MCP Registry: server.json, mcpName &amp; mcp-publisher">
+<meta property="og:description" content="A complete walkthrough for the official MCP Registry: write a valid server.json, choose a namespace, pass ownership verification for npm, PyPI, NuGet, Cargo, Docker and MCPB packages, and fix the errors mcp-publisher returns.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/publish-mcp-registry-server">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-08-06">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/publish-mcp-registry-server#article", "headline": "Publish an MCP server to the official MCP Registry", "description": "A complete walkthrough for the official MCP Registry: write a valid server.json, choose a namespace, pass ownership verification for npm, PyPI, NuGet, Cargo, Docker and MCPB packages, and fix the errors mcp-publisher returns.", "datePublished": "2026-08-06", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/publish-mcp-registry-server", "wordCount": 1077, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Publish an MCP server to the official MCP Registry", "item": "https://guagua-alvin.top/guides/publish-mcp-registry-server"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does the MCP Registry host my server's code?", "acceptedAnswer": {"@type": "Answer", "text": "No. The Registry stores only metadata: the server's name, description, version and where its package or remote endpoint lives. You publish the package itself to npm, PyPI, NuGet, crates.io, a container registry or a release page first, and the Registry entry points to it."}}, {"@type": "Question", "name": "What is mcpName in package.json?", "acceptedAnswer": {"@type": "Answer", "text": "mcpName is a property the Registry reads from your published npm package to verify ownership. Its value must be identical to the name in server.json, for example io.github.your-username/weather. If it is missing from the published version, publishing fails with a package validation error."}}, {"@type": "Question", "name": "Can I use my own domain as the namespace?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. GitHub authentication gives you the io.github.&lt;username&gt;/ namespace. To publish under a reverse-DNS name such as com.example/, authenticate with the DNS or HTTP method, which proves control of the domain."}}, {"@type": "Question", "name": "Can I change or delete a published version?", "acceptedAnswer": {"@type": "Answer", "text": "Treat published versions as permanent. The version string for a server must be unique, so publishing a fix means publishing a new version of both the package and the metadata rather than editing the existing entry."}}]}]}</script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="/"><span class=
-    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <nav>
-      <a href="/mcp-tools">MCP tools</a><a href="/">Directory</a>
-    </nav>
-  </header>
-  <main class="guide-page">
-    <p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href=
-    "/mcp-tools">MCP tools</a> / Registry</p>
-    <header class="guide-head">
-      <p class="eyebrow">Field note 06</p>
-      <h1>Validate server.json before the MCP Registry does.</h1>
-      <p class="guide-deck">Valid JSON can still describe the wrong package, version, namespace, or remote endpoint. Build the listing from the released artifact, validate it locally, then publish from the same commit.</p>
-      <p class="guide-meta">MCP Registry · Updated August 6, 2026 · 12 min</p>
-    </header>
-    <div class="guide-layout">
-      <aside class="guide-aside">
-        <strong>Tools used</strong><a href=
-        "https://mcpregistry.guagua-alvin.top/">RegistryReady</a><br>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Distribution</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Distribution</p>
+<h1>Publish an MCP server to the official MCP Registry</h1>
+<p class="guide-deck">The Registry stores metadata, not code. Publishing means proving that a name belongs to you and that the package it points to agrees. Most rejected submissions fail one of four checks, all of which you can test before running the publish command.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 5 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#what-the-registry-is-and-is-not">What the Registry is, and is not</a></li><li><a href="#a-minimal-serverjson">A minimal server.json</a></li><li><a href="#check-1-the-namespace-matches-your-authentication">Check 1: the namespace matches your authentication</a></li><li><a href="#check-2-the-package-proves-it-belongs-to-the-listing">Check 2: the package proves it belongs to the listing</a></li><li><a href="#check-3-versions-line-up">Check 3: versions line up</a></li><li><a href="#check-4-the-transport-and-inputs-are-described">Check 4: the transport and inputs are described</a></li><li><a href="#remote-servers">Remote servers</a></li><li><a href="#publish">Publish</a></li><li><a href="#errors-and-what-they-mean">Errors and what they mean</a></li><li><a href="#release-checklist">Release checklist</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcpregistry.guagua-alvin.top/">RegistryReady</a></div></aside>
+<article class="guide-body">
+<h2 id="what-the-registry-is-and-is-not">What the Registry is, and is not</h2>
+<p>The official MCP Registry at <code>registry.modelcontextprotocol.io</code> is a catalogue of server metadata that clients and downstream marketplaces read. It does not host packages and it does not review your code. It is still labelled a preview, so details can change; check the linked documentation before a release.</p>
+<p>A listing is one JSON document, <code>server.json</code>, that answers three questions: what the server is called, which version this is, and how a client can run or reach it.</p>
+<h2 id="a-minimal-serverjson">A minimal server.json</h2>
+<pre><code>{
+  &quot;$schema&quot;: &quot;https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json&quot;,
+  &quot;name&quot;: &quot;io.github.your-username/weather&quot;,
+  &quot;title&quot;: &quot;Weather&quot;,
+  &quot;description&quot;: &quot;Current conditions and forecasts from the Example Weather API.&quot;,
+  &quot;version&quot;: &quot;1.0.1&quot;,
+  &quot;repository&quot;: {
+    &quot;url&quot;: &quot;https://github.com/your-username/mcp-weather-server&quot;,
+    &quot;source&quot;: &quot;github&quot;
+  },
+  &quot;packages&quot;: [
+    {
+      &quot;registryType&quot;: &quot;npm&quot;,
+      &quot;identifier&quot;: &quot;@your-username/mcp-weather-server&quot;,
+      &quot;version&quot;: &quot;1.0.1&quot;,
+      &quot;transport&quot;: { &quot;type&quot;: &quot;stdio&quot; }
+    }
+  ]
+}
+</code></pre>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Field</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$schema</code></td>
+<td>The dated schema URL. It tells validators which rules apply</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>namespace/server-name</code>. The namespace must match how you authenticate</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>One clear sentence. Keep it short; long marketing copy is rejected by length limits</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>The version of this listing. Must be unique for the server</td>
+</tr>
+<tr>
+<td><code>packages[].identifier</code></td>
+<td>The exact package name in its registry</td>
+</tr>
+<tr>
+<td><code>packages[].version</code></td>
+<td>A specific published version, not a range and not <code>latest</code></td>
+</tr>
+<tr>
+<td><code>packages[].transport</code></td>
+<td>How the packaged server communicates, usually <code>{"type": "stdio"}</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="check-1-the-namespace-matches-your-authentication">Check 1: the namespace matches your authentication</h2>
+<p>The part of <code>name</code> before the slash is a namespace you must prove you control.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>You authenticate with</th>
+<th>You may publish under</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mcp-publisher login github</code></td>
+<td><code>io.github.&lt;your-username&gt;/…</code> or <code>io.github.&lt;your-org&gt;/…</code></td>
+</tr>
+<tr>
+<td>DNS or HTTP domain verification</td>
+<td><code>com.example/…</code> (your domain reversed)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The error <em>You do not have permission to publish this server</em> almost always means these two disagree: for example, a personal GitHub login used with an organisation's namespace you are not a member of, or a custom domain name used with GitHub authentication. Names are case-sensitive.</p>
+<h2 id="check-2-the-package-proves-it-belongs-to-the-listing">Check 2: the package proves it belongs to the listing</h2>
+<p>Anyone could write a <code>server.json</code> that points at somebody else's package, so the Registry looks inside the published package for a marker that names the server. The marker differs by package type:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th><code>registryType</code></th>
+<th>Where it is published</th>
+<th>Ownership marker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>npm</code></td>
+<td>npm public registry</td>
+<td><code>"mcpName": "&lt;server name&gt;"</code> in <code>package.json</code></td>
+</tr>
+<tr>
+<td><code>pypi</code></td>
+<td>PyPI</td>
+<td>The text <code>mcp-name: &lt;server name&gt;</code> in the README (an HTML comment is fine)</td>
+</tr>
+<tr>
+<td><code>nuget</code></td>
+<td>NuGet</td>
+<td><code>mcp-name: &lt;server name&gt;</code> in the package README</td>
+</tr>
+<tr>
+<td><code>cargo</code></td>
+<td>crates.io</td>
+<td><code>mcp-name: &lt;server name&gt;</code> as <strong>visible</strong> README text; crates.io strips HTML comments</td>
+</tr>
+<tr>
+<td><code>oci</code></td>
+<td>Docker Hub, GHCR and other supported registries</td>
+<td>Image label <code>io.modelcontextprotocol.server.name="&lt;server name&gt;"</code></td>
+</tr>
+<tr>
+<td><code>mcpb</code></td>
+<td>GitHub or GitLab release asset</td>
+<td>URL must contain "mcp"; <code>fileSha256</code> is required in <code>server.json</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>For npm:</p>
+<pre><code>{
+  &quot;name&quot;: &quot;@your-username/mcp-weather-server&quot;,
+  &quot;version&quot;: &quot;1.0.1&quot;,
+  &quot;mcpName&quot;: &quot;io.github.your-username/weather&quot;
+}
+</code></pre>
+<p>For a container image:</p>
+<pre><code>LABEL io.modelcontextprotocol.server.name=&quot;io.github.your-username/weather&quot;
+</code></pre>
+<p>The detail that catches people: <strong>the marker must be in the published artifact, at the version the listing names.</strong> Adding <code>mcpName</code> to your repository does nothing until you publish a new package version that contains it. If version 1.0.0 is already on npm without the property, bump to 1.0.1, publish that, and reference 1.0.1 in <code>server.json</code>.</p>
+<h2 id="check-3-versions-line-up">Check 3: versions line up</h2>
+<p>There are two version fields and they mean different things. The top-level <code>version</code> is the version of the server as listed. <code>packages[].version</code> is the version of the artifact to install. Keeping them equal is the simplest policy and avoids confusion.</p>
+<p>Before publishing, confirm the package version really exists:</p>
+<pre><code>npm view @your-username/mcp-weather-server@1.0.1 version mcpName
+</code></pre>
+<p>If that prints nothing, the Registry will not find it either. Ranges such as <code>^1.0.0</code> and tags such as <code>latest</code> are not accepted, because a listing must identify exactly one artifact. For OCI images the tag is part of the identifier (<code>ghcr.io/you/weather:1.0.1</code>), and a digest is better still.</p>
+<h2 id="check-4-the-transport-and-inputs-are-described">Check 4: the transport and inputs are described</h2>
+<p><code>transport.type</code> tells a client how to talk to the packaged server. A local package normally uses <code>stdio</code>. If the server needs configuration, declare it so clients can prompt for it instead of failing at startup:</p>
+<pre><code>&quot;environmentVariables&quot;: [
+  {
+    &quot;name&quot;: &quot;WEATHER_API_KEY&quot;,
+    &quot;description&quot;: &quot;API key for the Example Weather API&quot;,
+    &quot;isRequired&quot;: true,
+    &quot;isSecret&quot;: true
+  }
+]
+</code></pre>
+<p>Mark credentials with <code>isSecret</code> so clients store and display them appropriately. Never put a real value in <code>server.json</code>; the file is public.</p>
+<h2 id="remote-servers">Remote servers</h2>
+<p>A hosted server is listed with <code>remotes</code> instead of, or in addition to, <code>packages</code>:</p>
+<pre><code>&quot;remotes&quot;: [
+  { &quot;type&quot;: &quot;streamable-http&quot;, &quot;url&quot;: &quot;https://mcp.example.com/mcp&quot; }
+]
+</code></pre>
+<p>Use <code>streamable-http</code> for current servers. The older <code>sse</code> type exists for servers that still run the deprecated transport; see <a href="/guides/mcp-stdio-vs-streamable-http">stdio vs Streamable HTTP</a> for the difference. Publishing a remote under a custom-domain namespace requires that the URL's host matches the verified domain.</p>
+<h2 id="publish">Publish</h2>
+<pre><code># 1. publish the package first
+npm publish --access public
 
-        <a href="https://mcpcheck.guagua-alvin.top/">MCP Config
-        Guard</a>
-      </aside>
-      <article class="guide-body">
-        <div class="guide-answer"><strong>Fast path</strong><p>Start with the artifact users can install or the remote endpoint they can reach today. Copy its exact identity into <code>server.json</code>, validate schema and size, then publish from the corresponding release.</p><a href="https://mcpregistry.guagua-alvin.top/">Open the free server.json validator →</a></div>
-        <h2>Choose the distribution first</h2>
-        <p>Decide whether users install a package or connect to a
-        remote server. Do not fill both sections “for completeness”
-        unless both are genuinely maintained. The Registry metadata
-        should describe an installable release, not the project you
-        hope to have later.</p>
-        <h2>Copy identity from the release</h2>
-        <p>Take the package name and version from the published
-        artifact. Compare capitalization, namespace and tag
-        exactly. If the repository says 1.4.0 but the registry
-        package is 1.3.2, update the release or describe 1.3.2.</p>
-        <h2>Keep transport claims concrete</h2>
-        <p>For a remote entry, use the public MCP endpoint and the
-        transport it serves. Test it from outside your network. A
-        documentation homepage or health endpoint is not a
-        substitute for the MCP URL.</p>
-        <pre>{
-  "name": "io.example/ticket-search",
-  "version": "1.3.2",
-  "description": "Search support tickets by status and owner"
-}</pre>
-        <h2>Validate identity before prose</h2><div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Field</th><th>Source of truth</th><th>Failure to catch</th></tr></thead><tbody><tr><td>Name</td><td>Verified namespace</td><td>Ownership</td></tr><tr><td>Version</td><td>Published artifact</td><td>Missing build</td></tr><tr><td>Package ID</td><td>Package registry</td><td>Wrong scope</td></tr><tr><td>Remote URL</td><td>Public MCP endpoint</td><td>Homepage used</td></tr><tr><td>Repository</td><td>Public source</td><td>No audit trail</td></tr></tbody></table></div>
-        <h2>Use description space for selection</h2>
-        <p>Say what the server lets a user do and what system it
-        touches. Avoid “powerful,” “seamless,” and feature
-        inventories copied from the README. The document has a size
-        limit; spend bytes on information that helps a developer
-        decide.</p>
-        <h2>Validate before invoking the publisher</h2>
-        <p>Paste the document into <a href=
-        "https://mcpregistry.guagua-alvin.top/">RegistryReady</a>.
-        Resolve schema errors, version inconsistencies and the size
-        check. Then run the official publisher from the same commit
-        or release context you just described.</p>
-        <div class="guide-callout">
-          <p>If verification fails, compare the Registry identity
-          to the published package before editing unrelated JSON
-          fields.</p>
-        </div>
-        <h2>Check the install path once</h2>
-        <p>Install the public package or connect to the public URL
-        in a clean environment. Run a read-only tool. A listing
-        that validates but cannot be used is still a bad
-        release.</p>
-        <h2>What a schema validator cannot prove</h2><p>A validator catches malformed JSON, unsupported fields, identity mismatches, and size problems. It cannot prove the package is safe, the endpoint belongs to the stated maintainer, or every tool behaves as described.</p>
-        <h2>Pre-publish checklist</h2><ul class="guide-checklist"><li>The package or endpoint already exists.</li><li>Name and version match the release.</li><li>The description states the user task.</li><li>The URL is the MCP endpoint.</li><li>The document passes validation.</li><li>A clean client can call one read-only tool.</li></ul>
-        <h2>Related publishing help</h2><p>For authorization, use the <a href="/guides/debug-mcp-oauth-401">MCP OAuth 401 guide</a>. For client setup, use the <a href="/guides/claude-mcp-to-codex">Claude Desktop to Codex guide</a>.</p>
-        <div class="guide-next">
-          <h3>Expected result</h3>
-          <p>The document validates, its identity matches the
-          public artifact, the transport works from a clean client,
-          and the publisher verifies the same release.</p><a href=
-          "https://mcpregistry.guagua-alvin.top/">Validate
-          server.json →</a>
-        </div>
-      </article>
-    </div>
-  </main>
-  <footer>
-    <a class="brand" href="/"><span class=
-    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <p>Independent MCP field notes.</p>
-    <div>
-      <a href="/about">About</a><a href="/privacy">Privacy</a>
-    </div>
-  </footer>
+# 2. install the CLI (Homebrew shown; binaries are on the releases page)
+brew install mcp-publisher
+
+# 3. create or update server.json
+mcp-publisher init
+
+# 4. authenticate and publish
+mcp-publisher login github
+mcp-publisher publish
+</code></pre>
+<p>Confirm the result through the public API:</p>
+<pre><code>curl &quot;https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.your-username/weather&quot;
+</code></pre>
+<p>To avoid doing this by hand on every release, the Registry supports publishing from GitHub Actions using the workflow's OIDC identity, so no long-lived token needs to be stored.</p>
+<h2 id="errors-and-what-they-mean">Errors and what they mean</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registry validation failed for package</td>
+<td>The ownership marker is missing from the published version, or does not equal <code>name</code></td>
+<td>Add the marker, publish a new package version, update both version fields</td>
+</tr>
+<tr>
+<td>You do not have permission to publish this server</td>
+<td>Namespace does not match the authentication method</td>
+<td>Use <code>io.github.&lt;login&gt;/…</code> with GitHub auth, or verify the domain</td>
+</tr>
+<tr>
+<td>Invalid or expired Registry JWT token</td>
+<td>The login session ended</td>
+<td>Run <code>mcp-publisher login github</code> again</td>
+</tr>
+<tr>
+<td>Version already exists</td>
+<td>That listing version was published before</td>
+<td>Increment <code>version</code></td>
+</tr>
+<tr>
+<td>Schema validation errors</td>
+<td>Missing required field, wrong type, or an outdated <code>$schema</code></td>
+<td>Validate against the dated schema; regenerate with <code>mcp-publisher init</code></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="release-checklist">Release checklist</h2>
+<ul>
+<li>The package is published and publicly installable at the exact version.</li>
+<li>The ownership marker is inside that published version and equals <code>name</code> character for character.</li>
+<li><code>name</code> uses a namespace your login can publish to.</li>
+<li>Top-level <code>version</code> is new, and <code>packages[].version</code> exists.</li>
+<li>Required environment variables are declared; secrets are marked and no real values are present.</li>
+<li><code>description</code> reads as one accurate sentence.</li>
+<li>A clean machine can run the server with the command a client would build from this metadata.</li>
+</ul>
+<div class="guide-callout">
+<p>The last item is the one that matters to users. A listing that validates but does not start, because the package forgot a <code>bin</code> entry or needs an undeclared variable, is worse than no listing. Install your own server from the published metadata before announcing it.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Does the MCP Registry host my server&#x27;s code?</h3><p>No. The Registry stores only metadata: the server's name, description, version and where its package or remote endpoint lives. You publish the package itself to npm, PyPI, NuGet, crates.io, a container registry or a release page first, and the Registry entry points to it.</p><h3>What is mcpName in package.json?</h3><p><code>mcpName</code> is a property the Registry reads from your published npm package to verify ownership. Its value must be identical to the <code>name</code> in <code>server.json</code>, for example <code>io.github.your-username/weather</code>. If it is missing from the published version, publishing fails with a package validation error.</p><h3>Can I use my own domain as the namespace?</h3><p>Yes. GitHub authentication gives you the <code>io.github.&lt;username&gt;/</code> namespace. To publish under a reverse-DNS name such as <code>com.example/</code>, authenticate with the DNS or HTTP method, which proves control of the domain.</p><h3>Can I change or delete a published version?</h3><p>Treat published versions as permanent. The version string for a server must be unique, so publishing a fix means publishing a new version of both the package and the metadata rather than editing the existing entry.</p></section>
+<div class="guide-next"><h3>Validate server.json before publishing</h3><p>Check the schema, the name format, package and version alignment and transport fields, or generate a starting file from a short form.</p><a href="https://mcpregistry.guagua-alvin.top/">Open RegistryReady →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/registry/quickstart" rel="noopener">MCP Registry quickstart: publish a server</a></li><li><a href="https://modelcontextprotocol.io/registry/package-types" rel="noopener">MCP Registry: supported package types</a></li><li><a href="https://modelcontextprotocol.io/registry/authentication" rel="noopener">MCP Registry: authentication methods</a></li><li><a href="https://modelcontextprotocol.io/registry/remote-servers" rel="noopener">MCP Registry: remote servers</a></li><li><a href="https://github.com/modelcontextprotocol/registry" rel="noopener">MCP Registry source and issue tracker</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-config-file-locations">Where every MCP client keeps its config file</a><span>Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.</span></li><li><a href="/guides/mcp-stdio-vs-streamable-http">MCP transports: stdio, Streamable HTTP and the old SSE transport</a><span>How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.</span></li><li><a href="/guides/migrate-mcp-2026">Migrate an MCP server to the stateless 2026-07-28 protocol</a><span>What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published August 6, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
 </body>
 </html>

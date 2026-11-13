@@ -18,3 +18,15 @@ The site is plain static HTML, CSS, and JavaScript. Tool search and category fil
 - [Fix an MCP App that opens as a blank panel](https://guagua-alvin.top/guides/fix-mcp-app-blank-ui)
 - [Debug an MCP Task stuck in `working`](https://guagua-alvin.top/guides/debug-mcp-task-polling)
 - [Prepare `server.json` for the MCP Registry](https://guagua-alvin.top/guides/publish-mcp-registry-server)
+
+## Guides
+
+Guide pages are generated. Edit the Markdown in `content/guides/` (JSON front matter between `---` lines), then run:
+
+```bash
+pip install markdown
+python3 scripts/build-guides.py   # writes guides/*.html, guides/index.html and sitemap.xml
+python3 scripts/sync-chrome.py    # only after changing the shared header/footer
+```
+
+Commit the generated HTML: the Pages build command is `exit 0`, so nothing is built on deploy.

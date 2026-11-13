@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Free MCP Config Converter, Validators & Developer Tools</title>
-  <meta name="description" content="Convert Claude Desktop MCP configs to Codex TOML, validate server.json, debug MCP OAuth 401 errors, and check MCP Apps, Tasks, security, and agent files.">
+  <title>Guagua Tools: Free MCP &amp; AI Agent Tools and Practical Guides</title>
+  <meta name="description" content="Free browser tools and step-by-step guides for the Model Context Protocol and AI agents: convert MCP configs, fix connection and OAuth errors, validate server.json, and check agent files.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="theme-color" content="#f7f5ed">
   <link rel="canonical" href="https://guagua-alvin.top/">
@@ -14,7 +14,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
   <meta property="og:type" content="website">
   <meta property="og:title" content="Free MCP, AI Agent & Developer Tools | Guagua Tools">
-  <meta property="og:description" content="Thirteen focused browser tools for MCP Tasks, MCP Apps, AG-UI, A2UI, agent discovery, security, and print preparation.">
+  <meta property="og:description" content="Fourteen free browser tools and twelve practical guides for MCP Tasks, MCP Apps, AG-UI, A2UI, agent discovery, security, and print preparation.">
   <meta property="og:url" content="https://guagua-alvin.top/">
   <meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
   <meta name="twitter:card" content="summary_large_image">
@@ -40,10 +40,7 @@
 </head>
 <body>
   <a class="skip-link" href="#tools">Skip to tools</a>
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/guides/claude-mcp-to-codex">Config guide</a><a href="/guides/debug-mcp-oauth-401">OAuth guide</a><a href="/agents/">Agent skills</a><a class="github-link" href="https://github.com/dmf6009" rel="me">GitHub ↗</a></nav>
-  </header>
+  <header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
 
   <main>
     <section class="hero" aria-labelledby="hero-title">
@@ -66,16 +63,17 @@
     </section>
 
     <section class="case-section" aria-labelledby="case-title">
-      <div class="case-heading"><div><p class="section-kicker">MCP field notes</p><h2 id="case-title">Start with the failure you can see.</h2></div><p>Short, reproducible walkthroughs built around the config, response, or deployment symptom in front of you. Each one ends in a browser tool you can use on your own data.</p></div>
+      <div class="case-heading"><div><p class="section-kicker">Guides</p><h2 id="case-title">Start with the failure you can see.</h2></div><p>Twelve practical guides with exact file paths, field names and commands, each checked against the specification or documentation it cites. <a href="/guides/">Browse all guides →</a></p></div>
       <div class="case-grid">
-        <a href="/guides/migrate-mcp-2026"><small>Protocol upgrade · 8 min</small><h3>Remove the handshake without breaking older clients</h3><p>A two-path migration from <code>initialize</code> and session IDs to MCP 2026 stateless requests.</p><b>Follow the migration →</b></a>
-        <a href="/guides/claude-mcp-to-codex"><small>Configuration · 6 min</small><h3>Move a working Claude MCP server into Codex</h3><p>Translate the JSON, keep environment variables intact, then scan the TOML before saving it.</p><b>Convert a real config →</b></a>
-        <a href="/guides/debug-mcp-oauth-401"><small>Authentication · 7 min</small><h3>Trace a remote MCP server that only returns 401</h3><p>Check protected-resource metadata, issuer linkage, scopes and PKCE in the order the client sees them.</p><b>Debug the metadata chain →</b></a>
-        <a href="/guides/fix-mcp-app-blank-ui"><small>MCP Apps · 7 min</small><h3>Fix an MCP App that opens as a blank panel</h3><p>Follow the tool result to its <code>ui://</code> resource, MIME type, CSP and visibility metadata.</p><b>Inspect the app contract →</b></a>
-        <a href="/guides/debug-mcp-task-polling"><small>Long-running tools · 6 min</small><h3>Find why an MCP Task never leaves “working”</h3><p>Capture successive snapshots and look for timestamp regressions, missing results and terminal-state mistakes.</p><b>Read the task trace →</b></a>
-        <a href="/guides/publish-mcp-registry-server"><small>Distribution · 8 min</small><h3>Prepare server.json before the Registry rejects it</h3><p>Check package identity, transport fields, version alignment and the document size before publishing.</p><b>Prepare the listing →</b></a>
-        <a href="/labs/mcp-config-conversion-cases"><small>Lab note · 6 fixtures</small><h3>Test the converter against field-preservation cases</h3><p>Copy stdio, remote, header, quoted-name and invalid-transport fixtures and compare the expected Codex TOML.</p><b>Inspect the conversion cases →</b></a>
-        <a href="/labs/mcp-oauth-401-fixture"><small>Lab note · OAuth chain</small><h3>Break one edge in an MCP OAuth 401 fixture</h3><p>Follow challenge discovery, protected-resource metadata, issuer linkage, scopes and token audience.</p><b>Run the metadata fixture →</b></a>
+        <a href="/guides/mcp-config-file-locations"><small>Configuration · 6 min</small><h3>Where every MCP client keeps its config file</h3><p>Paths and top-level keys for Claude, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed.</p><b>Find the file →</b></a>
+        <a href="/guides/mcp-server-not-connecting"><small>Troubleshooting · 5 min</small><h3>Fix an MCP server that will not connect</h3><p><code>spawn npx ENOENT</code>, stdout logging, Windows <code>npx</code>, timeouts and missing environment variables.</p><b>Find your error →</b></a>
+        <a href="/guides/mcp-stdio-vs-streamable-http"><small>Transports · 5 min</small><h3>stdio, Streamable HTTP and the old SSE transport</h3><p>What each does on the wire, which to choose, and how to recognise a mismatch.</p><b>Compare transports →</b></a>
+        <a href="/guides/migrate-mcp-2026"><small>Protocol upgrade · 6 min</small><h3>Migrate to the stateless 2026-07-28 protocol</h3><p>No <code>initialize</code>, no session IDs, per-request metadata and a migration order that keeps old clients working.</p><b>Follow the migration →</b></a>
+        <a href="/guides/debug-mcp-oauth-401"><small>Authorization · 6 min</small><h3>Fix an MCP OAuth 401 from the first broken link</h3><p>Challenge, protected-resource metadata, issuer, PKCE and token audience, in the order the client sees them.</p><b>Debug the chain →</b></a>
+        <a href="/guides/claude-mcp-to-codex"><small>Config conversion · 5 min</small><h3>Convert a Claude Desktop MCP config to Codex TOML</h3><p>Field-by-field mapping, env tables, remote servers and the errors that follow a bad conversion.</p><b>Convert a config →</b></a>
+        <a href="/guides/block-ai-crawlers-robots-txt"><small>AI crawlers · 5 min</small><h3>Control AI crawlers with robots.txt</h3><p>GPTBot, ClaudeBot, Google-Extended and the rest, with rules for training, search and user-triggered fetches.</p><b>Write the policy →</b></a>
+        <a href="/guides/write-agents-md"><small>Agent instructions · 6 min</small><h3>Write an AGENTS.md that agents actually follow</h3><p>What to include, a complete example, nested files, and the mistakes that get instructions ignored.</p><b>Write the file →</b></a>
+        <a href="/guides/image-resolution-for-print"><small>Print preparation · 7 min</small><h3>How many pixels you need to print at 300 DPI</h3><p>Size charts for A-series, Letter and photo prints, and why the DPI label alone means nothing.</p><b>See the chart →</b></a>
       </div>
     </section>
 
@@ -181,7 +179,7 @@
       <h3>Independent and transparent</h3>
       <p>This is an independent developer resource, not an official certification service. Source code and issue tracking are available on <a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a>. Read more <a href="/about">about the project</a>, review the <a href="/privacy">privacy policy</a>, or <a href="/contact">report an error</a>.</p>
     </section></main>
-  <footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools.</p><div><a href="/mcp-tools">MCP</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="/privacy">Privacy</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+  <footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
   <script src="/script.js" defer></script>
 </body>
 </html>

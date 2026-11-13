@@ -24,14 +24,21 @@
 - MCP Task Trace: https://mcptasks.guagua-alvin.top/
 - MCP 2026 Stateless Check: https://mcp2026.guagua-alvin.top/
 
-## MCP field notes
+## Guides
 
-- Migrate an MCP server to 2026-07-28: https://guagua-alvin.top/guides/migrate-mcp-2026
-- Convert Claude Desktop MCP JSON to Codex TOML: https://guagua-alvin.top/guides/claude-mcp-to-codex
-- Debug an MCP OAuth 401: https://guagua-alvin.top/guides/debug-mcp-oauth-401
-- Fix a blank MCP App panel: https://guagua-alvin.top/guides/fix-mcp-app-blank-ui
-- Debug an MCP Task stuck in working: https://guagua-alvin.top/guides/debug-mcp-task-polling
-- Prepare server.json for the MCP Registry: https://guagua-alvin.top/guides/publish-mcp-registry-server
+- All guides: https://guagua-alvin.top/guides/
+- Where every MCP client keeps its config file: https://guagua-alvin.top/guides/mcp-config-file-locations
+- Fix an MCP server that will not connect: https://guagua-alvin.top/guides/mcp-server-not-connecting
+- MCP transports: stdio, Streamable HTTP and the old SSE transport: https://guagua-alvin.top/guides/mcp-stdio-vs-streamable-http
+- Convert a Claude Desktop MCP config to Codex TOML: https://guagua-alvin.top/guides/claude-mcp-to-codex
+- Fix an MCP OAuth 401 from the first broken link: https://guagua-alvin.top/guides/debug-mcp-oauth-401
+- Fix an MCP App that opens as a blank panel: https://guagua-alvin.top/guides/fix-mcp-app-blank-ui
+- Find why an MCP Task never leaves "working": https://guagua-alvin.top/guides/debug-mcp-task-polling
+- Migrate an MCP server to the stateless 2026-07-28 protocol: https://guagua-alvin.top/guides/migrate-mcp-2026
+- Publish an MCP server to the official MCP Registry: https://guagua-alvin.top/guides/publish-mcp-registry-server
+- Control AI crawlers with robots.txt and Content-Signal: https://guagua-alvin.top/guides/block-ai-crawlers-robots-txt
+- Write an AGENTS.md that coding agents actually follow: https://guagua-alvin.top/guides/write-agents-md
+- How many pixels you need to print at 300 DPI: https://guagua-alvin.top/guides/image-resolution-for-print
 
 The directory requires no account. Individual tools describe their own local-processing and privacy boundaries.
 

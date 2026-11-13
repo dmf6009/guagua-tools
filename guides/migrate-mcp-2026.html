@@ -1,9 +1,236 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Migrate an MCP Server to 2026-07-28 Without Breaking Clients</title><meta name="description" content="A practical MCP 2026 migration case: replace initialize sessions with server/discover and request metadata while retaining an intentional legacy fallback."><link rel="canonical" href="https://guagua-alvin.top/guides/migrate-mcp-2026"><link rel="stylesheet" href="/styles.css"><link rel="icon" href="/assets/favicon.svg"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/">Directory</a></nav></header><main class="guide-page"><p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/mcp-tools">MCP tools</a> / Migration</p><header class="guide-head"><p class="eyebrow"><span></span> Field note 01</p><h1>Remove the MCP handshake without breaking yesterday’s clients.</h1><p class="guide-deck">The server works behind one instance, then loses clients as soon as traffic reaches a second replica. Here is the small, testable migration that fixes the state problem without pretending old SDKs have disappeared.</p><p class="guide-meta">MCP 2026-07-28 · Updated July 29, 2026 · 8 min</p></header><div class="guide-layout"><aside class="guide-aside"><strong>Tools used</strong><a href="https://mcp2026.guagua-alvin.top/">MCP 2026 Stateless Check</a><br><a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a></aside><article class="guide-body"><h2>The failure</h2><p>A remote server stored client capabilities after <code>initialize</code> and issued an <code>Mcp-Session-Id</code>. Requests were fine until the load balancer sent the next POST to another process. That process knew the session ID but not the session.</p><p>Adding sticky routing would hide the symptom. It would not produce a 2026-07-28 server.</p><h2>Build a separate stateless path first</h2><p>Keep the legacy endpoint behavior while introducing a request path that accepts the new revision. Do not delete fallback during the first deployment. Your test matrix needs one pinned 2026 client and one older client.</p><pre>MCP-Protocol-Version: 2026-07-28
-MCP-Method: tools/list</pre><p>The body now carries the context the second replica was missing:</p><pre>"_meta": {
-  "io.modelcontextprotocol/protocolVersion": "2026-07-28",
-  "io.modelcontextprotocol/clientInfo": {
-    "name": "catalog-client",
-    "version": "2.1.0"
-  },
-  "io.modelcontextprotocol/clientCapabilities": {}
-}</pre><h2>Add discovery, but do not turn it into initialize</h2><p>Implement <code>server/discover</code> with <code>supportedVersions</code> and server capabilities. The result tells a client what the endpoint supports. It does not create state that later requests depend on.</p><div class="guide-callout"><p>A useful test: restart the server between discovery and <code>tools/list</code>. The second request should still succeed.</p></div><h2>Reject ambiguity</h2><p>If the HTTP version and body version disagree, return the standard header-mismatch error instead of choosing one. Reject an unsupported version clearly. Authenticate every request; clientInfo is a label, not identity.</p><h2>Run the trace</h2><p>Paste the headers and two or three representative JSON-RPC messages into <a href="https://mcp2026.guagua-alvin.top/">MCP 2026 Stateless Check</a>. A clean report only proves the visible envelope is coherent. Finish with integration tests that restart processes, switch replicas and exercise the legacy fallback.</p><div class="guide-next"><h3>Expected result</h3><p>A pinned 2026 client makes requests without initialize or a session ID. An older client deliberately negotiates the old path. Either path survives routing to a fresh process.</p><a href="https://mcp2026.guagua-alvin.top/">Validate your migration trace →</a></div></article></div></main><footer><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Independent MCP field notes.</p><div><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP 2026-07-28 Migration Guide: Stateless Requests Without initialize</title>
+<meta name="description" content="What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/migrate-mcp-2026">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP 2026-07-28 Migration Guide: Stateless Requests Without initialize">
+<meta property="og:description" content="What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/migrate-mcp-2026">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-07-28">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/migrate-mcp-2026#article", "headline": "Migrate an MCP server to the stateless 2026-07-28 protocol", "description": "What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.", "datePublished": "2026-07-28", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/migrate-mcp-2026", "wordCount": 1288, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Migrate an MCP server to the stateless 2026-07-28 protocol", "item": "https://guagua-alvin.top/guides/migrate-mcp-2026"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is the MCP initialize handshake removed?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The 2026-07-28 specification removes the initialize request and the notifications/initialized notification. A client can send a normal request such as tools/list as its first message, with its protocol version and capabilities carried in the request's _meta. Servers still need to answer initialize for as long as they support clients on older protocol versions."}}, {"@type": "Question", "name": "What replaces Mcp-Session-Id?", "acceptedAnswer": {"@type": "Answer", "text": "Nothing at the protocol level. The session header and protocol sessions are removed. If a workflow needs state across calls, the server returns an explicit handle, such as a cart ID or a task ID, and the client passes it back as an ordinary argument. Authentication identifies the user; the handle identifies the state."}}, {"@type": "Question", "name": "Do I have to migrate immediately?", "acceptedAnswer": {"@type": "Answer", "text": "No. Protocol versions are negotiated per request, so a server can support 2025-11-25 and 2026-07-28 side by side, and the official SDKs are designed to do that. The features that were deprecated rather than removed (Roots, Sampling, Logging, HTTP+SSE and Dynamic Client Registration) remain usable for at least twelve months."}}, {"@type": "Question", "name": "What is server/discover?", "acceptedAnswer": {"@type": "Answer", "text": "server/discover is a request that returns the server's supported protocol versions, capabilities and identity. Servers must implement it. Clients may call it when they want that information up front, but it is not a handshake: it negotiates nothing and creates no state."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Protocol upgrade</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Protocol upgrade</p>
+<h1>Migrate an MCP server to the stateless 2026-07-28 protocol</h1>
+<p class="guide-deck">The 2026-07-28 revision is the largest change to MCP since Streamable HTTP. Sessions and the handshake are gone, every request describes itself, and several long-standing features are deprecated. Here is what changed and an order of work that keeps older clients running.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 6 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#what-changed-at-a-glance">What changed, at a glance</a></li><li><a href="#every-request-describes-itself">Every request describes itself</a></li><li><a href="#three-headers-on-every-http-request">Three headers on every HTTP request</a></li><li><a href="#results-carry-a-resulttype">Results carry a resultType</a></li><li><a href="#lists-become-cacheable">Lists become cacheable</a></li><li><a href="#what-is-removed-outright">What is removed outright</a></li><li><a href="#what-is-deprecated-but-still-works">What is deprecated but still works</a></li><li><a href="#smaller-changes-that-break-real-code">Smaller changes that break real code</a></li><li><a href="#a-migration-order-that-keeps-old-clients-working">A migration order that keeps old clients working</a></li><li><a href="#testing-both-generations">Testing both generations</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcp2026.guagua-alvin.top/">MCP 2026 Stateless Check</a><a href="https://mcptasks.guagua-alvin.top/">MCP Task Trace</a></div></aside>
+<article class="guide-body">
+<h2 id="what-changed-at-a-glance">What changed, at a glance</h2>
+<p>The release candidate was locked in May 2026, with the final specification dated 28 July 2026. Its central idea is that an MCP server should be able to run like any stateless HTTP service: any instance can answer any request, with nothing remembered between them.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Area</th>
+<th>Before (2025-11-25)</th>
+<th>2026-07-28</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connection setup</td>
+<td><code>initialize</code> request, then <code>notifications/initialized</code></td>
+<td>Removed. The first message can be any request</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td><code>Mcp-Session-Id</code> header</td>
+<td>Removed</td>
+</tr>
+<tr>
+<td>Version and capabilities</td>
+<td>Negotiated once in the handshake</td>
+<td>Sent in <code>_meta</code> on every request</td>
+</tr>
+<tr>
+<td>Discovery</td>
+<td>Returned by <code>initialize</code></td>
+<td><code>server/discover</code>, optional for clients</td>
+</tr>
+<tr>
+<td>Server asks the user or model something mid-call</td>
+<td>Server-initiated request over an open SSE stream</td>
+<td>The result says <code>input_required</code>; the client retries with answers</td>
+</tr>
+<tr>
+<td>Change notifications</td>
+<td>Standalone GET stream, <code>resources/subscribe</code></td>
+<td>One <code>subscriptions/listen</code> stream</td>
+</tr>
+<tr>
+<td>List freshness</td>
+<td>Notifications only</td>
+<td><code>ttlMs</code> and <code>cacheScope</code> on list results</td>
+</tr>
+<tr>
+<td>Tasks</td>
+<td>Experimental core feature</td>
+<td>Extension <code>io.modelcontextprotocol/tasks</code></td>
+</tr>
+<tr>
+<td>HTTP routing</td>
+<td>Body only</td>
+<td><code>Mcp-Method</code> and <code>Mcp-Name</code> headers required</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="every-request-describes-itself">Every request describes itself</h2>
+<p>Without a handshake, the information that used to be exchanged once travels with each request in reserved <code>_meta</code> keys:</p>
+<pre><code>{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: 7,
+  &quot;method&quot;: &quot;tools/call&quot;,
+  &quot;params&quot;: {
+    &quot;name&quot;: &quot;search_tickets&quot;,
+    &quot;arguments&quot;: { &quot;query&quot;: &quot;refund&quot; },
+    &quot;_meta&quot;: {
+      &quot;io.modelcontextprotocol/protocolVersion&quot;: &quot;2026-07-28&quot;,
+      &quot;io.modelcontextprotocol/clientInfo&quot;: { &quot;name&quot;: &quot;example-client&quot;, &quot;version&quot;: &quot;3.2.0&quot; },
+      &quot;io.modelcontextprotocol/clientCapabilities&quot;: { &quot;extensions&quot;: {} }
+    }
+  }
+}
+</code></pre>
+<p>The server replies with <code>io.modelcontextprotocol/serverInfo</code> in the result's <code>_meta</code>. If it does not support the requested version it returns an unsupported-protocol-version error, and the client can pick another version, using <code>server/discover</code> to see which are offered.</p>
+<p>One consequence is easy to overlook: because nothing is negotiated per connection, <strong>the tool, prompt and resource lists can no longer differ per connection</strong>. If your server shows different tools to different callers, that decision must be based on something in the request, normally the authenticated identity.</p>
+<h2 id="three-headers-on-every-http-request">Three headers on every HTTP request</h2>
+<p>Over Streamable HTTP, each POST repeats the essentials in headers so that gateways, rate limiters and logs do not need to parse JSON:</p>
+<pre><code>POST /mcp HTTP/1.1
+Content-Type: application/json
+MCP-Protocol-Version: 2026-07-28
+Mcp-Method: tools/call
+Mcp-Name: search_tickets
+</code></pre>
+<p><code>Mcp-Method</code> is the JSON-RPC method and <code>Mcp-Name</code> is the target, such as the tool name. The headers must agree with the body; a server rejects a request where they differ. That check matters for security: without it, a gateway could authorize one tool by header while the body calls another.</p>
+<h2 id="results-carry-a-resulttype">Results carry a resultType</h2>
+<p>Every result now includes <code>resultType</code>. Ordinary results use <code>"complete"</code>. A client talking to an older server should treat a missing value as <code>"complete"</code>.</p>
+<p>The other value replaces server-initiated requests. Previously, a server that needed to ask the user a question during a tool call sent <code>elicitation/create</code> over an open stream and waited. Now it finishes the HTTP exchange and says what it needs:</p>
+<pre><code>{
+  &quot;jsonrpc&quot;: &quot;2.0&quot;,
+  &quot;id&quot;: 7,
+  &quot;result&quot;: {
+    &quot;resultType&quot;: &quot;input_required&quot;,
+    &quot;inputRequests&quot;: {
+      &quot;confirm_refund&quot;: {
+        &quot;method&quot;: &quot;elicitation/create&quot;,
+        &quot;params&quot;: {
+          &quot;mode&quot;: &quot;form&quot;,
+          &quot;message&quot;: &quot;Refund $240 to the original card?&quot;,
+          &quot;requestedSchema&quot;: {
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot;: { &quot;confirm&quot;: { &quot;type&quot;: &quot;boolean&quot; } },
+            &quot;required&quot;: [&quot;confirm&quot;]
+          }
+        }
+      }
+    },
+    &quot;requestState&quot;: &quot;opaque-integrity-protected-string&quot;
+  }
+}
+</code></pre>
+<p>The client collects the answers and sends the original call again, as a new request with a new JSON-RPC <code>id</code>, including <code>inputResponses</code> (a map with the same keys as <code>inputRequests</code>) and the exact <code>requestState</code> it was given. Because the state travels with the request, any server instance can handle the retry. The specification calls this pattern Multi Round-Trip Requests, and allows it on <code>tools/call</code>, <code>prompts/get</code> and <code>resources/read</code> only.</p>
+<p>Two rules matter for server authors. Only ask for input types the client declared support for in its capabilities. And treat a returned <code>requestState</code> as attacker-controlled: if it influences authorization or business logic, protect it with an HMAC or authenticated encryption, bind it to the authenticated user and the original request, give it a short expiry, and reject anything that fails verification.</p>
+<h2 id="lists-become-cacheable">Lists become cacheable</h2>
+<p><code>tools/list</code>, <code>prompts/list</code>, <code>resources/list</code>, <code>resources/templates/list</code> and <code>resources/read</code> results gain two fields: <code>ttlMs</code>, how long the result may be considered fresh, and <code>cacheScope</code>, either <code>"public"</code> or <code>"private"</code>. A client no longer needs a permanently open stream just to learn that a list changed.</p>
+<p>Return tools in a stable order. Clients place tool definitions in the model's prompt, and a list that reorders itself between calls defeats prompt caching.</p>
+<h2 id="what-is-removed-outright">What is removed outright</h2>
+<p>These are gone in 2026-07-28 with no deprecation period:</p>
+<ul>
+<li><code>initialize</code> and <code>notifications/initialized</code></li>
+<li>The <code>Mcp-Session-Id</code> header and protocol sessions</li>
+<li>SSE resumability: <code>Last-Event-ID</code> and event IDs. If a stream breaks, the in-flight request is lost and the client sends it again</li>
+<li>The standalone HTTP GET stream, <code>resources/subscribe</code> and <code>resources/unsubscribe</code>, replaced by <code>subscriptions/listen</code></li>
+<li><code>ping</code> and <code>logging/setLevel</code></li>
+<li><code>tasks/list</code> and <code>tasks/result</code> from the Tasks design</li>
+</ul>
+<p>The loss of resumability changes how you should write tools. A client that never saw the response will retry, so <strong>a tool with side effects needs to be idempotent</strong>: accept an idempotency key as an argument, or make the operation safe to repeat.</p>
+<h2 id="what-is-deprecated-but-still-works">What is deprecated but still works</h2>
+<p>A new lifecycle policy guarantees at least twelve months between deprecation and removal, so the earliest these can disappear is July 2027:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Deprecated</th>
+<th>Suggested replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Roots</td>
+<td>Pass paths as tool arguments, resource URIs or server configuration</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>Call a model provider's API directly from the server</td>
+</tr>
+<tr>
+<td>Logging over the protocol</td>
+<td>stderr for stdio servers; OpenTelemetry for structured telemetry</td>
+</tr>
+<tr>
+<td>HTTP+SSE transport</td>
+<td>Streamable HTTP</td>
+</tr>
+<tr>
+<td>OAuth Dynamic Client Registration</td>
+<td>Client ID Metadata Documents</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="smaller-changes-that-break-real-code">Smaller changes that break real code</h2>
+<ul>
+<li><strong>Resource not found</strong> now uses JSON-RPC code <code>-32602</code> (invalid params) instead of the custom <code>-32002</code>. Clients that compare against the literal old code need updating.</li>
+<li><strong>Tool schemas</strong> use full JSON Schema 2020-12 for <code>inputSchema</code> and <code>outputSchema</code>. Implementations must not automatically fetch external <code>$ref</code> URIs.</li>
+<li><strong>Authorization:</strong> clients must validate the <code>iss</code> parameter on the authorization response (RFC 9207), keep credentials separate per issuer, and send <code>application_type</code> when they do use Dynamic Client Registration. See the <a href="/guides/debug-mcp-oauth-401">OAuth 401 guide</a>.</li>
+<li><strong>Extensions</strong> are negotiated through an <code>extensions</code> map in client and server capabilities. Tasks and MCP Apps are both extensions now.</li>
+</ul>
+<h2 id="a-migration-order-that-keeps-old-clients-working">A migration order that keeps old clients working</h2>
+<p>Upgrade the SDK first; the Tier 1 SDKs handle both protocol generations and answer by the version each request declares. Then work through your own code:</p>
+<ol>
+<li><strong>Find everything keyed by session.</strong> Search for <code>Mcp-Session-Id</code>, session maps and per-connection caches. Move user identity to the authorization layer and workflow state to explicit handles that the server issues and the client passes back.</li>
+<li><strong>Make the tool list a function of the request.</strong> Remove anything that tailors <code>tools/list</code> during the handshake.</li>
+<li><strong>Implement <code>server/discover</code></strong>, and keep answering <code>initialize</code> for older clients.</li>
+<li><strong>Set <code>resultType</code></strong> on every result your own code constructs.</li>
+<li><strong>Rewrite mid-call questions</strong> from server-initiated elicitation or sampling to the <code>input_required</code> flow.</li>
+<li><strong>Validate the new headers</strong> and reject header and body mismatches. Update any gateway rules to use them.</li>
+<li><strong>Add <code>ttlMs</code> and <code>cacheScope</code></strong>, and sort lists deterministically.</li>
+<li><strong>Make side-effecting tools idempotent.</strong></li>
+<li><strong>Move Tasks code</strong> to the extension: no <code>tasks/list</code>, no <code>tasks/result</code>. The <a href="/guides/debug-mcp-task-polling">task debugging guide</a> has the mapping.</li>
+<li><strong>Plan the deprecations</strong>: Roots, Sampling, protocol logging and DCR.</li>
+</ol>
+<h2 id="testing-both-generations">Testing both generations</h2>
+<p>Run two kinds of client against the same deployment: one that still performs <code>initialize</code> and sends <code>Mcp-Session-Id</code>, and one that sends a bare 2026-07-28 <code>tools/call</code> as its very first request. Then test the property the release was designed for: put two instances behind a load balancer with no session affinity and confirm that a multi-step interaction, including an <code>input_required</code> round trip, succeeds when each step lands on a different instance.</p>
+<div class="guide-callout">
+<p>This page summarises the published changes and is not a substitute for the specification. Field names and required behaviour should be confirmed against the specification and your SDK's release notes before you ship.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Is the MCP initialize handshake removed?</h3><p>Yes. The 2026-07-28 specification removes the <code>initialize</code> request and the <code>notifications/initialized</code> notification. A client can send a normal request such as <code>tools/list</code> as its first message, with its protocol version and capabilities carried in the request's <code>_meta</code>. Servers still need to answer <code>initialize</code> for as long as they support clients on older protocol versions.</p><h3>What replaces Mcp-Session-Id?</h3><p>Nothing at the protocol level. The session header and protocol sessions are removed. If a workflow needs state across calls, the server returns an explicit handle, such as a cart ID or a task ID, and the client passes it back as an ordinary argument. Authentication identifies the user; the handle identifies the state.</p><h3>Do I have to migrate immediately?</h3><p>No. Protocol versions are negotiated per request, so a server can support 2025-11-25 and 2026-07-28 side by side, and the official SDKs are designed to do that. The features that were deprecated rather than removed (Roots, Sampling, Logging, HTTP+SSE and Dynamic Client Registration) remain usable for at least twelve months.</p><h3>What is server/discover?</h3><p><code>server/discover</code> is a request that returns the server's supported protocol versions, capabilities and identity. Servers must implement it. Clients may call it when they want that information up front, but it is not a handshake: it negotiates nothing and creates no state.</p></section>
+<div class="guide-next"><h3>Check a captured request against the new rules</h3><p>Paste a request, its HTTP headers and the response. The checker verifies the per-request metadata, header and body agreement, and flags leftover session and handshake usage.</p><a href="https://mcp2026.guagua-alvin.top/">Open MCP 2026 Stateless Check →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" rel="noopener">The 2026-07-28 MCP specification release candidate (MCP blog)</a></li><li><a href="https://modelcontextprotocol.io/specification/latest" rel="noopener">Model Context Protocol specification</a></li><li><a href="https://workos.com/blog/mcp-stateless-spec-2026-07-28" rel="noopener">MCP went stateless: what changed in the 2026-07-28 spec (WorkOS)</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc9207" rel="noopener">RFC 9207: OAuth 2.0 Authorization Server Issuer Identification</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-stdio-vs-streamable-http">MCP transports: stdio, Streamable HTTP and the old SSE transport</a><span>How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.</span></li><li><a href="/guides/debug-mcp-oauth-401">Fix an MCP OAuth 401 from the first broken link</a><span>Debug a remote MCP server that returns 401: read the WWW-Authenticate challenge, check RFC 9728 protected-resource metadata, authorization-server discovery, the resource parameter, token audience, scopes and PKCE S256.</span></li><li><a href="/guides/debug-mcp-task-polling">Find why an MCP Task never leaves &quot;working&quot;</a><span>Debug long-running MCP Tasks: the task state machine, tasks/get polling and pollInterval, ttl expiry, tasks/result blocking, input_required, illegal status transitions, and what changed in the 2026-07-28 Tasks extension.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published July 28, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

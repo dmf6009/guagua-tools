@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Resolution for Print: Pixels Needed at 300 DPI (Size Chart)</title>
+<meta name="description" content="Pixel dimensions for A-series, US Letter and photo print sizes at 150, 300 and 600 DPI, the formula to calculate any size, how viewing distance changes the requirement, and why changing the DPI number alone does nothing.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/image-resolution-for-print">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="Image Resolution for Print: Pixels Needed at 300 DPI (Size Chart)">
+<meta property="og:description" content="Pixel dimensions for A-series, US Letter and photo print sizes at 150, 300 and 600 DPI, the formula to calculate any size, how viewing distance changes the requirement, and why changing the DPI number alone does nothing.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/image-resolution-for-print">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/image-resolution-for-print#article", "headline": "How many pixels you need to print at 300 DPI", "description": "Pixel dimensions for A-series, US Letter and photo print sizes at 150, 300 and 600 DPI, the formula to calculate any size, how viewing distance changes the requirement, and why changing the DPI number alone does nothing.", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/image-resolution-for-print", "wordCount": 1331, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "How many pixels you need to print at 300 DPI", "item": "https://guagua-alvin.top/guides/image-resolution-for-print"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many pixels is A4 at 300 DPI?", "acceptedAnswer": {"@type": "Answer", "text": "A4 is 210 × 297 mm, or 8.27 × 11.69 inches. At 300 pixels per inch that is 2480 × 3508 pixels, about 8.7 megapixels. With a 3 mm bleed on every side the file should be 2551 × 3579 pixels."}}, {"@type": "Question", "name": "Is 72 DPI good enough for printing?", "acceptedAnswer": {"@type": "Answer", "text": "Not for anything viewed at reading distance. At 72 pixels per inch individual pixels are visible and edges look soft or jagged. It can be acceptable for very large prints seen from several metres away, such as banners, where the eye cannot resolve the detail."}}, {"@type": "Question", "name": "Can I change an image from 72 DPI to 300 DPI?", "acceptedAnswer": {"@type": "Answer", "text": "You can change the number, but that alone adds nothing. If you change the DPI setting without resampling, the pixels stay the same and the image is simply defined as a smaller print. If you resample to add pixels, the software invents them; the result is larger but not sharper than the original."}}, {"@type": "Question", "name": "What is the difference between DPI and PPI?", "acceptedAnswer": {"@type": "Answer", "text": "PPI, pixels per inch, describes how many image pixels are printed in each inch. DPI, dots per inch, describes how many ink dots a printer places per inch, which is usually a much higher number because several dots are needed to reproduce one pixel's colour. In everyday use, and in most print shop specifications, 'DPI' is used to mean PPI."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Print preparation</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Print preparation</p>
+<h1>How many pixels you need to print at 300 DPI</h1>
+<p class="guide-deck">A printer does not care what the DPI field in your file says. It cares how many pixels you have and how large you ask it to print them. One formula and one table answer almost every &quot;is this image big enough?&quot; question.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 7 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#the-one-formula">The one formula</a></li><li><a href="#paper-sizes-at-150-300-and-600-dpi">Paper sizes at 150, 300 and 600 DPI</a></li><li><a href="#photo-and-card-sizes-at-300-dpi">Photo and card sizes at 300 DPI</a></li><li><a href="#bigger-prints-need-fewer-pixels-per-inch">Bigger prints need fewer pixels per inch</a></li><li><a href="#the-dpi-number-in-the-file-is-only-a-label">The DPI number in the file is only a label</a></li><li><a href="#bleed-trim-and-safe-area">Bleed, trim and safe area</a></li><li><a href="#other-things-printers-check">Other things printers check</a></li><li><a href="#a-quick-decision-procedure">A quick decision procedure</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://printspeclab.guagua-alvin.top/">PrintSpec Lab</a></div></aside>
+<article class="guide-body">
+<h2 id="the-one-formula">The one formula</h2>
+<pre><code>pixels needed = print size in inches × pixels per inch
+</code></pre>
+<p>An 8 × 10 inch print at 300 pixels per inch needs 8 × 300 = 2400 pixels by 10 × 300 = 3000 pixels. Working in millimetres, divide by 25.4 first: 210 mm ÷ 25.4 = 8.27 inches.</p>
+<p>Turned around, the same formula tells you how large a given image can print:</p>
+<pre><code>maximum print size in inches = pixels ÷ pixels per inch
+</code></pre>
+<p>A 6000 × 4000 pixel photograph prints at 20 × 13.3 inches at 300 PPI, and at 40 × 26.7 inches at 150 PPI.</p>
+<p>Print shops ask for "300 DPI" because, at normal reading distance of roughly 30 cm, most people cannot see individual pixels at that density. It is a convention for a viewing distance, not a law.</p>
+<h2 id="paper-sizes-at-150-300-and-600-dpi">Paper sizes at 150, 300 and 600 DPI</h2>
+<p>Pixel dimensions are rounded to the nearest whole pixel.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Size</th>
+<th>Millimetres</th>
+<th>Inches</th>
+<th>150 DPI</th>
+<th>300 DPI</th>
+<th>600 DPI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A6</td>
+<td>105 × 148</td>
+<td>4.13 × 5.83</td>
+<td>620 × 874</td>
+<td>1240 × 1748</td>
+<td>2480 × 3496</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>148 × 210</td>
+<td>5.83 × 8.27</td>
+<td>874 × 1240</td>
+<td>1748 × 2480</td>
+<td>3496 × 4961</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>210 × 297</td>
+<td>8.27 × 11.69</td>
+<td>1240 × 1754</td>
+<td>2480 × 3508</td>
+<td>4961 × 7016</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>297 × 420</td>
+<td>11.69 × 16.54</td>
+<td>1754 × 2480</td>
+<td>3508 × 4961</td>
+<td>7016 × 9921</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>420 × 594</td>
+<td>16.54 × 23.39</td>
+<td>2480 × 3508</td>
+<td>4961 × 7016</td>
+<td>9921 × 14031</td>
+</tr>
+<tr>
+<td>A1</td>
+<td>594 × 841</td>
+<td>23.39 × 33.11</td>
+<td>3508 × 4967</td>
+<td>7016 × 9933</td>
+<td>14031 × 19866</td>
+</tr>
+<tr>
+<td>A0</td>
+<td>841 × 1189</td>
+<td>33.11 × 46.81</td>
+<td>4967 × 7022</td>
+<td>9933 × 14043</td>
+<td>19866 × 28087</td>
+</tr>
+<tr>
+<td>US Letter</td>
+<td>216 × 279</td>
+<td>8.5 × 11</td>
+<td>1275 × 1650</td>
+<td>2550 × 3300</td>
+<td>5100 × 6600</td>
+</tr>
+<tr>
+<td>US Legal</td>
+<td>216 × 356</td>
+<td>8.5 × 14</td>
+<td>1275 × 2100</td>
+<td>2550 × 4200</td>
+<td>5100 × 8400</td>
+</tr>
+<tr>
+<td>Tabloid</td>
+<td>279 × 432</td>
+<td>11 × 17</td>
+<td>1650 × 2550</td>
+<td>3300 × 5100</td>
+<td>6600 × 10200</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each step up the A series doubles the area, so the pixel count doubles too: an A3 file at 300 DPI has twice the pixels of an A4 file.</p>
+<h2 id="photo-and-card-sizes-at-300-dpi">Photo and card sizes at 300 DPI</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Print</th>
+<th>Inches</th>
+<th>Pixels at 300 DPI</th>
+<th>Megapixels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Business card (US)</td>
+<td>3.5 × 2</td>
+<td>1050 × 600</td>
+<td>0.6</td>
+</tr>
+<tr>
+<td>Business card (EU, 85 × 55 mm)</td>
+<td>3.35 × 2.17</td>
+<td>1004 × 650</td>
+<td>0.7</td>
+</tr>
+<tr>
+<td>Photo 4 × 6</td>
+<td>4 × 6</td>
+<td>1200 × 1800</td>
+<td>2.2</td>
+</tr>
+<tr>
+<td>Photo 5 × 7</td>
+<td>5 × 7</td>
+<td>1500 × 2100</td>
+<td>3.2</td>
+</tr>
+<tr>
+<td>Photo 8 × 10</td>
+<td>8 × 10</td>
+<td>2400 × 3000</td>
+<td>7.2</td>
+</tr>
+<tr>
+<td>Photo 11 × 14</td>
+<td>11 × 14</td>
+<td>3300 × 4200</td>
+<td>13.9</td>
+</tr>
+<tr>
+<td>Poster 18 × 24</td>
+<td>18 × 24</td>
+<td>5400 × 7200</td>
+<td>38.9</td>
+</tr>
+<tr>
+<td>Poster 24 × 36</td>
+<td>24 × 36</td>
+<td>7200 × 10800</td>
+<td>77.8</td>
+</tr>
+</tbody>
+</table></div>
+<p>A 12-megapixel phone photo (4000 × 3000) comfortably covers an 8 × 10 print at 300 DPI. It does not cover a 24 × 36 poster at 300 DPI, but it does not need to, for the reason in the next section.</p>
+<h2 id="bigger-prints-need-fewer-pixels-per-inch">Bigger prints need fewer pixels per inch</h2>
+<p>People look at large prints from further away, and the eye resolves less detail at a distance. That is why a billboard can be printed at 20 PPI and look sharp from the road.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Typical use</th>
+<th>Viewing distance</th>
+<th>Reasonable resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Books, magazines, flyers, photo prints</td>
+<td>About 30 cm</td>
+<td>300 PPI</td>
+</tr>
+<tr>
+<td>Small posters, wall calendars</td>
+<td>About 1 m</td>
+<td>150 to 200 PPI</td>
+</tr>
+<tr>
+<td>Large posters, exhibition panels</td>
+<td>1.5 to 3 m</td>
+<td>100 to 150 PPI</td>
+</tr>
+<tr>
+<td>Banners, building wraps</td>
+<td>5 m and more</td>
+<td>30 to 75 PPI</td>
+</tr>
+</tbody>
+</table></div>
+<p>So the 4000 × 3000 phone photo printed at 24 × 36 inches gives about 111 PPI across the long side after cropping to shape, which is fine for a poster on a wall. The table of sizes above is a requirement for work that will be held in the hand, not a universal rule.</p>
+<p>Two cases need more than 300. Line art and text stored as pixels, such as scanned drawings, logos saved as images and barcodes, show jagged edges at 300 and are usually prepared at 600 to 1200 PPI. Better still, keep text and logos as vectors, which have no resolution and print sharply at any size.</p>
+<h2 id="the-dpi-number-in-the-file-is-only-a-label">The DPI number in the file is only a label</h2>
+<p>An image file stores a grid of pixels and, optionally, a density value such as 72 or 300. That value is metadata. It changes how large a layout program places the image by default, and nothing else. A 3000 × 2000 pixel image labelled 72 DPI and the same image labelled 300 DPI contain identical data and print identically at the same physical size.</p>
+<p>This is the source of the most common misunderstanding in print preparation:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>What you did</th>
+<th>What actually changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Changed 72 to 300 <strong>without</strong> resampling</td>
+<td>Nothing in the pixels. The default print size became smaller</td>
+</tr>
+<tr>
+<td>Changed 72 to 300 <strong>with</strong> resampling</td>
+<td>The software invented about 17 times as many pixels. The file is bigger, not more detailed</td>
+</tr>
+<tr>
+<td>Exported from a design tool "at 300 DPI"</td>
+<td>Usually a real change: the tool rendered more pixels for the same layout size</td>
+</tr>
+</tbody>
+</table></div>
+<p>When a printer rejects a file as "72 DPI", the real message is "this image does not have enough pixels for the size you ordered". Check the pixel dimensions against the table. If they are enough, the label is irrelevant; if they are not, relabelling will not help.</p>
+<p>Upscaling tools, including AI-based ones, can make an enlargement look cleaner by generating plausible detail. That is often acceptable for photographs and risky for anything where accuracy matters, such as small text, faces, product details and maps, because the added detail is a guess.</p>
+<h2 id="bleed-trim-and-safe-area">Bleed, trim and safe area</h2>
+<p>If colour or an image runs to the edge of the page, the file must extend beyond the final size, because cutting is never perfectly accurate. The extra margin is the <strong>bleed</strong>, commonly 3 mm in Europe and 0.125 inch (3.2 mm) in North America, on every side.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Final size</th>
+<th>With 3 mm bleed</th>
+<th>Pixels at 300 DPI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A5, 148 × 210 mm</td>
+<td>154 × 216 mm</td>
+<td>1819 × 2551</td>
+</tr>
+<tr>
+<td>A4, 210 × 297 mm</td>
+<td>216 × 303 mm</td>
+<td>2551 × 3579</td>
+</tr>
+<tr>
+<td>US Letter with 0.125 in bleed</td>
+<td>8.75 × 11.25 in</td>
+<td>2625 × 3375</td>
+</tr>
+</tbody>
+</table></div>
+<p>Keep text and logos inside a <strong>safe area</strong> at least 3 to 5 mm inside the trim line, so that a slightly off-centre cut does not clip them. Always follow the specific template your printer provides; binding methods and large formats often need more.</p>
+<h2 id="other-things-printers-check">Other things printers check</h2>
+<ul>
+<li><strong>Colour mode.</strong> Commercial presses print in CMYK. Many online printers accept RGB and convert it, but bright screen colours, especially saturated greens and blues, will look duller on paper. Ask what they want.</li>
+<li><strong>File format.</strong> PDF is the usual delivery format because it keeps vectors and fonts intact. For images, TIFF or high-quality JPEG; avoid repeatedly re-saving JPEGs, which accumulates compression artefacts.</li>
+<li><strong>Fonts.</strong> Embed them in the PDF or convert text to outlines.</li>
+<li><strong>Black text.</strong> Small text should be pure black (100% K), not a mix of four inks, or slight misregistration makes it look blurred.</li>
+<li><strong>Images inside a PDF.</strong> A PDF page has a physical size, but each placed image has its own effective resolution, which depends on how much it was scaled in the layout. A photo placed at 200% of its size has half its original PPI.</li>
+</ul>
+<h2 id="a-quick-decision-procedure">A quick decision procedure</h2>
+<ol>
+<li>Find the final printed size in inches, including bleed.</li>
+<li>Multiply each side by the PPI appropriate for the viewing distance: 300 for hand-held items.</li>
+<li>Compare with the image's pixel dimensions, not its DPI label.</li>
+<li>If the image is short by a small margin, say 250 PPI instead of 300, it will usually print well. If it has less than half the pixels needed, find a larger original or print smaller.</li>
+</ol>
+<div class="guide-callout">
+<p>Resolution cannot be added afterwards. Keep the largest original you have, crop and resize copies, and export for print as the last step.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>How many pixels is A4 at 300 DPI?</h3><p>A4 is 210 × 297 mm, or 8.27 × 11.69 inches. At 300 pixels per inch that is 2480 × 3508 pixels, about 8.7 megapixels. With a 3 mm bleed on every side the file should be 2551 × 3579 pixels.</p><h3>Is 72 DPI good enough for printing?</h3><p>Not for anything viewed at reading distance. At 72 pixels per inch individual pixels are visible and edges look soft or jagged. It can be acceptable for very large prints seen from several metres away, such as banners, where the eye cannot resolve the detail.</p><h3>Can I change an image from 72 DPI to 300 DPI?</h3><p>You can change the number, but that alone adds nothing. If you change the DPI setting without resampling, the pixels stay the same and the image is simply defined as a smaller print. If you resample to add pixels, the software invents them; the result is larger but not sharper than the original.</p><h3>What is the difference between DPI and PPI?</h3><p>PPI, pixels per inch, describes how many image pixels are printed in each inch. DPI, dots per inch, describes how many ink dots a printer places per inch, which is usually a much higher number because several dots are needed to reproduce one pixel's colour. In everyday use, and in most print shop specifications, 'DPI' is used to mean PPI.</p></section>
+<div class="guide-next"><h3>Check a real file in seconds</h3><p>Drop in an image or PDF to see its pixel dimensions, the largest size it prints at 300 DPI, and whether it meets a target size. Files are processed in your browser and are not uploaded.</p><a href="https://printspeclab.guagua-alvin.top/">Open PrintSpec Lab →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://www.iso.org/standard/36631.html" rel="noopener">ISO 216: paper sizes (A and B series)</a></li><li><a href="https://helpx.adobe.com/photoshop/using/image-size-resolution.html" rel="noopener">Adobe: image size and resolution</a></li><li><a href="https://en.wikipedia.org/wiki/Dots_per_inch" rel="noopener">Wikipedia: pixel density and dots per inch</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/block-ai-crawlers-robots-txt">Control AI crawlers with robots.txt and Content-Signal</a><span>A current list of AI crawler user agents (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot and others), ready-to-copy robots.txt rules, the Content-Signal directive, and what robots.txt cannot do.</span></li><li><a href="/guides/write-agents-md">Write an AGENTS.md that coding agents actually follow</a><span>What AGENTS.md is, which coding agents read it, what to put in it, how nested files and precedence work, a complete example, and the mistakes that make agents ignore or misapply your instructions.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published November 12, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

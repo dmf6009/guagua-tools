@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP Config File Locations: Claude, Cursor, VS Code, Codex &amp; More</title>
+<meta name="description" content="Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/mcp-config-file-locations">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP Config File Locations: Claude, Cursor, VS Code, Codex &amp; More">
+<meta property="og:description" content="Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/mcp-config-file-locations">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/mcp-config-file-locations#article", "headline": "Where every MCP client keeps its config file", "description": "Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/mcp-config-file-locations", "wordCount": 1147, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Where every MCP client keeps its config file", "item": "https://guagua-alvin.top/guides/mcp-config-file-locations"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does my MCP server not appear after I edit the config file?", "acceptedAnswer": {"@type": "Answer", "text": "The three most common causes are editing a file the client does not read (for example a project file when the client only loaded the user file), using the wrong top-level key (servers instead of mcpServers, or the reverse), and invalid JSON such as a trailing comma. Most desktop clients also read the file only at startup, so fully quit and reopen the application after saving."}}, {"@type": "Question", "name": "Is the MCP config format the same in every client?", "acceptedAnswer": {"@type": "Answer", "text": "No. Most JSON-based clients use an mcpServers object, but VS Code uses servers, Zed uses context_servers, and Codex uses TOML tables named [mcp_servers.&lt;name&gt;]. The fields inside an entry (command, args, env, url) are similar but not identical, especially for remote servers."}}, {"@type": "Question", "name": "Should I commit a project-level MCP config to Git?", "acceptedAnswer": {"@type": "Answer", "text": "A project file such as .mcp.json, .cursor/mcp.json or .vscode/mcp.json is designed to be shared, so committing it is normal. Never commit real credentials inside it. Reference environment variables or use the client's input-prompt mechanism, and review the file like code because it starts processes on every teammate's machine."}}, {"@type": "Question", "name": "Can one file configure all my MCP clients?", "acceptedAnswer": {"@type": "Answer", "text": "Not natively. Each client reads its own file. You can keep one source of truth and convert it, which is what a converter is for, or use a client-specific command such as claude mcp add or codex mcp add to write the entry for you."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Configuration reference</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Configuration reference</p>
+<h1>Where every MCP client keeps its config file</h1>
+<p class="guide-deck">The same MCP server needs a different file, a different top-level key and sometimes a different format in every client. This page lists the paths, shows a working entry for each, and explains the mistakes that make a client silently ignore your server.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 6 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#quick-reference">Quick reference</a></li><li><a href="#claude-desktop">Claude Desktop</a></li><li><a href="#claude-code">Claude Code</a></li><li><a href="#cursor">Cursor</a></li><li><a href="#vs-code">VS Code</a></li><li><a href="#windsurf">Windsurf</a></li><li><a href="#codex">Codex</a></li><li><a href="#gemini-cli">Gemini CLI</a></li><li><a href="#cline">Cline</a></li><li><a href="#zed">Zed</a></li><li><a href="#five-mistakes-that-make-a-client-ignore-your-server">Five mistakes that make a client ignore your server</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a><a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a></div></aside>
+<article class="guide-body">
+<h2 id="quick-reference">Quick reference</h2>
+<p>Use this table to find the file, then read the section for your client for the details that matter: the key name, the scope rules and how to reload. Paths beginning with <code>~</code> are in your home directory; on Windows that is <code>%USERPROFILE%</code>.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Client</th>
+<th>User-level file</th>
+<th>Project-level file</th>
+<th>Top-level key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Desktop</td>
+<td><code>claude_desktop_config.json</code> in the app's data folder</td>
+<td>—</td>
+<td><code>mcpServers</code></td>
+</tr>
+<tr>
+<td>Claude Code</td>
+<td><code>~/.claude.json</code></td>
+<td><code>.mcp.json</code></td>
+<td><code>mcpServers</code></td>
+</tr>
+<tr>
+<td>Cursor</td>
+<td><code>~/.cursor/mcp.json</code></td>
+<td><code>.cursor/mcp.json</code></td>
+<td><code>mcpServers</code></td>
+</tr>
+<tr>
+<td>VS Code (Copilot)</td>
+<td><code>mcp.json</code> in the user profile</td>
+<td><code>.vscode/mcp.json</code></td>
+<td><code>servers</code></td>
+</tr>
+<tr>
+<td>Windsurf</td>
+<td><code>~/.codeium/windsurf/mcp_config.json</code></td>
+<td>—</td>
+<td><code>mcpServers</code></td>
+</tr>
+<tr>
+<td>Codex</td>
+<td><code>~/.codex/config.toml</code></td>
+<td><code>.codex/config.toml</code></td>
+<td><code>[mcp_servers.&lt;name&gt;]</code></td>
+</tr>
+<tr>
+<td>Gemini CLI</td>
+<td><code>~/.gemini/settings.json</code></td>
+<td><code>.gemini/settings.json</code></td>
+<td><code>mcpServers</code></td>
+</tr>
+<tr>
+<td>Cline</td>
+<td><code>cline_mcp_settings.json</code> in VS Code global storage</td>
+<td>—</td>
+<td><code>mcpServers</code></td>
+</tr>
+<tr>
+<td>Zed</td>
+<td><code>~/.config/zed/settings.json</code></td>
+<td>—</td>
+<td><code>context_servers</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Client applications change quickly. If a path here does not exist on your machine, use the client's own "open MCP configuration" command, which is listed in each section below, and treat that as authoritative.</p>
+<h2 id="claude-desktop">Claude Desktop</h2>
+<p>Claude Desktop reads one file per operating system:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>OS</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>macOS</td>
+<td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td><code>%APPDATA%\Claude\claude_desktop_config.json</code></td>
+</tr>
+<tr>
+<td>Linux (unofficial builds)</td>
+<td><code>~/.config/Claude/claude_desktop_config.json</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The reliable way to open it is <strong>Settings → Developer → Edit Config</strong>, which creates the file if it does not exist. A minimal local server looks like this:</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;filesystem&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-filesystem&quot;, &quot;/Users/you/Documents&quot;]
+    }
+  }
+}
+</code></pre>
+<p>Claude Desktop reads the file at startup only. Closing the window is not enough on macOS: quit the application completely, then reopen it. Logs for each server are written to <code>~/Library/Logs/Claude/</code> on macOS and <code>%APPDATA%\Claude\logs\</code> on Windows, in files named <code>mcp-server-&lt;name&gt;.log</code>.</p>
+<h2 id="claude-code">Claude Code</h2>
+<p>Claude Code has three scopes. The scope decides both the file and who else gets the server.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Scope</th>
+<th>Stored in</th>
+<th>Shared with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>local</code> (default)</td>
+<td><code>~/.claude.json</code>, under the current project's entry</td>
+<td>Only you, only this project</td>
+</tr>
+<tr>
+<td><code>project</code></td>
+<td><code>.mcp.json</code> at the repository root</td>
+<td>Everyone who clones the repository</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td><code>~/.claude.json</code>, at the top level</td>
+<td>Only you, every project</td>
+</tr>
+</tbody>
+</table></div>
+<p>You rarely need to edit these files by hand. The CLI writes them:</p>
+<pre><code># local stdio server
+claude mcp add tickets --env TICKET_TOKEN=... -- npx -y @example/ticket-server
+
+# remote server, shared with the team through .mcp.json
+claude mcp add --transport http --scope project docs https://mcp.example.com/mcp
+
+claude mcp list
+</code></pre>
+<p>A project-scoped <code>.mcp.json</code> uses the same <code>mcpServers</code> shape as Claude Desktop, and supports <code>${VAR}</code> and <code>${VAR:-default}</code> expansion so that a shared file does not need to contain secrets. Claude Code asks for approval before it uses servers from a project file it has not seen before.</p>
+<h2 id="cursor">Cursor</h2>
+<p>Cursor reads <code>~/.cursor/mcp.json</code> for servers you want everywhere and <code>.cursor/mcp.json</code> inside a project for servers that belong to that codebase. Both use <code>mcpServers</code>. Remote servers take a <code>url</code> instead of a <code>command</code>:</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;: { &quot;command&quot;: &quot;npx&quot;, &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;] },
+    &quot;docs&quot;: { &quot;url&quot;: &quot;https://mcp.example.com/mcp&quot; }
+  }
+}
+</code></pre>
+<p>After saving, open <strong>Settings → MCP</strong> (labelled "Tools &amp; MCP" in recent versions) and check that the server shows a green status and a tool count. If it shows an error, the same panel exposes the server's output.</p>
+<h2 id="vs-code">VS Code</h2>
+<p>VS Code is the client most likely to trip people who copy a config from elsewhere, because <strong>its top-level key is <code>servers</code>, not <code>mcpServers</code></strong>, and each entry may declare a <code>type</code>.</p>
+<pre><code>{
+  &quot;servers&quot;: {
+    &quot;tickets&quot;: {
+      &quot;type&quot;: &quot;stdio&quot;,
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;],
+      &quot;env&quot;: { &quot;TICKET_TOKEN&quot;: &quot;${input:ticket-token}&quot; }
+    },
+    &quot;docs&quot;: { &quot;type&quot;: &quot;http&quot;, &quot;url&quot;: &quot;https://mcp.example.com/mcp&quot; }
+  },
+  &quot;inputs&quot;: [
+    { &quot;id&quot;: &quot;ticket-token&quot;, &quot;type&quot;: &quot;promptString&quot;, &quot;description&quot;: &quot;Ticket API token&quot;, &quot;password&quot;: true }
+  ]
+}
+</code></pre>
+<p>The workspace file is <code>.vscode/mcp.json</code>. For a server available in every workspace, run <strong>MCP: Open User Configuration</strong> from the Command Palette; it opens the <code>mcp.json</code> in your user profile. The <code>inputs</code> array is worth using: VS Code prompts for the value once and stores it securely, so the token never appears in the file.</p>
+<h2 id="windsurf">Windsurf</h2>
+<p>Windsurf's Cascade reads <code>~/.codeium/windsurf/mcp_config.json</code> (on Windows, <code>%USERPROFILE%\.codeium\windsurf\mcp_config.json</code>). It uses <code>mcpServers</code>. One detail differs from other clients: a remote server is declared with <strong><code>serverUrl</code></strong>, not <code>url</code>.</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;docs&quot;: { &quot;serverUrl&quot;: &quot;https://mcp.example.com/mcp&quot; }
+  }
+}
+</code></pre>
+<p>Press the refresh button in the MCP panel after editing the file.</p>
+<h2 id="codex">Codex</h2>
+<p>Codex is the one mainstream client that does not use JSON. The CLI, the IDE extension and the desktop app share <code>~/.codex/config.toml</code>; a trusted project can add <code>.codex/config.toml</code>. Each server is a TOML table:</p>
+<pre><code>[mcp_servers.tickets]
+command = &quot;npx&quot;
+args = [&quot;-y&quot;, &quot;@example/ticket-server&quot;]
+
+[mcp_servers.tickets.env]
+TICKET_TOKEN = &quot;value-from-your-secret-store&quot;
+
+[mcp_servers.docs]
+url = &quot;https://mcp.example.com/mcp&quot;
+bearer_token_env_var = &quot;DOCS_TOKEN&quot;
+</code></pre>
+<p>Note the underscore in <code>mcp_servers</code>: a table named <code>[mcpServers.tickets]</code> is silently ignored. <code>codex mcp add</code> and <code>codex mcp list</code> manage the same file. The full field mapping from Claude JSON is in the <a href="/guides/claude-mcp-to-codex">Claude-to-Codex conversion guide</a>.</p>
+<h2 id="gemini-cli">Gemini CLI</h2>
+<p>Gemini CLI stores MCP servers inside its general settings file: <code>~/.gemini/settings.json</code> for your user, <code>.gemini/settings.json</code> for a project. The key is <code>mcpServers</code>. Its remote fields are easy to mix up: <code>httpUrl</code> is for a Streamable HTTP server, while <code>url</code> is for the older SSE transport.</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;: { &quot;command&quot;: &quot;npx&quot;, &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;] },
+    &quot;docs&quot;: { &quot;httpUrl&quot;: &quot;https://mcp.example.com/mcp&quot; }
+  }
+}
+</code></pre>
+<p>Run <code>/mcp</code> inside the CLI to list servers and their tools.</p>
+<h2 id="cline">Cline</h2>
+<p>Cline is a VS Code extension, but it does not read VS Code's <code>mcp.json</code>. It keeps its own <code>cline_mcp_settings.json</code> inside the extension's global storage, for example <code>~/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/</code> on macOS and <code>%APPDATA%\Code\User\globalStorage\saoudrizwan.claude-dev\settings\</code> on Windows. Open it from the Cline panel with <strong>MCP Servers → Configure</strong> rather than hunting for the path; forks of VS Code store it under their own application folder.</p>
+<h2 id="zed">Zed</h2>
+<p>Zed calls MCP servers <em>context servers</em> and stores them in its main settings file, <code>~/.config/zed/settings.json</code>, under <code>context_servers</code>:</p>
+<pre><code>{
+  &quot;context_servers&quot;: {
+    &quot;tickets&quot;: { &quot;command&quot;: &quot;npx&quot;, &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;], &quot;env&quot;: {} }
+  }
+}
+</code></pre>
+<h2 id="five-mistakes-that-make-a-client-ignore-your-server">Five mistakes that make a client ignore your server</h2>
+<ol>
+<li><strong>The wrong key.</strong> <code>mcpServers</code>, <code>servers</code>, <code>context_servers</code> and <code>mcp_servers</code> are not interchangeable. A client finds no servers under an unknown key and reports nothing.</li>
+<li><strong>Invalid JSON.</strong> A trailing comma or a comment breaks strict JSON parsers. Claude Desktop will warn at startup; some clients fail quietly. Paste the file into a validator before restarting.</li>
+<li><strong>Editing the wrong scope.</strong> If a user-level and a project-level file both exist, check which one the client actually loaded. Claude Code's <code>claude mcp list</code> and Codex's <code>codex mcp list</code> print the effective set.</li>
+<li><strong>Relative paths and a missing PATH.</strong> Desktop apps do not start from your project directory and often do not inherit your shell's PATH. Use absolute paths for scripts, and see the <a href="/guides/mcp-server-not-connecting">connection troubleshooting guide</a> if the error is <code>spawn npx ENOENT</code>.</li>
+<li><strong>Not restarting.</strong> Claude Desktop and several others load MCP configuration once. Quit and reopen.</li>
+</ol>
+<div class="guide-callout">
+<p>A config file starts programs with your user's permissions. Before copying an entry from a README, read the command, pin the package version where you can, and keep tokens out of the file. <a href="https://mcpcheck.guagua-alvin.top/">MCP Config Guard</a> flags the common risks without uploading the file.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Why does my MCP server not appear after I edit the config file?</h3><p>The three most common causes are editing a file the client does not read (for example a project file when the client only loaded the user file), using the wrong top-level key (<code>servers</code> instead of <code>mcpServers</code>, or the reverse), and invalid JSON such as a trailing comma. Most desktop clients also read the file only at startup, so fully quit and reopen the application after saving.</p><h3>Is the MCP config format the same in every client?</h3><p>No. Most JSON-based clients use an <code>mcpServers</code> object, but VS Code uses <code>servers</code>, Zed uses <code>context_servers</code>, and Codex uses TOML tables named <code>[mcp_servers.&lt;name&gt;]</code>. The fields inside an entry (command, args, env, url) are similar but not identical, especially for remote servers.</p><h3>Should I commit a project-level MCP config to Git?</h3><p>A project file such as <code>.mcp.json</code>, <code>.cursor/mcp.json</code> or <code>.vscode/mcp.json</code> is designed to be shared, so committing it is normal. Never commit real credentials inside it. Reference environment variables or use the client's input-prompt mechanism, and review the file like code because it starts processes on every teammate's machine.</p><h3>Can one file configure all my MCP clients?</h3><p>Not natively. Each client reads its own file. You can keep one source of truth and convert it, which is what a converter is for, or use a client-specific command such as <code>claude mcp add</code> or <code>codex mcp add</code> to write the entry for you.</p></section>
+<div class="guide-next"><h3>Convert one config into every format</h3><p>Paste a working entry from any client and get the equivalent JSON or TOML for the others, entirely in your browser.</p><a href="https://mcp.guagua-alvin.top/">Open MCP Config Lab →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/docs/develop/connect-local-servers" rel="noopener">Model Context Protocol: connect to local MCP servers</a></li><li><a href="https://docs.claude.com/en/docs/claude-code/mcp" rel="noopener">Claude Code documentation: MCP</a></li><li><a href="https://cursor.com/docs/context/mcp" rel="noopener">Cursor documentation: Model Context Protocol</a></li><li><a href="https://code.visualstudio.com/docs/copilot/customization/mcp-servers" rel="noopener">VS Code documentation: use MCP servers</a></li><li><a href="https://developers.openai.com/codex/mcp" rel="noopener">Codex documentation: Model Context Protocol</a></li><li><a href="https://github.com/google-gemini/gemini-cli/blob/main/docs/tools/mcp-server.md" rel="noopener">Gemini CLI documentation: MCP servers</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/mcp-stdio-vs-streamable-http">MCP transports: stdio, Streamable HTTP and the old SSE transport</a><span>How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.</span></li><li><a href="/guides/claude-mcp-to-codex">Convert a Claude Desktop MCP config to Codex TOML</a><span>Map claude_desktop_config.json to Codex&#x27;s ~/.codex/config.toml: field-by-field mapping for mcpServers to [mcp_servers], env tables, remote URLs, bearer tokens, timeouts and the errors that follow a bad conversion.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published November 12, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

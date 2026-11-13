@@ -1,1 +1,228 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fix an MCP App That Opens as a Blank UI Panel</title><meta name="description" content="Debug a blank MCP App by checking the tool-to-ui resource link, ui:// URI, HTML MIME type, visibility, permissions and CSP."><link rel="canonical" href="https://guagua-alvin.top/guides/fix-mcp-app-blank-ui"><link rel="stylesheet" href="/styles.css"><link rel="icon" href="/assets/favicon.svg"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/">Directory</a></nav></header><main class="guide-page"><p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/mcp-tools">MCP tools</a> / MCP Apps</p><header class="guide-head"><p class="eyebrow"><span></span> Field note 04</p><h1>The tool works. Its MCP App panel is blank.</h1><p class="guide-deck">When the structured result is visible but the embedded interface is empty, stop debugging the business logic. Trace the host’s path from the tool descriptor to the HTML resource.</p><p class="guide-meta">MCP Apps · Updated July 29, 2026 · 7 min</p></header><div class="guide-layout"><aside class="guide-aside"><strong>Tool used</strong><a href="https://mcpapps.guagua-alvin.top/">MCP App Ready</a></aside><article class="guide-body"><h2>Confirm the tool advertises a UI</h2><p>Inspect the tool descriptor returned by <code>tools/list</code>. The UI metadata must point to the exact <code>ui://</code> resource URI. One different slash or hostname-like segment is a different resource.</p><h2>Read that exact resource</h2><p>Call <code>resources/read</code> with the advertised URI. Confirm the returned item uses the MCP Apps HTML profile MIME type expected by the host and contains actual HTML text. A normal <code>text/html</code> response from an unrelated web route is not automatically the same contract.</p><h2>Look at policy before JavaScript</h2><p>If the shell renders but scripts, fonts or API calls fail, compare every external origin with the declared CSP metadata. Keep the list narrow. Adding a wildcard to make the panel work trades one visible bug for an invisible security problem.</p><div class="guide-callout"><p>Open the host console. A CSP refusal is better evidence than changing resource metadata at random.</p></div><h2>Check visibility and permissions</h2><p>Make sure the tool is visible in the contexts where you expect it and that optional permissions match what the UI uses. Do not request clipboard, camera or network access simply because the host supports those fields.</p><h2>Validate the contract together</h2><p>Paste the tool descriptor, resource response and HTML into <a href="https://mcpapps.guagua-alvin.top/">MCP App Ready</a>. The checker correlates the URI and metadata that are easy to review incorrectly in separate logs.</p><div class="guide-next"><h3>Expected result</h3><p>The descriptor points to one readable UI resource, the resource carries the correct HTML profile, and every requested origin or permission is both declared and necessary.</p><a href="https://mcpapps.guagua-alvin.top/">Validate the MCP App contract →</a></div></article></div></main><footer><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Independent MCP field notes.</p><div><a href="/about">About</a><a href="/privacy">Privacy</a></div></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP App Shows a Blank Panel? Check ui:// Resource, MIME Type &amp; CSP</title>
+<meta name="description" content="Debug a blank MCP Apps UI: verify _meta.ui.resourceUri, the ui:// resource, the text/html;profile=mcp-app MIME type, the default sandbox CSP, connectDomains and resourceDomains, and the ui/initialize handshake.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/fix-mcp-app-blank-ui">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP App Shows a Blank Panel? Check ui:// Resource, MIME Type &amp; CSP">
+<meta property="og:description" content="Debug a blank MCP Apps UI: verify _meta.ui.resourceUri, the ui:// resource, the text/html;profile=mcp-app MIME type, the default sandbox CSP, connectDomains and resourceDomains, and the ui/initialize handshake.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/fix-mcp-app-blank-ui">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-07-29">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/fix-mcp-app-blank-ui#article", "headline": "Fix an MCP App that opens as a blank panel", "description": "Debug a blank MCP Apps UI: verify _meta.ui.resourceUri, the ui:// resource, the text/html;profile=mcp-app MIME type, the default sandbox CSP, connectDomains and resourceDomains, and the ui/initialize handshake.", "datePublished": "2026-07-29", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/fix-mcp-app-blank-ui", "wordCount": 1172, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Fix an MCP App that opens as a blank panel", "item": "https://guagua-alvin.top/guides/fix-mcp-app-blank-ui"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What MIME type does an MCP App resource need?", "acceptedAnswer": {"@type": "Answer", "text": "The UI resource must be returned with the MIME type text/html;profile=mcp-app. A resource served as plain text/html is an ordinary HTML resource, and a host that implements MCP Apps will not render it as an app."}}, {"@type": "Question", "name": "Why can my MCP App not call my API?", "acceptedAnswer": {"@type": "Answer", "text": "When the resource declares no CSP metadata, hosts apply a restrictive default that includes connect-src 'none', so every fetch, XHR and WebSocket is blocked. List the API's origin in _meta.ui.csp.connectDomains on the resource, or route the call through an MCP tool using tools/call."}}, {"@type": "Question", "name": "Why does my MCP App work in one host but not another?", "acceptedAnswer": {"@type": "Answer", "text": "MCP Apps is an optional extension. A host that does not advertise the io.modelcontextprotocol/ui extension shows only the tool's normal text result. Hosts also differ in which display modes, permissions and domains they allow, so test in each host you intend to support."}}, {"@type": "Question", "name": "Can an MCP App load scripts from a CDN?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, if the origin is listed in _meta.ui.csp.resourceDomains. Without that, external scripts, styles, fonts and images are blocked by the default policy. Bundling everything into the single HTML file avoids the problem and is the pattern most examples use."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / MCP Apps</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> MCP Apps</p>
+<h1>Fix an MCP App that opens as a blank panel</h1>
+<p class="guide-deck">The tool returns data, but the embedded interface is empty. Stop debugging the business logic. A blank panel is a broken link somewhere between the tool descriptor, the UI resource, the sandbox policy and the app&#x27;s first message to the host.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 6 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#how-an-mcp-app-reaches-the-screen">How an MCP App reaches the screen</a></li><li><a href="#1-confirm-the-host-supports-mcp-apps">1. Confirm the host supports MCP Apps</a></li><li><a href="#2-check-the-tool-descriptor">2. Check the tool descriptor</a></li><li><a href="#3-read-the-exact-resource">3. Read the exact resource</a></li><li><a href="#4-look-at-the-sandbox-policy-before-your-javascript">4. Look at the sandbox policy before your JavaScript</a></li><li><a href="#5-check-the-handshake">5. Check the handshake</a></li><li><a href="#symptom-to-cause-summary">Symptom-to-cause summary</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcpapps.guagua-alvin.top/">MCP App Ready</a></div></aside>
+<article class="guide-body">
+<h2 id="how-an-mcp-app-reaches-the-screen">How an MCP App reaches the screen</h2>
+<p>MCP Apps is an extension to the Model Context Protocol (stable specification dated 2026-01-26) that lets a tool present an interactive HTML interface inside the host. Five things must all be true for anything to appear:</p>
+<ol>
+<li>The host supports the extension and told the server so.</li>
+<li>The tool's descriptor points at a UI resource.</li>
+<li><code>resources/read</code> returns that resource, with the right MIME type and real HTML.</li>
+<li>The sandbox's Content Security Policy allows everything the page loads.</li>
+<li>The page completes the <code>ui/initialize</code> handshake with the host.</li>
+</ol>
+<p>A failure at steps 1 to 3 gives you no panel or an empty one. A failure at steps 4 or 5 gives you a panel that renders a shell and then stays blank. Work through them in order.</p>
+<h2 id="1-confirm-the-host-supports-mcp-apps">1. Confirm the host supports MCP Apps</h2>
+<p>A client that implements the extension advertises it in its capabilities under <code>extensions</code>, with the identifier <code>io.modelcontextprotocol/ui</code> and the MIME types it can render:</p>
+<pre><code>{
+  &quot;capabilities&quot;: {
+    &quot;extensions&quot;: {
+      &quot;io.modelcontextprotocol/ui&quot;: { &quot;mimeTypes&quot;: [&quot;text/html;profile=mcp-app&quot;] }
+    }
+  }
+}
+</code></pre>
+<p>If the host does not send this, it will show the tool's text result and nothing else, and no change to your server will produce a panel. Check the host's documentation or the public client matrix before spending time on the server. Your tool should always return a meaningful text or structured result for this reason: it is what every other client sees.</p>
+<h2 id="2-check-the-tool-descriptor">2. Check the tool descriptor</h2>
+<p>Call <code>tools/list</code> (the MCP Inspector works well) and look at the tool's <code>_meta</code>:</p>
+<pre><code>{
+  &quot;name&quot;: &quot;show_dashboard&quot;,
+  &quot;description&quot;: &quot;Show the ticket dashboard&quot;,
+  &quot;inputSchema&quot;: { &quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {} },
+  &quot;_meta&quot;: {
+    &quot;ui&quot;: {
+      &quot;resourceUri&quot;: &quot;ui://tickets/dashboard.html&quot;,
+      &quot;visibility&quot;: [&quot;model&quot;, &quot;app&quot;]
+    }
+  }
+}
+</code></pre>
+<ul>
+<li><strong><code>_meta.ui.resourceUri</code> must be present and use the <code>ui://</code> scheme.</strong> An <code>https://</code> URL here is not valid.</li>
+<li><strong>Use the nested form.</strong> Early drafts used a flat key, <code>_meta["ui/resourceUri"]</code>. It is deprecated; some hosts still accept it and others do not, which produces the "works in one client" bug.</li>
+<li><strong><code>visibility</code></strong> defaults to <code>["model", "app"]</code>. A tool marked <code>["app"]</code> only is hidden from the model: the app can call it, but the model can never trigger it, so if that is your only entry point the panel never opens.</li>
+</ul>
+<p>The metadata must be on the tool <strong>definition</strong> returned by <code>tools/list</code>. Putting it only on the tool call result is too late; hosts read the descriptor so they can preload the UI before the call finishes.</p>
+<h2 id="3-read-the-exact-resource">3. Read the exact resource</h2>
+<p>Request the URI from the descriptor, copied rather than retyped:</p>
+<pre><code>{ &quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 2, &quot;method&quot;: &quot;resources/read&quot;, &quot;params&quot;: { &quot;uri&quot;: &quot;ui://tickets/dashboard.html&quot; } }
+</code></pre>
+<p>A correct response:</p>
+<pre><code>{
+  &quot;contents&quot;: [{
+    &quot;uri&quot;: &quot;ui://tickets/dashboard.html&quot;,
+    &quot;mimeType&quot;: &quot;text/html;profile=mcp-app&quot;,
+    &quot;text&quot;: &quot;&lt;!doctype html&gt;&lt;html&gt;...&lt;/html&gt;&quot;,
+    &quot;_meta&quot;: { &quot;ui&quot;: { &quot;csp&quot;: { &quot;connectDomains&quot;: [&quot;https://api.example.com&quot;] } } }
+  }]
+}
+</code></pre>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Check</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The request succeeds</td>
+<td>A "resource not found" error means the URI in the tool and the registered resource differ, often by one slash or a file extension</td>
+</tr>
+<tr>
+<td><code>mimeType</code> is exactly <code>text/html;profile=mcp-app</code></td>
+<td>Plain <code>text/html</code> is not treated as an app</td>
+</tr>
+<tr>
+<td><code>text</code> contains a complete HTML document</td>
+<td>An empty string, a file path or an unbuilt template renders as a blank frame</td>
+</tr>
+<tr>
+<td><code>uri</code> in the response equals the requested URI</td>
+<td>Some hosts match them strictly</td>
+</tr>
+</tbody>
+</table></div>
+<p>If your HTML is produced by a bundler, confirm the build ran. A very common cause of a blank panel is a server that reads <code>dist/index.html</code> from disk while the file does not exist in the published package, and returns an empty string or throws.</p>
+<h2 id="4-look-at-the-sandbox-policy-before-your-javascript">4. Look at the sandbox policy before your JavaScript</h2>
+<p>Hosts render the page in a sandboxed iframe. If the resource declares no <code>csp</code> metadata, the default policy is deliberately tight:</p>
+<pre><code>default-src 'none';
+script-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline';
+img-src 'self' data:;
+media-src 'self' data:;
+connect-src 'none';
+</code></pre>
+<p>Read that as a list of things that fail silently unless you declare them:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>The page does this</th>
+<th>Result under the default</th>
+<th>Declare in <code>_meta.ui.csp</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fetch("https://api.example.com/…")</code>, WebSocket</td>
+<td>Blocked (<code>connect-src 'none'</code>)</td>
+<td><code>connectDomains</code></td>
+</tr>
+<tr>
+<td><code>&lt;script src="https://cdn.example.com/…"&gt;</code>, external CSS, web fonts, remote images</td>
+<td>Blocked</td>
+<td><code>resourceDomains</code></td>
+</tr>
+<tr>
+<td>Embeds another site in an <code>&lt;iframe&gt;</code></td>
+<td>Blocked</td>
+<td><code>frameDomains</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>A page whose framework bundle comes from a CDN therefore renders nothing at all: the HTML loads, the script is refused, and the root element stays empty. Open the host's developer tools and look at the console. A line such as <em>Refused to load the script … because it violates the following Content Security Policy directive</em> is far better evidence than guessing.</p>
+<p>Two ways to fix it. Bundle scripts and styles into the single HTML file, which needs no policy changes and is what the official examples do. Or declare the origins you need, on the <strong>resource</strong> (not the tool):</p>
+<pre><code>&quot;_meta&quot;: { &quot;ui&quot;: { &quot;csp&quot;: {
+  &quot;connectDomains&quot;: [&quot;https://api.example.com&quot;],
+  &quot;resourceDomains&quot;: [&quot;https://cdn.example.com&quot;]
+} } }
+</code></pre>
+<p>Keep the list short. A host may refuse or warn about broad entries, and a wildcard added to make the panel work replaces a visible bug with an invisible security problem. Device access such as camera, microphone, geolocation and clipboard writing is requested separately through <code>_meta.ui.permissions</code>, and hosts may decline.</p>
+<h2 id="5-check-the-handshake">5. Check the handshake</h2>
+<p>The page and the host talk over <code>postMessage</code> using JSON-RPC. Nothing useful happens until the page sends <code>ui/initialize</code>, receives the host's reply, and sends <code>ui/notifications/initialized</code>. Only then does the host deliver the tool's arguments and result through <code>ui/notifications/tool-input</code> and <code>ui/notifications/tool-result</code>.</p>
+<p>If the panel shows your static shell but never any data:</p>
+<ul>
+<li><strong>The app never connected.</strong> With the official SDK, that means <code>app.connect()</code> was not called, threw, or ran before the handlers were registered.</li>
+<li><strong>Handlers were registered too late.</strong> Set the tool-result handler before connecting, or the first result can arrive with nobody listening.</li>
+<li><strong>The page is waiting for a <code>load</code> event that already fired</strong>, or for a size it was never given. Send a size-changed notification, or give the root element an explicit height; a zero-height app looks identical to a blank one.</li>
+</ul>
+<pre><code>import { App } from &quot;@modelcontextprotocol/ext-apps&quot;;
+
+const app = new App({ name: &quot;Ticket dashboard&quot;, version: &quot;1.0.0&quot; });
+app.ontoolresult = (result) =&gt; render(result.structuredContent);   // register first
+await app.connect();                                               // then connect
+</code></pre>
+<h2 id="symptom-to-cause-summary">Symptom-to-cause summary</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>What you see</th>
+<th>Most likely cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Only text, no panel</td>
+<td>Host does not support the extension, or <code>_meta.ui.resourceUri</code> is missing from the tool definition</td>
+</tr>
+<tr>
+<td>Empty frame, nothing in the DOM</td>
+<td>Wrong MIME type, empty <code>text</code>, or the resource read failed</td>
+</tr>
+<tr>
+<td>Shell renders, console shows CSP errors</td>
+<td>External scripts, styles or API calls not declared in <code>csp</code></td>
+</tr>
+<tr>
+<td>Shell renders, no data, no errors</td>
+<td>Handshake not completed or result handler registered late</td>
+</tr>
+<tr>
+<td>Works in one host only</td>
+<td>Deprecated flat metadata key, or an undeclared domain that one host happens to allow</td>
+</tr>
+<tr>
+<td>Panel has zero height</td>
+<td>No size reported; set a height or notify the host of the size</td>
+</tr>
+</tbody>
+</table></div>
+<div class="guide-callout">
+<p>Treat the sandbox as a feature. It is what allows a host to render third-party interfaces safely, so the durable fix for a blocked request is to declare exactly what the app needs, not to look for a host with a looser policy.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>What MIME type does an MCP App resource need?</h3><p>The UI resource must be returned with the MIME type <code>text/html;profile=mcp-app</code>. A resource served as plain <code>text/html</code> is an ordinary HTML resource, and a host that implements MCP Apps will not render it as an app.</p><h3>Why can my MCP App not call my API?</h3><p>When the resource declares no CSP metadata, hosts apply a restrictive default that includes <code>connect-src 'none'</code>, so every <code>fetch</code>, XHR and WebSocket is blocked. List the API's origin in <code>_meta.ui.csp.connectDomains</code> on the resource, or route the call through an MCP tool using <code>tools/call</code>.</p><h3>Why does my MCP App work in one host but not another?</h3><p>MCP Apps is an optional extension. A host that does not advertise the <code>io.modelcontextprotocol/ui</code> extension shows only the tool's normal text result. Hosts also differ in which display modes, permissions and domains they allow, so test in each host you intend to support.</p><h3>Can an MCP App load scripts from a CDN?</h3><p>Yes, if the origin is listed in <code>_meta.ui.csp.resourceDomains</code>. Without that, external scripts, styles, fonts and images are blocked by the default policy. Bundling everything into the single HTML file avoids the problem and is the pattern most examples use.</p></section>
+<div class="guide-next"><h3>Validate the whole app contract</h3><p>Paste the tool descriptor, the resource response and the HTML. The checker correlates the URI, MIME type, visibility and CSP that are easy to misread in separate logs.</p><a href="https://mcpapps.guagua-alvin.top/">Open MCP App Ready →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/extensions/apps/overview" rel="noopener">MCP Apps overview</a></li><li><a href="https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx" rel="noopener">MCP Apps specification 2026-01-26</a></li><li><a href="https://apps.extensions.modelcontextprotocol.io/api/" rel="noopener">MCP Apps SDK and API documentation</a></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP" rel="noopener">MDN: Content Security Policy</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/debug-mcp-task-polling">Find why an MCP Task never leaves &quot;working&quot;</a><span>Debug long-running MCP Tasks: the task state machine, tasks/get polling and pollInterval, ttl expiry, tasks/result blocking, input_required, illegal status transitions, and what changed in the 2026-07-28 Tasks extension.</span></li><li><a href="/guides/migrate-mcp-2026">Migrate an MCP server to the stateless 2026-07-28 protocol</a><span>What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published July 29, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

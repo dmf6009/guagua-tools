@@ -1,4 +1,231 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Debug an MCP Task Stuck in Working</title><meta name="description" content="Capture and validate an MCP Tasks lifecycle that never leaves working, including timestamps, polling intervals, input requests and terminal results."><link rel="canonical" href="https://guagua-alvin.top/guides/debug-mcp-task-polling"><link rel="stylesheet" href="/styles.css"><link rel="icon" href="/assets/favicon.svg"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script></head><body><header class="site-header"><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav><a href="/mcp-tools">MCP tools</a><a href="/">Directory</a></nav></header><main class="guide-page"><p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/mcp-tools">MCP tools</a> / Tasks</p><header class="guide-head"><p class="eyebrow"><span></span> Field note 05</p><h1>The export finished. The MCP Task still says “working.”</h1><p class="guide-deck">A single task object rarely explains a polling failure. Save the lifecycle in order and check where durable state stopped matching the work.</p><p class="guide-meta">MCP Tasks · Updated July 29, 2026 · 6 min</p></header><div class="guide-layout"><aside class="guide-aside"><strong>Tool used</strong><a href="https://mcptasks.guagua-alvin.top/">MCP Task Trace</a></aside><article class="guide-body"><h2>Capture snapshots, not screenshots</h2><p>Save the creation result and each later <code>tasks/get</code> result as JSONL. Preserve timestamps, status, polling interval and result discriminator. Redact the payload, not the lifecycle fields.</p><pre>{"resultType":"task","taskId":"exp_42","status":"working",
-"createdAt":"2026-07-29T09:00:00Z",
-"lastUpdatedAt":"2026-07-29T09:00:00Z","ttlMs":3600000,
-"pollIntervalMs":3000}</pre><h2>Separate worker completion from task completion</h2><p>The background job writing a file does not automatically update the durable MCP task record. Find the transaction that stores the terminal status and result. If it runs after an exception-prone notification, move the state update earlier or make both operations retry-safe.</p><h2>Check the clock and terminal payload</h2><p><code>lastUpdatedAt</code> must not move backward between replicas. A completed task needs its result; a failed task needs a JSON-RPC error. Once terminal, it cannot return to working because a delayed worker wrote an old snapshot.</p><h2>Respect input_required</h2><p>If work is waiting for approval, the task is not merely working. Return <code>input_required</code> with the outstanding input request keys and accept the reply through the current task update flow.</p><div class="guide-callout"><p>Poll at the interval the server returns. A tight client loop can turn a state bug into a load incident.</p></div><h2>Validate the sequence</h2><p>Paste the ordered JSONL into <a href="https://mcptasks.guagua-alvin.top/">MCP Task Trace</a>. Fix the first impossible transition, then rerun the real worker with process restarts and duplicate delivery.</p><div class="guide-next"><h3>Expected result</h3><p>The task survives reconnects, timestamps only advance, polling slows when requested, and the first terminal snapshot remains terminal with the correct result or error.</p><a href="https://mcptasks.guagua-alvin.top/">Check the task lifecycle →</a></div></article></div></main><footer><a class="brand" href="/"><span class="brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Independent MCP field notes.</p><div><a href="/about">About</a><a href="/privacy">Privacy</a></div></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP Task Stuck in &#x27;working&#x27;? Debug Polling, TTL &amp; Status Transitions</title>
+<meta name="description" content="Debug long-running MCP Tasks: the task state machine, tasks/get polling and pollInterval, ttl expiry, tasks/result blocking, input_required, illegal status transitions, and what changed in the 2026-07-28 Tasks extension.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/debug-mcp-task-polling">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP Task Stuck in &#x27;working&#x27;? Debug Polling, TTL &amp; Status Transitions">
+<meta property="og:description" content="Debug long-running MCP Tasks: the task state machine, tasks/get polling and pollInterval, ttl expiry, tasks/result blocking, input_required, illegal status transitions, and what changed in the 2026-07-28 Tasks extension.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/debug-mcp-task-polling">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-07-29">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/debug-mcp-task-polling#article", "headline": "Find why an MCP Task never leaves \"working\"", "description": "Debug long-running MCP Tasks: the task state machine, tasks/get polling and pollInterval, ttl expiry, tasks/result blocking, input_required, illegal status transitions, and what changed in the 2026-07-28 Tasks extension.", "datePublished": "2026-07-29", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/debug-mcp-task-polling", "wordCount": 1273, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Find why an MCP Task never leaves \"working\"", "item": "https://guagua-alvin.top/guides/debug-mcp-task-polling"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What are the valid MCP task statuses?", "acceptedAnswer": {"@type": "Answer", "text": "There are five: working, input_required, completed, failed and cancelled. A task always starts as working. The last three are terminal, and a task in a terminal status must never change again."}}, {"@type": "Question", "name": "How often should a client poll an MCP task?", "acceptedAnswer": {"@type": "Answer", "text": "Use the pollInterval value, in milliseconds, that the server returns with the task. It is a suggestion from the server about how often tasks/get is useful. If it is absent, choose a conservative interval and back off; polling in a tight loop is the fastest way to get rate-limited."}}, {"@type": "Question", "name": "What does ttl mean on an MCP task?", "acceptedAnswer": {"@type": "Answer", "text": "ttl is the time in milliseconds, measured from createdAt, for which the server promises to keep the task and its result. After that the server may delete it, even if it never finished, and tasks/get will return an error saying the task was not found. The server may override the ttl the client asked for."}}, {"@type": "Question", "name": "Does tasks/result return immediately?", "acceptedAnswer": {"@type": "Answer", "text": "In the 2025-11-25 specification it does not. tasks/result blocks until the task reaches a terminal status and then returns exactly what the original request would have returned. In the 2026-07-28 Tasks extension, tasks/result is removed and the result is delivered through tasks/get."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / MCP Tasks</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> MCP Tasks</p>
+<h1>Find why an MCP Task never leaves &quot;working&quot;</h1>
+<p class="guide-deck">A task that stays in &quot;working&quot; forever is rarely still working. Either the server lost it, the client is asking the wrong question, or the task is waiting for input nobody delivered. A short sequence of snapshots tells you which.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 6 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#the-lifecycle-in-one-table">The lifecycle in one table</a></li><li><a href="#capture-a-trace-before-you-change-anything">Capture a trace before you change anything</a></li><li><a href="#pattern-1-status-and-lastupdatedat-never-change">Pattern 1: status and lastUpdatedAt never change</a></li><li><a href="#pattern-2-lastupdatedat-advances-but-status-stays-working">Pattern 2: lastUpdatedAt advances but status stays working</a></li><li><a href="#pattern-3-task-not-found-after-a-while">Pattern 3: "task not found" after a while</a></li><li><a href="#pattern-4-the-task-is-waiting-in-input_required">Pattern 4: the task is waiting in input_required</a></li><li><a href="#pattern-5-the-client-is-blocked-not-the-task">Pattern 5: the client is blocked, not the task</a></li><li><a href="#pattern-6-impossible-transitions">Pattern 6: impossible transitions</a></li><li><a href="#before-a-task-is-even-created">Before a task is even created</a></li><li><a href="#what-changes-in-the-2026-07-28-tasks-extension">What changes in the 2026-07-28 Tasks extension</a></li><li><a href="#checklist-for-a-healthy-task-implementation">Checklist for a healthy task implementation</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcptasks.guagua-alvin.top/">MCP Task Trace</a></div></aside>
+<article class="guide-body">
+<h2 id="the-lifecycle-in-one-table">The lifecycle in one table</h2>
+<p>Tasks let a server accept a slow request, return a handle straight away, and deliver the real result later. They were introduced as an experimental feature in the 2025-11-25 specification and became an official extension in 2026-07-28. Both versions share the same state machine:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+<th>May move to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>working</code></td>
+<td>The request is being processed. Every task starts here.</td>
+<td><code>input_required</code>, <code>completed</code>, <code>failed</code>, <code>cancelled</code></td>
+</tr>
+<tr>
+<td><code>input_required</code></td>
+<td>The server needs something from the requestor before it can continue.</td>
+<td><code>working</code>, <code>completed</code>, <code>failed</code>, <code>cancelled</code></td>
+</tr>
+<tr>
+<td><code>completed</code></td>
+<td>Finished successfully; the result is available.</td>
+<td>— terminal</td>
+</tr>
+<tr>
+<td><code>failed</code></td>
+<td>Did not finish successfully. For tool calls this includes a result with <code>isError: true</code>.</td>
+<td>— terminal</td>
+</tr>
+<tr>
+<td><code>cancelled</code></td>
+<td>Stopped at the requestor's request.</td>
+<td>— terminal</td>
+</tr>
+</tbody>
+</table></div>
+<p>A task object looks like this:</p>
+<pre><code>{
+  &quot;taskId&quot;: &quot;786512e2-9e0d-44bd-8f29-789f320fe840&quot;,
+  &quot;status&quot;: &quot;working&quot;,
+  &quot;statusMessage&quot;: &quot;Rendering page 14 of 60&quot;,
+  &quot;createdAt&quot;: &quot;2026-11-12T10:30:00Z&quot;,
+  &quot;lastUpdatedAt&quot;: &quot;2026-11-12T10:31:40Z&quot;,
+  &quot;ttl&quot;: 600000,
+  &quot;pollInterval&quot;: 5000
+}
+</code></pre>
+<p><code>createdAt</code> and <code>lastUpdatedAt</code> are required RFC 3339 timestamps. <code>ttl</code> and <code>pollInterval</code> are in milliseconds.</p>
+<h2 id="capture-a-trace-before-you-change-anything">Capture a trace before you change anything</h2>
+<p>One response cannot tell you whether a task is progressing. Record several consecutive <code>tasks/get</code> responses, one JSON object per line, with the time you received each:</p>
+<pre><code>while true; do
+  curl -s https://mcp.example.com/mcp \
+    -H &quot;Content-Type: application/json&quot; -H &quot;Accept: application/json&quot; \
+    -d '{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;tasks/get&quot;,&quot;params&quot;:{&quot;taskId&quot;:&quot;786512e2-9e0d-44bd-8f29-789f320fe840&quot;}}' \
+    &gt;&gt; trace.jsonl
+  echo &gt;&gt; trace.jsonl
+  sleep 5
+done
+</code></pre>
+<p>Then compare the lines. The pattern you see points to the cause.</p>
+<h2 id="pattern-1-status-and-lastupdatedat-never-change">Pattern 1: status and lastUpdatedAt never change</h2>
+<pre><code>working  lastUpdatedAt=10:31:40
+working  lastUpdatedAt=10:31:40
+working  lastUpdatedAt=10:31:40
+</code></pre>
+<p>The server is not touching the task. The background job has crashed, was never started, or runs in a different process that cannot write to this task store. Check, in this order:</p>
+<ul>
+<li><strong>Was the work actually scheduled?</strong> A handler that creates the task record and returns, but forgets to start the job, produces exactly this trace.</li>
+<li><strong>Did the worker die?</strong> An unhandled exception in a background coroutine or thread is often logged nowhere. Wrap the job so that any error moves the task to <code>failed</code> with a <code>statusMessage</code>.</li>
+<li><strong>Is the store shared?</strong> With several server instances and an in-memory task store, the instance that answers <code>tasks/get</code> may not be the one doing the work. Tasks need storage every instance can read.</li>
+</ul>
+<p>A server should never leave a task in <code>working</code> after the work has ended. Every exit path, including timeouts and process shutdown, needs to write a terminal status.</p>
+<h2 id="pattern-2-lastupdatedat-advances-but-status-stays-working">Pattern 2: lastUpdatedAt advances but status stays working</h2>
+<pre><code>working  lastUpdatedAt=10:31:40  &quot;Rendering page 14 of 60&quot;
+working  lastUpdatedAt=10:32:10  &quot;Rendering page 19 of 60&quot;
+</code></pre>
+<p>The task is alive and simply slow. Nothing is broken. Show the <code>statusMessage</code> to the user, keep to the <code>pollInterval</code>, and check that the <code>ttl</code> is long enough for the job to finish.</p>
+<h2 id="pattern-3-task-not-found-after-a-while">Pattern 3: "task not found" after a while</h2>
+<p>The task's <code>ttl</code> elapsed and the server deleted it. <code>ttl</code> counts from <code>createdAt</code>, not from completion, so a job that takes eleven minutes with a ten-minute ttl disappears before its result can be read. This is allowed behaviour: after the ttl a server may delete a task regardless of its status.</p>
+<p>Fixes: request a longer <code>ttl</code> when creating the task, have the server choose a ttl that covers the realistic worst case, and always read the <code>ttl</code> in the response, because the server may have overridden the value you asked for. An error with code <code>-32602</code> and a message such as <em>Task not found</em> or <em>Task has expired</em> is the signature of this problem.</p>
+<h2 id="pattern-4-the-task-is-waiting-in-input_required">Pattern 4: the task is waiting in input_required</h2>
+<p><code>input_required</code> is not a kind of <code>working</code>. It means the server has a question, typically an elicitation, and will not continue until it is answered. A client that only polls <code>tasks/get</code> will see <code>input_required</code> forever.</p>
+<p>In the 2025-11-25 design, the client must call <code>tasks/result</code> when it sees this status. That call opens the channel on which the server sends its request, tagged with <code>io.modelcontextprotocol/related-task</code> so the client knows which task it belongs to. Once the client replies, the task returns to <code>working</code>.</p>
+<p>In the 2026-07-28 extension the mechanism is simpler: the client sends the missing input with <code>tasks/update</code>.</p>
+<h2 id="pattern-5-the-client-is-blocked-not-the-task">Pattern 5: the client is blocked, not the task</h2>
+<p>In 2025-11-25, <code>tasks/result</code> <strong>blocks until the task is terminal</strong>. A client that calls it immediately after creating a task and waits with a short HTTP timeout will see a timeout and may report the task as hung, while the server is working normally. Poll <code>tasks/get</code> until the status is terminal, then call <code>tasks/result</code>. If you do block on <code>tasks/result</code>, make sure every proxy between you and the server allows a response that long.</p>
+<h2 id="pattern-6-impossible-transitions">Pattern 6: impossible transitions</h2>
+<p>These indicate a server bug, and a strict client may reject the whole task:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Seen in the trace</th>
+<th>Rule broken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>completed</code> → <code>working</code></td>
+<td>Terminal statuses must never change</td>
+</tr>
+<tr>
+<td><code>cancelled</code> → <code>completed</code></td>
+<td>A cancelled task stays cancelled even if the work finishes afterwards</td>
+</tr>
+<tr>
+<td>First status is <code>completed</code> or <code>input_required</code></td>
+<td>Tasks must begin as <code>working</code></td>
+</tr>
+<tr>
+<td><code>lastUpdatedAt</code> earlier than <code>createdAt</code>, or going backwards</td>
+<td>Timestamps must be consistent</td>
+</tr>
+<tr>
+<td><code>taskId</code> changes between responses</td>
+<td>The ID is fixed when the task is created</td>
+</tr>
+<tr>
+<td>A status such as <code>running</code>, <code>done</code> or <code>error</code></td>
+<td>Only the five defined values are valid</td>
+</tr>
+<tr>
+<td>Missing <code>createdAt</code> or <code>lastUpdatedAt</code></td>
+<td>Both are required in every task response</td>
+</tr>
+</tbody>
+</table></div>
+<p>The cancellation race is the one most often missed: the client cancels, the server marks the task <code>cancelled</code>, and a few seconds later the worker finishes and overwrites the status with <code>completed</code>. Guard every status write with a check that the current status is not terminal.</p>
+<h2 id="before-a-task-is-even-created">Before a task is even created</h2>
+<p>If the server answers a task-augmented call with an ordinary result, or with a <code>-32601</code> error, the negotiation failed before any task existed:</p>
+<ul>
+<li>In 2025-11-25 the server must declare <code>tasks.requests.tools.call</code> in its capabilities, and each tool states its own position through <code>execution.taskSupport</code>: <code>forbidden</code> (the default), <code>optional</code> or <code>required</code>. Calling a tool as a task when it does not allow it returns <code>-32601</code>; so does calling a <code>required</code> tool without a task.</li>
+<li>The client asks for a task by adding a <code>task</code> object to the request parameters, for example <code>"task": {"ttl": 600000}</code>.</li>
+</ul>
+<h2 id="what-changes-in-the-2026-07-28-tasks-extension">What changes in the 2026-07-28 Tasks extension</h2>
+<p>If you built on the experimental API, plan a migration. The differences that matter for debugging:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>2025-11-25 (experimental core feature)</th>
+<th>2026-07-28 (extension <code>io.modelcontextprotocol/tasks</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The client decides to create a task by sending <code>params.task</code></td>
+<td>The client advertises the extension; the server decides when a call becomes a task</td>
+</tr>
+<tr>
+<td><code>tasks/result</code> blocks and returns the result</td>
+<td>Removed. Poll <code>tasks/get</code>; the result arrives with the terminal state</td>
+</tr>
+<tr>
+<td><code>tasks/list</code> enumerates tasks</td>
+<td>Removed, because it cannot be scoped safely without sessions</td>
+</tr>
+<tr>
+<td>Input delivered through a request on the <code>tasks/result</code> stream</td>
+<td><code>tasks/update</code> carries client input</td>
+</tr>
+<tr>
+<td><code>tasks/cancel</code></td>
+<td>Unchanged in purpose</td>
+</tr>
+</tbody>
+</table></div>
+<p>A client that still calls <code>tasks/result</code> or <code>tasks/list</code> against a 2026-07-28 server gets "method not found". The <a href="/guides/migrate-mcp-2026">stateless migration guide</a> covers the surrounding protocol changes.</p>
+<h2 id="checklist-for-a-healthy-task-implementation">Checklist for a healthy task implementation</h2>
+<ul>
+<li>Return the task handle quickly; do the work elsewhere.</li>
+<li>Update <code>lastUpdatedAt</code> and <code>statusMessage</code> as the job progresses.</li>
+<li>Write a terminal status on every exit path, including crashes and shutdown.</li>
+<li>Never modify a task that is already terminal.</li>
+<li>Choose a <code>ttl</code> longer than the slowest realistic run, and report the real value.</li>
+<li>Bind tasks to the caller's authorization context, and use unguessable task IDs.</li>
+<li>Keep task state in storage shared by every server instance.</li>
+</ul>
+<div class="guide-callout">
+<p>A task ID is a capability: anyone who holds it can read the result unless the server ties tasks to an authenticated caller. Treat IDs in logs and bug reports with the same care as any other access token.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>What are the valid MCP task statuses?</h3><p>There are five: <code>working</code>, <code>input_required</code>, <code>completed</code>, <code>failed</code> and <code>cancelled</code>. A task always starts as <code>working</code>. The last three are terminal, and a task in a terminal status must never change again.</p><h3>How often should a client poll an MCP task?</h3><p>Use the <code>pollInterval</code> value, in milliseconds, that the server returns with the task. It is a suggestion from the server about how often <code>tasks/get</code> is useful. If it is absent, choose a conservative interval and back off; polling in a tight loop is the fastest way to get rate-limited.</p><h3>What does ttl mean on an MCP task?</h3><p><code>ttl</code> is the time in milliseconds, measured from <code>createdAt</code>, for which the server promises to keep the task and its result. After that the server may delete it, even if it never finished, and <code>tasks/get</code> will return an error saying the task was not found. The server may override the ttl the client asked for.</p><h3>Does tasks/result return immediately?</h3><p>In the 2025-11-25 specification it does not. <code>tasks/result</code> blocks until the task reaches a terminal status and then returns exactly what the original request would have returned. In the 2026-07-28 Tasks extension, <code>tasks/result</code> is removed and the result is delivered through <code>tasks/get</code>.</p></section>
+<div class="guide-next"><h3>Read the trace, not one snapshot</h3><p>Paste a series of task responses as JSONL. The validator checks every transition, timestamp and field against the lifecycle rules and points at the first one that breaks them.</p><a href="https://mcptasks.guagua-alvin.top/">Open MCP Task Trace →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/tasks" rel="noopener">MCP specification 2025-11-25: tasks</a></li><li><a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" rel="noopener">The 2026-07-28 MCP specification release candidate</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc3339" rel="noopener">RFC 3339: date and time on the Internet</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/fix-mcp-app-blank-ui">Fix an MCP App that opens as a blank panel</a><span>Debug a blank MCP Apps UI: verify _meta.ui.resourceUri, the ui:// resource, the text/html;profile=mcp-app MIME type, the default sandbox CSP, connectDomains and resourceDomains, and the ui/initialize handshake.</span></li><li><a href="/guides/migrate-mcp-2026">Migrate an MCP server to the stateless 2026-07-28 protocol</a><span>What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published July 29, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

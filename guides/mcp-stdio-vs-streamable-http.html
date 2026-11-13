@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP Transports Explained: stdio vs Streamable HTTP vs SSE</title>
+<meta name="description" content="How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/mcp-stdio-vs-streamable-http">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP Transports Explained: stdio vs Streamable HTTP vs SSE">
+<meta property="og:description" content="How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/mcp-stdio-vs-streamable-http">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/mcp-stdio-vs-streamable-http#article", "headline": "MCP transports: stdio, Streamable HTTP and the old SSE transport", "description": "How MCP's stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/mcp-stdio-vs-streamable-http", "wordCount": 1090, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "MCP transports: stdio, Streamable HTTP and the old SSE transport", "item": "https://guagua-alvin.top/guides/mcp-stdio-vs-streamable-http"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is SSE deprecated in MCP?", "acceptedAnswer": {"@type": "Answer", "text": "The standalone HTTP+SSE transport from the 2024-11-05 specification is deprecated and was replaced by Streamable HTTP in the 2025-03-26 revision. Server-Sent Events still exist inside Streamable HTTP as an optional way to stream a response, so 'SSE' as a technique is not gone; the two-endpoint transport built on it is."}}, {"@type": "Question", "name": "Which MCP transport should I use?", "acceptedAnswer": {"@type": "Answer", "text": "Use stdio when the server runs on the same machine as the client and needs local access such as files, a local database or a CLI. Use Streamable HTTP when the server is a hosted service, must serve several users, or needs OAuth. Do not build new servers on the deprecated HTTP+SSE transport."}}, {"@type": "Question", "name": "Can one MCP server support both stdio and HTTP?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The official SDKs separate the server logic from the transport, so the same tools can be exposed over stdio for local installs and over Streamable HTTP for hosted use. Many published servers choose the transport from a command-line flag or an environment variable."}}, {"@type": "Question", "name": "Why do I get a 405 Method Not Allowed from an MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "A 405 usually means a transport mismatch. A Streamable HTTP client sends a POST to the MCP endpoint, while an old SSE server expects a GET on its /sse endpoint, or the reverse. Check which transport the server implements and use the matching URL and client setting."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Transports</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Transports</p>
+<h1>MCP transports: stdio, Streamable HTTP and the old SSE transport</h1>
+<p class="guide-deck">A transport is only the pipe that carries JSON-RPC messages, but picking the wrong one is behind most &#x27;it works on my machine&#x27; MCP problems. Here is what each transport does on the wire, when to use it, and how to recognise a mismatch.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 5 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#the-short-version">The short version</a></li><li><a href="#stdio-the-client-starts-the-server">stdio: the client starts the server</a></li><li><a href="#streamable-http-one-endpoint-optional-streaming">Streamable HTTP: one endpoint, optional streaming</a></li><li><a href="#sessions-and-what-changes-in-2026-07-28">Sessions, and what changes in 2026-07-28</a></li><li><a href="#the-old-httpsse-transport">The old HTTP+SSE transport</a></li><li><a href="#choosing-a-transport">Choosing a transport</a></li><li><a href="#recognising-a-transport-mismatch">Recognising a transport mismatch</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcp.guagua-alvin.top/">MCP Config Lab</a><a href="https://mcp2026.guagua-alvin.top/">MCP 2026 Stateless Check</a></div></aside>
+<article class="guide-body">
+<h2 id="the-short-version">The short version</h2>
+<p>The Model Context Protocol defines messages (JSON-RPC 2.0 requests, responses and notifications) separately from how they travel. The specification standardises two transports:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Transport</th>
+<th>Where the server runs</th>
+<th>How messages travel</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>stdio</strong></td>
+<td>A child process on the same machine</td>
+<td>Newline-delimited JSON on stdin and stdout</td>
+<td>Current</td>
+</tr>
+<tr>
+<td><strong>Streamable HTTP</strong></td>
+<td>Anywhere reachable by URL</td>
+<td>HTTP POST to one endpoint; the reply is JSON or an SSE stream</td>
+<td>Current</td>
+</tr>
+<tr>
+<td>HTTP+SSE</td>
+<td>Anywhere reachable by URL</td>
+<td>A long-lived <code>GET /sse</code> stream plus a separate POST endpoint</td>
+<td>Deprecated since 2025-03-26</td>
+</tr>
+</tbody>
+</table></div>
+<p>If the server touches things on your computer, choose stdio. If it is a service other people connect to, choose Streamable HTTP.</p>
+<h2 id="stdio-the-client-starts-the-server">stdio: the client starts the server</h2>
+<p>With stdio, the client launches the server as a subprocess using the <code>command</code> and <code>args</code> from its config. It then writes JSON-RPC messages to the process's standard input and reads replies from its standard output. Each message is a single line of JSON; messages must not contain embedded newlines.</p>
+<pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@example/ticket-server&quot;],
+      &quot;env&quot;: { &quot;TICKET_TOKEN&quot;: &quot;${TICKET_TOKEN}&quot; }
+    }
+  }
+}
+</code></pre>
+<p>Three properties follow from that design:</p>
+<ul>
+<li><strong>No network, no port, no authentication layer.</strong> The server inherits the trust of the user who started the client. That is convenient and it is also the main security consideration: a stdio server runs with your permissions.</li>
+<li><strong>stdout belongs to the protocol.</strong> Anything else printed there corrupts the stream. Logs go to stderr. This single rule explains a large share of failed connections; the <a href="/guides/mcp-server-not-connecting">connection troubleshooting guide</a> covers it.</li>
+<li><strong>One client, one process.</strong> Each client starts its own copy. Two editors using the same server run two processes with separate state.</li>
+</ul>
+<p>Credentials for a stdio server come from the environment, which is why config files have an <code>env</code> block. The MCP authorization specification (OAuth) does not apply to stdio.</p>
+<h2 id="streamable-http-one-endpoint-optional-streaming">Streamable HTTP: one endpoint, optional streaming</h2>
+<p>Streamable HTTP was introduced in the 2025-03-26 specification. The server exposes a single path, conventionally <code>/mcp</code>, and the client sends every JSON-RPC message as an HTTP POST to it.</p>
+<pre><code>POST /mcp HTTP/1.1
+Host: mcp.example.com
+Content-Type: application/json
+Accept: application/json, text/event-stream
+MCP-Protocol-Version: 2025-11-25
+
+{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;tools/list&quot;}
+</code></pre>
+<p>The <code>Accept</code> header lists both content types because the server may answer in either of two ways:</p>
+<ul>
+<li><code>Content-Type: application/json</code> — one response body, then the connection closes. This is enough for most tool calls.</li>
+<li><code>Content-Type: text/event-stream</code> — a Server-Sent Events stream on which the server can send progress notifications and then the final response.</li>
+</ul>
+<p>That choice is what "streamable" means: streaming is available when a request needs it and absent when it does not, so a simple server can be an ordinary stateless HTTP handler.</p>
+<p>In client config files a remote server is an entry with a URL instead of a command. The field name varies by client: <code>url</code> in Claude Code, Cursor and Codex, <code>"type": "http"</code> plus <code>url</code> in VS Code, <code>serverUrl</code> in Windsurf and <code>httpUrl</code> in Gemini CLI. The <a href="/guides/mcp-config-file-locations">config file reference</a> has an example for each.</p>
+<p>Because the server is on the network, it needs real access control. The specification's authorization model is OAuth 2.1 with protected-resource metadata, and servers must also validate the <code>Origin</code> header to defend local HTTP servers against DNS rebinding. A local development server should bind to <code>127.0.0.1</code>, not <code>0.0.0.0</code>.</p>
+<h2 id="sessions-and-what-changes-in-2026-07-28">Sessions, and what changes in 2026-07-28</h2>
+<p>In the 2025 revisions, a Streamable HTTP server could assign a session during initialization by returning an <code>Mcp-Session-Id</code> header, which the client then echoed on every request. Sessions made load balancing awkward, because every request had to reach the instance that remembered the session.</p>
+<p>The 2026-07-28 specification removes protocol-level sessions and the <code>initialize</code> handshake. Each request carries its own protocol version and client information, and Streamable HTTP requests add <code>Mcp-Method</code> and <code>Mcp-Name</code> headers so that gateways can route and rate-limit without parsing the body. If you operate a remote server, read the <a href="/guides/migrate-mcp-2026">stateless migration guide</a> before relying on session state.</p>
+<h2 id="the-old-httpsse-transport">The old HTTP+SSE transport</h2>
+<p>The original remote transport, defined in the 2024-11-05 specification, used two endpoints:</p>
+<ol>
+<li>The client opened <code>GET /sse</code> and kept it open. The first event told the client which URL to POST to.</li>
+<li>The client sent requests by POST to that second URL, and received all responses on the open SSE stream.</li>
+</ol>
+<p>It worked, but it required a permanently open connection per client, could not be served from typical serverless platforms, and lost in-flight responses when the stream dropped. Streamable HTTP replaced it. Many servers still expose an <code>/sse</code> endpoint for older clients, and client documentation often still shows a separate "SSE" option, which is why the two get confused.</p>
+<p>You can usually tell which one a server speaks from its URL and behaviour:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Clue</th>
+<th>Transport</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URL ends in <code>/sse</code>; a browser GET stays open and prints <code>event: endpoint</code></td>
+<td>HTTP+SSE (deprecated)</td>
+</tr>
+<tr>
+<td>URL ends in <code>/mcp</code>; a GET returns 405 or opens an optional stream; POST returns JSON</td>
+<td>Streamable HTTP</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="choosing-a-transport">Choosing a transport</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Situation</th>
+<th>Use</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reads local files, runs local commands, talks to a local database</td>
+<td>stdio</td>
+<td>Needs local access; no network exposure</td>
+</tr>
+<tr>
+<td>A hosted API you offer to customers</td>
+<td>Streamable HTTP</td>
+<td>One deployment, OAuth, scales horizontally</td>
+</tr>
+<tr>
+<td>An internal company tool for many employees</td>
+<td>Streamable HTTP</td>
+<td>Central updates and central access control</td>
+</tr>
+<tr>
+<td>A quick personal script</td>
+<td>stdio</td>
+<td>Nothing to deploy</td>
+</tr>
+<tr>
+<td>A client that only supports stdio must reach a remote server</td>
+<td>stdio bridge</td>
+<td>A small proxy such as <code>mcp-remote</code> runs locally and forwards to the URL</td>
+</tr>
+</tbody>
+</table></div>
+<p>The last row is common in practice. A bridge is configured as a stdio server whose arguments contain the remote URL:</p>
+<pre><code>{ &quot;command&quot;: &quot;npx&quot;, &quot;args&quot;: [&quot;-y&quot;, &quot;mcp-remote&quot;, &quot;https://mcp.example.com/mcp&quot;] }
+</code></pre>
+<h2 id="recognising-a-transport-mismatch">Recognising a transport mismatch</h2>
+<ul>
+<li><strong>405 Method Not Allowed</strong> — POST sent to an SSE-only endpoint, or GET sent to a server that does not offer a stream.</li>
+<li><strong>404 Not Found</strong> — the base URL was configured without the <code>/mcp</code> or <code>/sse</code> path.</li>
+<li><strong>The connection opens and nothing ever arrives</strong> — a Streamable HTTP client waiting on an SSE server's <code>endpoint</code> event, or a proxy buffering the event stream. Reverse proxies must disable response buffering for <code>text/event-stream</code>.</li>
+<li><strong>400 Bad Request mentioning the protocol version</strong> — the <code>MCP-Protocol-Version</code> header is missing or names a revision the server does not support.</li>
+<li><strong>Works locally, fails behind a load balancer</strong> — session affinity. Requests carrying an <code>Mcp-Session-Id</code> are reaching an instance that never issued it.</li>
+</ul>
+<div class="guide-callout">
+<p>Deprecated does not mean switched off. HTTP+SSE servers still run and many clients still connect to them, but new work should target Streamable HTTP, and anything you publish should say clearly which transport and which URL it expects.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Is SSE deprecated in MCP?</h3><p>The standalone HTTP+SSE transport from the 2024-11-05 specification is deprecated and was replaced by Streamable HTTP in the 2025-03-26 revision. Server-Sent Events still exist inside Streamable HTTP as an optional way to stream a response, so 'SSE' as a technique is not gone; the two-endpoint transport built on it is.</p><h3>Which MCP transport should I use?</h3><p>Use stdio when the server runs on the same machine as the client and needs local access such as files, a local database or a CLI. Use Streamable HTTP when the server is a hosted service, must serve several users, or needs OAuth. Do not build new servers on the deprecated HTTP+SSE transport.</p><h3>Can one MCP server support both stdio and HTTP?</h3><p>Yes. The official SDKs separate the server logic from the transport, so the same tools can be exposed over stdio for local installs and over Streamable HTTP for hosted use. Many published servers choose the transport from a command-line flag or an environment variable.</p><h3>Why do I get a 405 Method Not Allowed from an MCP server?</h3><p>A 405 usually means a transport mismatch. A Streamable HTTP client sends a POST to the MCP endpoint, while an old SSE server expects a GET on its <code>/sse</code> endpoint, or the reverse. Check which transport the server implements and use the matching URL and client setting.</p></section>
+<div class="guide-next"><h3>Moving a server between clients?</h3><p>Convert stdio and remote entries between Claude, Cursor, VS Code, Codex and Gemini formats without retyping them.</p><a href="https://mcp.guagua-alvin.top/">Open MCP Config Lab →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/transports" rel="noopener">MCP specification 2025-11-25: transports</a></li><li><a href="https://modelcontextprotocol.io/specification/2024-11-05/basic/transports" rel="noopener">MCP specification 2024-11-05: HTTP with SSE transport</a></li><li><a href="https://blog.modelcontextprotocol.io/posts/2026-07-28-release-candidate/" rel="noopener">The 2026-07-28 MCP specification release candidate</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-config-file-locations">Where every MCP client keeps its config file</a><span>Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.</span></li><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/migrate-mcp-2026">Migrate an MCP server to the stateless 2026-07-28 protocol</a><span>What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published November 12, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

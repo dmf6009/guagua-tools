@@ -1,108 +1,242 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content=
-  "width=device-width,initial-scale=1">
-  <title>MCP OAuth 401 Troubleshooting: Metadata, Scopes &amp; PKCE</title>
-  <meta name="description" content=
-  "Fix an MCP server 401 by checking WWW-Authenticate, protected resource metadata, authorization server discovery, resource audiences, scopes, and PKCE S256.">
-  <meta name="robots" content="index,follow,max-snippet:-1">
-  <link rel="canonical" href=
-  "https://guagua-alvin.top/guides/debug-mcp-oauth-401">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" href="/assets/favicon.svg">
-  <script async src=
-  "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000"
-  crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCP OAuth 401 Troubleshooting: Metadata, Scopes, Audience &amp; PKCE</title>
+<meta name="description" content="Debug a remote MCP server that returns 401: read the WWW-Authenticate challenge, check RFC 9728 protected-resource metadata, authorization-server discovery, the resource parameter, token audience, scopes and PKCE S256.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/debug-mcp-oauth-401">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="MCP OAuth 401 Troubleshooting: Metadata, Scopes, Audience &amp; PKCE">
+<meta property="og:description" content="Debug a remote MCP server that returns 401: read the WWW-Authenticate challenge, check RFC 9728 protected-resource metadata, authorization-server discovery, the resource parameter, token audience, scopes and PKCE S256.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/debug-mcp-oauth-401">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-07-29">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/debug-mcp-oauth-401#article", "headline": "Fix an MCP OAuth 401 from the first broken link", "description": "Debug a remote MCP server that returns 401: read the WWW-Authenticate challenge, check RFC 9728 protected-resource metadata, authorization-server discovery, the resource parameter, token audience, scopes and PKCE S256.", "datePublished": "2026-07-29", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/debug-mcp-oauth-401", "wordCount": 1139, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Fix an MCP OAuth 401 from the first broken link", "item": "https://guagua-alvin.top/guides/debug-mcp-oauth-401"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Why does my MCP server return 401 even though I logged in successfully?", "acceptedAnswer": {"@type": "Answer", "text": "Logging in proves the authorization server accepted you. It does not prove the token is valid for the MCP server. The usual causes are a token whose audience does not match the MCP server's resource identifier, a missing scope, an issuer the server does not trust, or an expired token that the client failed to refresh."}}, {"@type": "Question", "name": "What is the resource_metadata parameter in WWW-Authenticate?", "acceptedAnswer": {"@type": "Answer", "text": "It is a URL, defined by RFC 9728, pointing to the server's protected-resource metadata document. An MCP client reads it from the 401 response to learn which authorization server protects the resource. If the header is missing, the client falls back to the well-known path derived from the MCP server URL."}}, {"@type": "Question", "name": "Does an MCP client have to use PKCE?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The MCP authorization specification requires PKCE for authorization-code flows and clients use the S256 challenge method. Clients are expected to refuse to proceed if the authorization server's metadata does not advertise PKCE support through code_challenge_methods_supported."}}, {"@type": "Question", "name": "Do stdio MCP servers use OAuth?", "acceptedAnswer": {"@type": "Answer", "text": "No. The MCP authorization specification applies to HTTP-based transports. A stdio server runs as a local process and receives credentials from its environment, typically through the env block of the client configuration."}}]}]}</script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="/"><span class=
-    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <nav>
-      <a href="/mcp-tools">MCP tools</a><a href="/">Directory</a>
-    </nav>
-  </header>
-  <main class="guide-page">
-    <p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href=
-    "/mcp-tools">MCP tools</a> / OAuth</p>
-    <header class="guide-head">
-      <p class="eyebrow">Field note 03</p>
-      <h1>Fix an MCP OAuth 401 from the first broken link.</h1>
-      <p class="guide-deck">A working login page does not prove that an MCP client can discover authorization. Capture the challenge, follow the protected-resource metadata, and verify every identifier before changing application code.</p>
-      <p class="guide-meta">Remote MCP OAuth · Updated August 6, 2026 · 12 min</p>
-    </header>
-    <div class="guide-layout">
-      <aside class="guide-aside">
-        <strong>Tool used</strong><a href=
-        "https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a>
-      </aside>
-      <article class="guide-body">
-        <div class="guide-answer"><strong>Start here</strong><p>An unauthenticated MCP request should return <code>401 Unauthorized</code> with a Bearer challenge whose <code>resource_metadata</code> value points to protected-resource metadata. If that pointer is absent or unreachable, later OAuth settings cannot repair discovery.</p><a href="https://mcpoauth.guagua-alvin.top/">Open the MCP OAuth metadata validator →</a></div>
-        <h2>Capture the first 401</h2>
-        <p>Send an unauthenticated request to the MCP resource and
-        save the response headers. You are looking for a Bearer
-        challenge that points the client toward protected-resource
-        metadata. Do not begin at the authorization server
-        dashboard; begin where the client failed.</p>
-        <h2>Open the protected-resource document</h2>
-        <p>Fetch the advertised metadata URL directly. Confirm that
-        its resource identifier describes the MCP endpoint you
-        called and that its authorization server list contains the
-        issuer you intend to use.</p>
-        <pre>{
-  "resource": "https://api.example.com/mcp",
-  "authorization_servers": [
-    "https://login.example.com"
-  ],
-  "scopes_supported": ["mcp:tools"]
-}</pre>
-        <h2>Follow the issuer</h2>
-        <p>Open the authorization-server metadata and compare
-        issuer, authorization endpoint and token endpoint origins.
-        Redirects and proxy hostnames often produce the subtle
-        mismatch: every document loads, but the identifiers
-        disagree.</p>
-        <h2>Read the chain as five separate checks</h2><div class="guide-table-wrap"><table class="guide-table"><thead><tr><th>Checkpoint</th><th>Evidence</th><th>Common failure</th></tr></thead><tbody><tr><td>Challenge</td><td><code>WWW-Authenticate</code></td><td>Missing pointer</td></tr><tr><td>Resource</td><td><code>resource</code></td><td>Host mismatch</td></tr><tr><td>Issuer</td><td><code>authorization_servers</code></td><td>Wrong tenant</td></tr><tr><td>Client flow</td><td>PKCE methods</td><td>S256 unavailable</td></tr><tr><td>Token</td><td>Audience, scope</td><td>Wrong resource</td></tr></tbody></table></div>
-        <h2>Check what the client can actually do</h2>
-        <p>For a public client, require PKCE with S256. Confirm the
-        requested scope is both advertised and accepted. A token
-        minted for the wrong resource or audience may be perfectly
-        valid and still receive 401 from the MCP server.</p>
-        <div class="guide-callout">
-          <p>Do not paste client secrets or live tokens into a
-          validator. Metadata URLs and redacted documents are
-          enough for this check.</p>
-        </div>
-        <h2>Use the chain view</h2>
-        <p>Enter the resource URL and metadata in <a href=
-        "https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a>.
-        Work from the first broken edge. Fixing later fields while
-        the resource-to-issuer link is wrong only creates
-        noise.</p>
-        <h2>Symptom-to-fix matrix</h2><h3>The client never opens a browser</h3><p>Inspect the initial 401. The client probably never discovered the authorization server because the metadata pointer is missing, malformed, or blocked.</p><h3>Login succeeds, then the call still returns 401</h3><p>Compare token audience, issuer, expiry, and granted scopes with the resource metadata. Authentication may have succeeded for the wrong resource.</p><h3>It works locally but fails behind a proxy</h3><p>Compare externally visible URLs with generated values. Forwarded host and protocol handling often advertises an internal hostname or <code>http</code> URL.</p>
-        <h2>Safe debugging checklist</h2><ul class="guide-checklist"><li>Save headers and public metadata, not live tokens.</li><li>Resolve the earliest failing URL first.</li><li>Compare identifiers exactly.</li><li>Require PKCE S256 for public clients.</li><li>Retry after correcting cached metadata.</li></ul>
-        <h2>Related MCP tools</h2><p>If client configuration is wrong, use the <a href="/guides/claude-mcp-to-codex">Claude-to-Codex conversion guide</a>. Before publishing, validate the listing with the <a href="/guides/publish-mcp-registry-server">server.json Registry guide</a>.</p>
-        <div class="guide-next">
-          <h3>Expected result</h3>
-          <p>The unauthenticated challenge leads to the correct
-          resource document, that document names the correct
-          issuer, and a PKCE authorization produces a token
-          accepted for the MCP resource.</p><a href=
-          "https://mcpoauth.guagua-alvin.top/">Trace the OAuth
-          metadata →</a>
-        </div>
-      </article>
-    </div>
-  </main>
-  <footer>
-    <a class="brand" href="/"><span class=
-    "brand-mark">G</span><span>GUAGUA <b>TOOLS</b></span></a>
-    <p>Independent MCP field notes.</p>
-    <div>
-      <a href="/about">About</a><a href="/privacy">Privacy</a>
-    </div>
-  </footer>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Authorization</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Authorization</p>
+<h1>Fix an MCP OAuth 401 from the first broken link</h1>
+<p class="guide-deck">A working login page does not prove that an MCP client can discover how to authorize. The flow is a chain of five documents and requests; a 401 means one link is broken. Start at the first response and move forward one link at a time.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 6 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#the-chain-a-client-follows">The chain a client follows</a></li><li><a href="#step-1-capture-the-first-401">Step 1: capture the first 401</a></li><li><a href="#step-2-read-the-protected-resource-metadata">Step 2: read the protected-resource metadata</a></li><li><a href="#step-3-follow-the-issuer">Step 3: follow the issuer</a></li><li><a href="#step-4-the-authorization-and-token-requests">Step 4: the authorization and token requests</a></li><li><a href="#step-5-why-a-valid-token-still-gets-401">Step 5: why a valid token still gets 401</a></li><li><a href="#symptom-to-fix-matrix">Symptom-to-fix matrix</a></li><li><a href="#newer-requirements-to-plan-for">Newer requirements to plan for</a></li><li><a href="#safe-debugging-checklist">Safe debugging checklist</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://mcpoauth.guagua-alvin.top/">MCP OAuth Lab</a></div></aside>
+<article class="guide-body">
+<h2 id="the-chain-a-client-follows">The chain a client follows</h2>
+<p>When a client connects to a protected MCP server it does not know in advance where to log in. It discovers that in steps, and each step depends on the one before:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>#</th>
+<th>Step</th>
+<th>What the client needs</th>
+<th>Typical failure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Unauthenticated request → <code>401</code></td>
+<td>A <code>WWW-Authenticate: Bearer</code> challenge</td>
+<td>No challenge, or a <code>403</code>/<code>302</code> instead</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Protected-resource metadata</td>
+<td><code>resource</code> and <code>authorization_servers</code></td>
+<td>404, wrong <code>resource</code> value</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Authorization-server metadata</td>
+<td>Endpoints, PKCE methods, registration options</td>
+<td>Issuer mismatch, wrong well-known path</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Authorization and token requests</td>
+<td>PKCE S256 and the <code>resource</code> parameter</td>
+<td>Token minted for the wrong audience</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Request with the token</td>
+<td>Server-side validation</td>
+<td>Audience, issuer, scope or expiry rejected</td>
+</tr>
+</tbody>
+</table></div>
+<p>Debug in that order. Changing token settings while step 2 is broken produces noise, because the client never gets that far.</p>
+<h2 id="step-1-capture-the-first-401">Step 1: capture the first 401</h2>
+<p>Send a request with no credentials and keep the response headers:</p>
+<pre><code>curl -i -X POST https://mcp.example.com/mcp \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json, text/event-stream&quot; \
+  -d '{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;tools/list&quot;}'
+</code></pre>
+<p>A server that follows the specification answers like this:</p>
+<pre><code>HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Bearer resource_metadata=&quot;https://mcp.example.com/.well-known/oauth-protected-resource/mcp&quot;, scope=&quot;tickets:read&quot;
+</code></pre>
+<p>Things to check:</p>
+<ul>
+<li><strong>The status is 401.</strong> A redirect to an HTML login page, or a 403, gives the client nothing to discover. API gateways and web application firewalls in front of the server often cause this.</li>
+<li><strong><code>resource_metadata</code> is an absolute HTTPS URL</strong> that you can open from outside your network.</li>
+<li>The optional <code>scope</code> value tells the client what to request. If it is present, it should name scopes the authorization server will actually grant.</li>
+</ul>
+<p>If the header has no <code>resource_metadata</code>, clients fall back to well-known locations. For an MCP endpoint at <code>https://mcp.example.com/mcp</code> they try <code>/.well-known/oauth-protected-resource/mcp</code> and then <code>/.well-known/oauth-protected-resource</code> at the root.</p>
+<h2 id="step-2-read-the-protected-resource-metadata">Step 2: read the protected-resource metadata</h2>
+<p>Fetch the URL from step 1:</p>
+<pre><code>{
+  &quot;resource&quot;: &quot;https://mcp.example.com/mcp&quot;,
+  &quot;authorization_servers&quot;: [&quot;https://login.example.com&quot;],
+  &quot;scopes_supported&quot;: [&quot;tickets:read&quot;, &quot;tickets:write&quot;],
+  &quot;bearer_methods_supported&quot;: [&quot;header&quot;]
+}
+</code></pre>
+<ul>
+<li><strong><code>resource</code> must identify the MCP server the client called.</strong> Compare scheme, host, port and path. <code>http</code> versus <code>https</code>, a trailing slash, or an internal hostname behind a proxy all count as different resources, and a careful client rejects the document.</li>
+<li><strong><code>authorization_servers</code> must contain the issuer you intend to use.</strong> In multi-tenant identity providers, the wrong tenant URL here sends every user to the wrong login.</li>
+<li>The response should be <code>application/json</code> and, for browser-based clients, served with CORS headers that allow a cross-origin GET.</li>
+</ul>
+<h2 id="step-3-follow-the-issuer">Step 3: follow the issuer</h2>
+<p>Take the authorization server URL and fetch its metadata. For an issuer without a path, that is <code>https://login.example.com/.well-known/oauth-authorization-server</code>. Clients also try <code>/.well-known/openid-configuration</code>. For an issuer with a path such as <code>https://login.example.com/tenant1</code>, the well-known segment is inserted before the path: <code>https://login.example.com/.well-known/oauth-authorization-server/tenant1</code>.</p>
+<pre><code>{
+  &quot;issuer&quot;: &quot;https://login.example.com&quot;,
+  &quot;authorization_endpoint&quot;: &quot;https://login.example.com/authorize&quot;,
+  &quot;token_endpoint&quot;: &quot;https://login.example.com/token&quot;,
+  &quot;registration_endpoint&quot;: &quot;https://login.example.com/register&quot;,
+  &quot;code_challenge_methods_supported&quot;: [&quot;S256&quot;],
+  &quot;response_types_supported&quot;: [&quot;code&quot;],
+  &quot;grant_types_supported&quot;: [&quot;authorization_code&quot;, &quot;refresh_token&quot;]
+}
+</code></pre>
+<ul>
+<li><strong><code>issuer</code> must equal the URL you used to find the document</strong>, character for character. This is the most common subtle failure: every document loads, but a proxy rewrote the host or added a trailing slash, and the identifiers disagree.</li>
+<li><strong><code>code_challenge_methods_supported</code> must include <code>S256</code>.</strong> If the field is absent, MCP clients are required to stop.</li>
+<li><strong>The client must be able to register.</strong> The server should support Client ID Metadata Documents (<code>client_id_metadata_document_supported: true</code>), or Dynamic Client Registration (a <code>registration_endpoint</code>), or the user must supply a pre-registered client ID. With none of the three, a client that has never seen this server cannot proceed, and the visible symptom is often just "the browser never opens".</li>
+</ul>
+<h2 id="step-4-the-authorization-and-token-requests">Step 4: the authorization and token requests</h2>
+<p>Two parameters deserve attention in the authorization URL the client opens:</p>
+<pre><code>https://login.example.com/authorize?response_type=code
+  &amp;client_id=...
+  &amp;redirect_uri=http://127.0.0.1:33418/callback
+  &amp;code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM
+  &amp;code_challenge_method=S256
+  &amp;resource=https%3A%2F%2Fmcp.example.com%2Fmcp
+  &amp;scope=tickets%3Aread
+</code></pre>
+<ul>
+<li><strong><code>resource</code></strong> (RFC 8707) tells the authorization server which API the token is for. MCP clients must send it on both the authorization request and the token request. An authorization server that ignores it will issue a token with a default audience, and step 5 will fail.</li>
+<li><strong><code>redirect_uri</code></strong> must exactly match a registered value. Desktop clients use a loopback address with a port; some identity providers reject loopback redirects unless the client is registered as a native application.</li>
+</ul>
+<h2 id="step-5-why-a-valid-token-still-gets-401">Step 5: why a valid token still gets 401</h2>
+<p>At this point the user has logged in and the client is sending <code>Authorization: Bearer ...</code>. If the server still answers 401, decode the token (if it is a JWT) and compare its claims with what the server expects:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Claim</th>
+<th>Must be</th>
+<th>Typical mistake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aud</code></td>
+<td>The MCP server's resource identifier</td>
+<td>The identity provider's default API audience, or the client ID</td>
+</tr>
+<tr>
+<td><code>iss</code></td>
+<td>The issuer from step 3</td>
+<td>A different tenant or region</td>
+</tr>
+<tr>
+<td><code>exp</code></td>
+<td>In the future</td>
+<td>Clock skew on the server; client not refreshing</td>
+</tr>
+<tr>
+<td><code>scope</code></td>
+<td>Includes what the tool needs</td>
+<td>Requested scope was silently dropped</td>
+</tr>
+</tbody>
+</table></div>
+<p>An MCP server must only accept tokens issued for itself. It must not accept a token for another API and must not forward the client's token to upstream services. If your server calls another API, it needs its own credentials for that.</p>
+<p>Two status codes are easy to confuse here. <code>401</code> means the token is missing, expired or not valid for this server. <code>403</code> with <code>error="insufficient_scope"</code> means the token is fine but lacks a scope; the client should request more, not log in again.</p>
+<h2 id="symptom-to-fix-matrix">Symptom-to-fix matrix</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Symptom</th>
+<th>First thing to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The client never opens a browser</td>
+<td>Steps 1 to 3: missing challenge, unreachable metadata, or no way to register a client</td>
+</tr>
+<tr>
+<td>The browser opens, then "invalid redirect_uri"</td>
+<td>Loopback redirect not allowed for this client registration</td>
+</tr>
+<tr>
+<td>Login succeeds, the next call is 401</td>
+<td>Step 5: the <code>aud</code> claim. Is the authorization server honouring <code>resource</code>?</td>
+</tr>
+<tr>
+<td>Works for an hour, then 401 until reconnect</td>
+<td>Refresh tokens not issued (<code>offline_access</code> not granted) or refresh failing</td>
+</tr>
+<tr>
+<td>Works locally, fails behind a proxy</td>
+<td>Metadata advertises an internal host or <code>http</code>; fix forwarded-header handling</td>
+</tr>
+<tr>
+<td>Works in one client, not another</td>
+<td>One client supports only DCR or only pre-registration; check which registration methods the server offers</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="newer-requirements-to-plan-for">Newer requirements to plan for</h2>
+<p>The 2026-07-28 revision of the specification tightens two things. Clients must validate the <code>iss</code> parameter returned on the authorization response against the issuer they started with (RFC 9207), which defends against mix-up attacks; make sure your authorization server sends it. And Client ID Metadata Documents become the preferred registration method, with Dynamic Client Registration deprecated. The <a href="/guides/migrate-mcp-2026">migration guide</a> lists the other changes.</p>
+<h2 id="safe-debugging-checklist">Safe debugging checklist</h2>
+<ul>
+<li>Save headers and public metadata documents, not live tokens.</li>
+<li>Fix the earliest failing link first.</li>
+<li>Compare identifiers exactly: scheme, host, port, path, trailing slash.</li>
+<li>Confirm <code>S256</code> is advertised.</li>
+<li>Confirm the token's <code>aud</code> is the MCP server.</li>
+<li>After correcting metadata, clear the client's cached authorization state and reconnect.</li>
+</ul>
+<div class="guide-callout">
+<p>Never paste client secrets, authorization codes or live access tokens into a validator, a chat or an issue tracker. The metadata documents are public by design and are enough to diagnose steps 1 to 3.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Why does my MCP server return 401 even though I logged in successfully?</h3><p>Logging in proves the authorization server accepted you. It does not prove the token is valid for the MCP server. The usual causes are a token whose audience does not match the MCP server's resource identifier, a missing scope, an issuer the server does not trust, or an expired token that the client failed to refresh.</p><h3>What is the resource_metadata parameter in WWW-Authenticate?</h3><p>It is a URL, defined by RFC 9728, pointing to the server's protected-resource metadata document. An MCP client reads it from the 401 response to learn which authorization server protects the resource. If the header is missing, the client falls back to the well-known path derived from the MCP server URL.</p><h3>Does an MCP client have to use PKCE?</h3><p>Yes. The MCP authorization specification requires PKCE for authorization-code flows and clients use the S256 challenge method. Clients are expected to refuse to proceed if the authorization server's metadata does not advertise PKCE support through <code>code_challenge_methods_supported</code>.</p><h3>Do stdio MCP servers use OAuth?</h3><p>No. The MCP authorization specification applies to HTTP-based transports. A stdio server runs as a local process and receives credentials from its environment, typically through the <code>env</code> block of the client configuration.</p></section>
+<div class="guide-next"><h3>Check the whole metadata chain at once</h3><p>Paste the resource URL and the public metadata documents; the validator reports the first identifier that does not line up. No tokens or secrets are needed.</p><a href="https://mcpoauth.guagua-alvin.top/">Open MCP OAuth Lab →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization" rel="noopener">MCP specification 2025-11-25: authorization</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc9728" rel="noopener">RFC 9728: OAuth 2.0 Protected Resource Metadata</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc8414" rel="noopener">RFC 8414: OAuth 2.0 Authorization Server Metadata</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc8707" rel="noopener">RFC 8707: Resource Indicators for OAuth 2.0</a></li><li><a href="https://www.rfc-editor.org/rfc/rfc7636" rel="noopener">RFC 7636: Proof Key for Code Exchange (PKCE)</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/mcp-stdio-vs-streamable-http">MCP transports: stdio, Streamable HTTP and the old SSE transport</a><span>How MCP&#x27;s stdio and Streamable HTTP transports work, why HTTP+SSE was deprecated, which one to choose for a local or remote server, and how each appears in client config files.</span></li><li><a href="/guides/migrate-mcp-2026">Migrate an MCP server to the stateless 2026-07-28 protocol</a><span>What the MCP 2026-07-28 specification removes and adds: no initialize handshake, no Mcp-Session-Id, server/discover, per-request _meta, Mcp-Method and Mcp-Name headers, input_required results, cacheable lists, and a step-by-step migration plan.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published July 29, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
 </body>
 </html>

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to Block (or Allow) AI Crawlers in robots.txt: GPTBot, ClaudeBot &amp; More</title>
+<meta name="description" content="A current list of AI crawler user agents (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot and others), ready-to-copy robots.txt rules, the Content-Signal directive, and what robots.txt cannot do.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/block-ai-crawlers-robots-txt">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="How to Block (or Allow) AI Crawlers in robots.txt: GPTBot, ClaudeBot &amp; More">
+<meta property="og:description" content="A current list of AI crawler user agents (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot and others), ready-to-copy robots.txt rules, the Content-Signal directive, and what robots.txt cannot do.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/block-ai-crawlers-robots-txt">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/block-ai-crawlers-robots-txt#article", "headline": "Control AI crawlers with robots.txt and Content-Signal", "description": "A current list of AI crawler user agents (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot and others), ready-to-copy robots.txt rules, the Content-Signal directive, and what robots.txt cannot do.", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/block-ai-crawlers-robots-txt", "wordCount": 1086, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Control AI crawlers with robots.txt and Content-Signal", "item": "https://guagua-alvin.top/guides/block-ai-crawlers-robots-txt"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Does blocking GPTBot remove my site from ChatGPT search?", "acceptedAnswer": {"@type": "Answer", "text": "No. GPTBot collects content that may be used for training. ChatGPT's search results come from a different crawler, OAI-SearchBot, and pages fetched at a user's request use ChatGPT-User. You can block GPTBot and still allow OAI-SearchBot if you want to appear in search answers without contributing training data."}}, {"@type": "Question", "name": "Does blocking Google-Extended affect my Google Search ranking?", "acceptedAnswer": {"@type": "Answer", "text": "No. Google-Extended is a control token, not a separate crawler: it tells Google not to use your content for training Gemini models and for grounding in some Gemini products. It does not affect crawling, indexing or ranking in Google Search, which are governed by Googlebot."}}, {"@type": "Question", "name": "Is robots.txt legally binding or technically enforced?", "acceptedAnswer": {"@type": "Answer", "text": "Neither. robots.txt is a voluntary convention, standardised as RFC 9309. Reputable crawlers follow it, but nothing stops a client from ignoring it or sending a false user agent. To enforce a block you need server-side controls such as firewall or bot-management rules."}}, {"@type": "Question", "name": "Should I use robots.txt or a noindex tag?", "acceptedAnswer": {"@type": "Answer", "text": "They do different jobs. robots.txt controls whether a crawler may fetch a URL. A noindex meta tag or header controls whether a fetched page may be shown in search results, and it only works if the crawler is allowed to fetch the page and see it. Blocking a URL in robots.txt and adding noindex to it at the same time defeats the noindex."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / AI crawlers</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> AI crawlers</p>
+<h1>Control AI crawlers with robots.txt and Content-Signal</h1>
+<p class="guide-deck">&quot;Block AI&quot; is three different decisions: whether your pages may train models, whether they may appear in AI search answers, and whether an assistant may fetch a page when a user asks. Each has its own user agents, and blocking the wrong one removes you from places you wanted to be.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 5 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#three-kinds-of-ai-crawler">Three kinds of AI crawler</a></li><li><a href="#user-agents-to-know">User agents to know</a></li><li><a href="#copy-and-paste-configurations">Copy-and-paste configurations</a></li><li><a href="#the-rule-that-surprises-people-the-most-specific-group-wins">The rule that surprises people: the most specific group wins</a></li><li><a href="#content-signal-saying-how-content-may-be-used">Content-Signal: saying how content may be used</a></li><li><a href="#what-robotstxt-cannot-do">What robots.txt cannot do</a></li><li><a href="#test-before-and-after-you-deploy">Test before and after you deploy</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://aipolicy.guagua-alvin.top/">CrawlerPolicy</a></div></aside>
+<article class="guide-body">
+<h2 id="three-kinds-of-ai-crawler">Three kinds of AI crawler</h2>
+<p>Before writing any rules, decide what you are trying to prevent. The companies that run AI products now mostly publish separate user agents for separate purposes:</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Purpose</th>
+<th>What it does with your page</th>
+<th>If you block it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Training</strong></td>
+<td>Collects pages that may be used to train future models</td>
+<td>Your content is left out of future training data. No effect on visibility today</td>
+</tr>
+<tr>
+<td><strong>AI search</strong></td>
+<td>Builds an index used to cite and link sources in answers</td>
+<td>Your site stops being cited in that product's answers</td>
+</tr>
+<tr>
+<td><strong>User-triggered fetch</strong></td>
+<td>Fetches one page because a person asked the assistant about it</td>
+<td>The assistant tells the user it cannot read your page</td>
+</tr>
+</tbody>
+</table></div>
+<p>A publisher who wants readers but not uncompensated training would block the first group and allow the other two. A site with private or licensed material might block all three. Blocking everything "just in case" is the choice people most often regret, because it removes a growing source of referral traffic.</p>
+<h2 id="user-agents-to-know">User agents to know</h2>
+<p>These are the tokens to use after <code>User-agent:</code>. Vendors add and rename crawlers, so check the linked documentation before relying on any list, including this one.</p>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Operator</th>
+<th>Training</th>
+<th>AI search</th>
+<th>User-triggered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAI</td>
+<td><code>GPTBot</code></td>
+<td><code>OAI-SearchBot</code></td>
+<td><code>ChatGPT-User</code></td>
+</tr>
+<tr>
+<td>Anthropic</td>
+<td><code>ClaudeBot</code></td>
+<td><code>Claude-SearchBot</code></td>
+<td><code>Claude-User</code></td>
+</tr>
+<tr>
+<td>Perplexity</td>
+<td>—</td>
+<td><code>PerplexityBot</code></td>
+<td><code>Perplexity-User</code></td>
+</tr>
+<tr>
+<td>Google</td>
+<td><code>Google-Extended</code> (control token)</td>
+<td>covered by <code>Googlebot</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Apple</td>
+<td><code>Applebot-Extended</code> (control token)</td>
+<td><code>Applebot</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Meta</td>
+<td><code>Meta-ExternalAgent</code></td>
+<td>—</td>
+<td><code>Meta-ExternalFetcher</code></td>
+</tr>
+<tr>
+<td>Amazon</td>
+<td><code>Amazonbot</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>ByteDance</td>
+<td><code>Bytespider</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Common Crawl</td>
+<td><code>CCBot</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>Two entries behave differently from the rest. <code>Google-Extended</code> and <code>Applebot-Extended</code> are not crawlers and never appear in your logs. They are switches read by the company's normal crawler: disallowing them opts your content out of model training while Search continues exactly as before. Common Crawl's <code>CCBot</code> is not operated by an AI company, but its public dataset is widely used for training, so it belongs in any training opt-out.</p>
+<h2 id="copy-and-paste-configurations">Copy-and-paste configurations</h2>
+<p>Place <code>robots.txt</code> at the root of each host: <code>https://example.com/robots.txt</code>. A file on <code>www.example.com</code> does not cover <code>blog.example.com</code>.</p>
+<h3 id="block-training-stay-visible-in-ai-search">Block training, stay visible in AI search</h3>
+<pre><code># Training crawlers and training opt-out tokens
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Amazonbot
+User-agent: Bytespider
+User-agent: CCBot
+Disallow: /
+
+# Everyone else, including search and user-triggered agents
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap.xml
+</code></pre>
+<p>Several <code>User-agent</code> lines may share one group of rules. That is part of the standard and keeps the file short.</p>
+<h3 id="block-every-ai-use">Block every AI use</h3>
+<p>Add the search and user-triggered agents to the same group:</p>
+<pre><code>User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+User-agent: Amazonbot
+User-agent: Bytespider
+User-agent: CCBot
+Disallow: /
+</code></pre>
+<h3 id="allow-ai-but-protect-part-of-the-site">Allow AI, but protect part of the site</h3>
+<pre><code>User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+Disallow: /members/
+Disallow: /drafts/
+Allow: /
+</code></pre>
+<h2 id="the-rule-that-surprises-people-the-most-specific-group-wins">The rule that surprises people: the most specific group wins</h2>
+<p>A crawler obeys <strong>only one group</strong>: the one whose <code>User-agent</code> matches it most specifically. It does not combine that group with <code>User-agent: *</code>.</p>
+<pre><code>User-agent: *
+Disallow: /admin/
+
+User-agent: GPTBot
+Disallow: /drafts/
+</code></pre>
+<p>Here GPTBot may crawl <code>/admin/</code>, because once it finds its own group it ignores the wildcard group entirely. If a rule should apply to everyone, repeat it in every named group.</p>
+<p>Within a group, when an <code>Allow</code> and a <code>Disallow</code> both match a URL, the longer (more specific) path wins. An empty <code>Disallow:</code> means "allow everything", and <code>Disallow: /</code> means "allow nothing". Mixing those two up is the classic way to block a whole site by accident.</p>
+<h2 id="content-signal-saying-how-content-may-be-used">Content-Signal: saying how content may be used</h2>
+<p>robots.txt was designed to answer one question: may you fetch this URL? It has no vocabulary for <em>what you may do afterwards</em>. Content Signals, a convention introduced by Cloudflare in 2025, adds a line for that:</p>
+<pre><code>User-agent: *
+Content-Signal: search=yes, ai-input=no, ai-train=no
+Allow: /
+</code></pre>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Signal</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>search</code></td>
+<td>Building a search index and showing links and short excerpts</td>
+</tr>
+<tr>
+<td><code>ai-input</code></td>
+<td>Using the content as input to an AI answer at request time (retrieval, grounding)</td>
+</tr>
+<tr>
+<td><code>ai-train</code></td>
+<td>Using the content to train or fine-tune models</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each is <code>yes</code> or <code>no</code>; leaving one out expresses no preference. The line sits inside a <code>User-agent</code> group like any other rule, and parsers that do not know it simply ignore it, so adding it cannot break an existing file. It is a statement of preference rather than a technical control, and how much weight operators give it varies. It is still worth adding, because it states your position in a machine-readable form that an access rule alone cannot.</p>
+<h2 id="what-robotstxt-cannot-do">What robots.txt cannot do</h2>
+<ul>
+<li><strong>It does not enforce anything.</strong> Compliance is voluntary. Crawlers that ignore the file, or that pretend to be a browser, are stopped only by server-side measures: firewall rules, bot management, rate limiting or authentication.</li>
+<li><strong>It does not remove what was already collected.</strong> A rule added today affects future crawls.</li>
+<li><strong>It does not hide content.</strong> The file is public and lists the paths you care about. Do not use it to protect anything sensitive; require a login instead.</li>
+<li><strong>It does not control indexing.</strong> A blocked URL can still appear in search results as a bare link if other sites point to it. Use <code>noindex</code> on a crawlable page to keep it out of results.</li>
+<li><strong>It does not cover other hosts.</strong> Each subdomain needs its own file.</li>
+</ul>
+<p>Where enforcement matters, verify identity rather than trusting the user-agent string. OpenAI, Anthropic, Perplexity and others publish the IP ranges their crawlers use, and a request claiming to be <code>GPTBot</code> from an unlisted address is an impostor.</p>
+<h2 id="test-before-and-after-you-deploy">Test before and after you deploy</h2>
+<ol>
+<li>Fetch the file as a crawler would and check the status is 200 and the type is plain text. A robots.txt that returns an HTML error page, or a 5xx error, is interpreted in ways you will not like: many crawlers treat a server error as "disallow everything".</li>
+<li>Make sure no CDN or security rule serves a challenge page to bots requesting <code>/robots.txt</code> itself.</li>
+<li>Test specific URLs against specific user agents rather than reading the file by eye. Group selection and path precedence are easy to misjudge.</li>
+<li>Watch your access logs for a few days. Training crawlers you disallowed should stop requesting pages other than <code>robots.txt</code>.</li>
+</ol>
+<pre><code>curl -sI https://example.com/robots.txt | head -n 5
+curl -s -A &quot;GPTBot&quot; https://example.com/robots.txt
+</code></pre>
+<div class="guide-callout">
+<p>A policy is a business decision, not a technical one. Before blocking search-oriented agents, look at how much traffic already arrives from AI products; before allowing training crawlers, check any licences that apply to content you publish but do not own.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>Does blocking GPTBot remove my site from ChatGPT search?</h3><p>No. GPTBot collects content that may be used for training. ChatGPT's search results come from a different crawler, OAI-SearchBot, and pages fetched at a user's request use ChatGPT-User. You can block GPTBot and still allow OAI-SearchBot if you want to appear in search answers without contributing training data.</p><h3>Does blocking Google-Extended affect my Google Search ranking?</h3><p>No. Google-Extended is a control token, not a separate crawler: it tells Google not to use your content for training Gemini models and for grounding in some Gemini products. It does not affect crawling, indexing or ranking in Google Search, which are governed by Googlebot.</p><h3>Is robots.txt legally binding or technically enforced?</h3><p>Neither. robots.txt is a voluntary convention, standardised as RFC 9309. Reputable crawlers follow it, but nothing stops a client from ignoring it or sending a false user agent. To enforce a block you need server-side controls such as firewall or bot-management rules.</p><h3>Should I use robots.txt or a noindex tag?</h3><p>They do different jobs. robots.txt controls whether a crawler may fetch a URL. A <code>noindex</code> meta tag or header controls whether a fetched page may be shown in search results, and it only works if the crawler is allowed to fetch the page and see it. Blocking a URL in robots.txt and adding noindex to it at the same time defeats the noindex.</p></section>
+<div class="guide-next"><h3>Build the policy instead of typing it</h3><p>Choose what each kind of AI crawler may do and get a robots.txt block with matching Content-Signal lines, or paste an existing file to see who it lets in.</p><a href="https://aipolicy.guagua-alvin.top/">Open CrawlerPolicy →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://www.rfc-editor.org/rfc/rfc9309" rel="noopener">RFC 9309: Robots Exclusion Protocol</a></li><li><a href="https://platform.openai.com/docs/bots" rel="noopener">OpenAI: overview of OpenAI crawlers</a></li><li><a href="https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler" rel="noopener">Anthropic: does Anthropic crawl data from the web, and how can site owners block the crawler?</a></li><li><a href="https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers" rel="noopener">Google: common crawlers, including Google-Extended</a></li><li><a href="https://docs.perplexity.ai/guides/bots" rel="noopener">Perplexity: crawlers</a></li><li><a href="https://contentsignals.org/" rel="noopener">Content Signals</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-config-file-locations">Where every MCP client keeps its config file</a><span>Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.</span></li><li><a href="/guides/write-agents-md">Write an AGENTS.md that coding agents actually follow</a><span>What AGENTS.md is, which coding agents read it, what to put in it, how nested files and precedence work, a complete example, and the mistakes that make agents ignore or misapply your instructions.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published November 12, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>

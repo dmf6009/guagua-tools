@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to Write AGENTS.md: Structure, Examples &amp; Common Mistakes</title>
+<meta name="description" content="What AGENTS.md is, which coding agents read it, what to put in it, how nested files and precedence work, a complete example, and the mistakes that make agents ignore or misapply your instructions.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="author" content="Alvin Li">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://guagua-alvin.top/guides/write-agents-md">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Guagua Tools">
+<meta property="og:title" content="How to Write AGENTS.md: Structure, Examples &amp; Common Mistakes">
+<meta property="og:description" content="What AGENTS.md is, which coding agents read it, what to put in it, how nested files and precedence work, a complete example, and the mistakes that make agents ignore or misapply your instructions.">
+<meta property="og:url" content="https://guagua-alvin.top/guides/write-agents-md">
+<meta property="og:image" content="https://guagua-alvin.top/assets/social-card.svg">
+<meta property="article:published_time" content="2026-11-12">
+<meta property="article:modified_time" content="2026-11-12">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TechArticle", "@id": "https://guagua-alvin.top/guides/write-agents-md#article", "headline": "Write an AGENTS.md that coding agents actually follow", "description": "What AGENTS.md is, which coding agents read it, what to put in it, how nested files and precedence work, a complete example, and the mistakes that make agents ignore or misapply your instructions.", "datePublished": "2026-11-12", "dateModified": "2026-11-12", "inLanguage": "en", "mainEntityOfPage": "https://guagua-alvin.top/guides/write-agents-md", "wordCount": 1202, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}, "publisher": {"@type": "Organization", "name": "Guagua Tools", "url": "https://guagua-alvin.top/", "logo": {"@type": "ImageObject", "url": "https://guagua-alvin.top/assets/favicon.svg"}}, "image": "https://guagua-alvin.top/assets/social-card.svg"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Guagua Tools", "item": "https://guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://guagua-alvin.top/guides/"}, {"@type": "ListItem", "position": 3, "name": "Write an AGENTS.md that coding agents actually follow", "item": "https://guagua-alvin.top/guides/write-agents-md"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is AGENTS.md?", "acceptedAnswer": {"@type": "Answer", "text": "AGENTS.md is a plain Markdown file, placed in a repository, that gives AI coding agents the project-specific context a README does not: how to build and test, which conventions to follow, and what not to touch. It is an open convention with no required schema, supported by many coding agents."}}, {"@type": "Question", "name": "Where should AGENTS.md go?", "acceptedAnswer": {"@type": "Answer", "text": "Put the main file at the repository root. In a monorepo you can add further AGENTS.md files inside packages; an agent working on a file uses the nearest one up the directory tree, so a package-level file can add to or override the root guidance for that package."}}, {"@type": "Question", "name": "What is the difference between AGENTS.md and README.md?", "acceptedAnswer": {"@type": "Answer", "text": "A README is for people: what the project is, how to install it, how to contribute. AGENTS.md is for agents: exact commands, verification steps, boundaries and conventions, written as instructions. Keeping them separate keeps the README readable and the agent file precise."}}, {"@type": "Question", "name": "Does Claude Code read AGENTS.md?", "acceptedAnswer": {"@type": "Answer", "text": "Claude Code's own instruction file is CLAUDE.md. A common setup is to keep the shared instructions in AGENTS.md and have CLAUDE.md import it with a line containing @AGENTS.md, so every agent reads one source of truth."}}]}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="site-header"><a class="brand" href="/" aria-label="Guagua Tools home"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><nav aria-label="Main navigation"><a href="/mcp-tools">MCP tools</a><a href="/ai-agent-tools">Agent tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/about">About</a></nav></header>
+<main class="guide-page" id="content">
+<p class="breadcrumbs"><a href="/">Guagua Tools</a> / <a href="/guides/">Guides</a> / Agent instructions</p>
+<header class="guide-head">
+<p class="eyebrow"><span></span> Agent instructions</p>
+<h1>Write an AGENTS.md that coding agents actually follow</h1>
+<p class="guide-deck">An AGENTS.md is the briefing a coding agent reads before it touches your repository. The useful ones are short, specific and testable. The ones that fail are long, vague, or quietly contradict themselves. Here is how to write the first kind.</p>
+<p class="guide-meta">By Alvin Li · Updated <time datetime="2026-11-12">November 12, 2026</time> · 6 min read</p>
+</header>
+<div class="guide-layout">
+<aside class="guide-aside"><nav class="guide-toc" aria-label="On this page"><strong>On this page</strong><ol><li><a href="#what-agentsmd-is-for">What AGENTS.md is for</a></li><li><a href="#what-to-include">What to include</a></li><li><a href="#a-complete-example">A complete example</a></li><li><a href="#nested-files-and-precedence">Nested files and precedence</a></li><li><a href="#working-with-claudemd-and-other-tool-specific-files">Working with CLAUDE.md and other tool-specific files</a></li><li><a href="#mistakes-that-make-agents-ignore-the-file">Mistakes that make agents ignore the file</a></li><li><a href="#security-instructions-are-executable-in-practice">Security: instructions are executable in practice</a></li><li><a href="#maintaining-it">Maintaining it</a></li><li><a href="#faq">FAQ</a></li></ol></nav><div class="guide-aside-tools"><strong>Free tool for this guide</strong><a href="https://agentslint.guagua-alvin.top/">AgentFile Check</a><a href="https://skillguard.guagua-alvin.top/">Agent Skill Guard</a></div></aside>
+<article class="guide-body">
+<h2 id="what-agentsmd-is-for">What AGENTS.md is for</h2>
+<p>A coding agent arriving in your repository knows the programming language but nothing about your project: which package manager you use, how tests are run, which directories are generated, what a reviewer will reject. It can discover some of that by exploring, slowly and sometimes wrongly. <code>AGENTS.md</code> tells it up front.</p>
+<p>The format is deliberately minimal. It is ordinary Markdown, with no required headings and no front matter. It began as a convention shared by several agent vendors and is now maintained as an open format, read by tools including Codex, Cursor, GitHub Copilot's coding agent, Gemini CLI, Jules, Aider, Zed, Windsurf and others. That reach is the reason to prefer it over a tool-specific file: one document serves every agent your contributors use.</p>
+<h2 id="what-to-include">What to include</h2>
+<p>Write down what a capable new contributor would have to ask. In practice that is six things.</p>
+<p><strong>1. Setup and build commands, exactly as typed.</strong> An agent will run what you write. <code>pnpm install</code> and <code>pnpm build</code>, not "install dependencies".</p>
+<p><strong>2. How to verify a change.</strong> This is the most valuable section. State the command that must pass before work is considered done, how to run a single test, and how long things take.</p>
+<p><strong>3. Project layout.</strong> A few lines on where source, tests and generated files live, and which directories must never be edited by hand.</p>
+<p><strong>4. Conventions a linter does not enforce.</strong> Naming, error-handling style, how to add a migration, which library to use for dates. Skip anything the formatter already fixes.</p>
+<p><strong>5. Boundaries.</strong> What needs human approval, what must not be changed, and which commands are forbidden: production deploys, force pushes, edits to lockfiles or CI configuration.</p>
+<p><strong>6. Pull request expectations.</strong> Commit message format, what a PR description must contain, whether to update the changelog.</p>
+<h2 id="a-complete-example">A complete example</h2>
+<pre><code># AGENTS.md
+
+## Project
+TypeScript monorepo for the Tickets API and its web dashboard.
+Node 22, pnpm 10. Packages live in `packages/*`.
+
+## Setup
+- Install: `pnpm install`
+- Start the API locally: `pnpm --filter api dev` (port 4000)
+
+## Verify before finishing
+Run all three; all must pass.
+- Type check: `pnpm typecheck`
+- Lint: `pnpm lint`
+- Tests: `pnpm test`
+
+Run one test file: `pnpm --filter api test src/refunds/refund.test.ts`
+The full suite takes about four minutes. Prefer single files while iterating.
+
+## Layout
+- `packages/api/src` — HTTP handlers and domain logic
+- `packages/web/src` — React dashboard
+- `packages/db/migrations` — SQL migrations, append-only
+- `packages/*/dist`, `packages/api/src/generated` — generated, never edit
+
+## Conventions
+- Validate all request bodies with the zod schemas in `packages/api/src/schemas`.
+- Money is an integer number of cents. Never use floating point for amounts.
+- New database changes are a new migration file. Never edit an existing one.
+- Throw `AppError` with a code from `errors.ts`; do not throw plain strings.
+
+## Boundaries
+- Do not modify `.github/workflows`, `pnpm-lock.yaml` or anything in `infra/`
+  unless the task explicitly asks for it.
+- Never run `pnpm deploy`, `pnpm db:reset`, or any command against production.
+- Ask before adding a new runtime dependency.
+
+## Pull requests
+- Conventional Commits (`feat:`, `fix:`, `chore:`).
+- Describe what changed, why, and how you verified it.
+</code></pre>
+<p>That is about forty lines, and an agent can act on every one of them.</p>
+<h2 id="nested-files-and-precedence">Nested files and precedence</h2>
+<p>In a large repository, one file cannot describe everything. Agents that support the convention look for <code>AGENTS.md</code> in the directory of the file they are working on and in each parent directory, and <strong>the nearest file takes precedence</strong> when instructions conflict. A typical arrangement:</p>
+<pre><code>AGENTS.md                  # shared rules: tooling, PR format, boundaries
+packages/api/AGENTS.md     # API-specific: test database, schema rules
+packages/web/AGENTS.md     # dashboard-specific: component conventions
+</code></pre>
+<p>Keep shared rules at the root and put only the differences in package files. Do not copy the root content into each package; duplicated text drifts, and two files that disagree are worse than one that is incomplete.</p>
+<p>Individual tools add their own layers. Codex, for example, also reads a personal <code>~/.codex/AGENTS.md</code> that applies to all your projects, and concatenates files from the repository root down to the working directory, with a size limit on the combined text. An explicit instruction in the user's prompt overrides anything in the file.</p>
+<h2 id="working-with-claudemd-and-other-tool-specific-files">Working with CLAUDE.md and other tool-specific files</h2>
+<p>Some tools have their own file names: <code>CLAUDE.md</code> for Claude Code, <code>.github/copilot-instructions.md</code> for Copilot, rule files for Cursor. Maintaining four copies guarantees they diverge. Choose one source of truth and point the others at it.</p>
+<p>For Claude Code, a <code>CLAUDE.md</code> containing a single import line is enough:</p>
+<pre><code>@AGENTS.md
+</code></pre>
+<p>Put only what is unique to that tool in the tool-specific file.</p>
+<h2 id="mistakes-that-make-agents-ignore-the-file">Mistakes that make agents ignore the file</h2>
+<div class="guide-table-wrap"><table class="guide-table">
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Why it fails</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vague guidance: "write clean, well-tested code"</td>
+<td>Nothing to act on or check</td>
+<td>Name the command and the rule</td>
+</tr>
+<tr>
+<td>Commands described, not written</td>
+<td>The agent guesses the script name</td>
+<td>Put the exact command in backticks</td>
+</tr>
+<tr>
+<td>No verification step</td>
+<td>The agent declares success without running anything</td>
+<td>Add a "must pass" list</td>
+</tr>
+<tr>
+<td>Contradictions: "always add tests" and "do not touch <code>tests/</code>"</td>
+<td>The agent picks one arbitrarily</td>
+<td>Search the file for conflicts when you add a rule</td>
+</tr>
+<tr>
+<td>Stale commands</td>
+<td>The file says <code>npm test</code>; the project moved to pnpm</td>
+<td>Review the file whenever tooling changes</td>
+</tr>
+<tr>
+<td>Too long</td>
+<td>Important rules are diluted and may be truncated</td>
+<td>Keep the root file to what applies everywhere; move detail into nested files or linked docs</td>
+</tr>
+<tr>
+<td>Only prohibitions</td>
+<td>The agent knows what not to do but not what to do instead</td>
+<td>Pair each "never" with the approved alternative</td>
+</tr>
+<tr>
+<td>Secrets or internal URLs</td>
+<td>The file is committed and widely read</td>
+<td>Reference variable names, never values</td>
+</tr>
+</tbody>
+</table></div>
+<p>A useful test: give the file to a new human contributor. If they could make a correct change using only this file and the code, an agent probably can too.</p>
+<h2 id="security-instructions-are-executable-in-practice">Security: instructions are executable in practice</h2>
+<p>An agent treats <code>AGENTS.md</code> as trusted guidance and will run the commands in it. That makes the file part of your supply chain.</p>
+<ul>
+<li><strong>Review changes to it like code.</strong> A pull request that adds "run <code>curl … | sh</code> during setup" to an instruction file is an attack, not documentation.</li>
+<li><strong>Be careful with repositories you did not write.</strong> Opening an untrusted project in an agent with permission to run commands means following that project's instructions. Read its agent files first, and keep approval prompts on.</li>
+<li><strong>Do not grant authority the file should not have.</strong> Instructions such as "ignore previous rules" or "do not ask for confirmation" have no place in a project file.</li>
+<li>The same applies to <code>SKILL.md</code> files and other instruction bundles downloaded from the internet. <a href="https://skillguard.guagua-alvin.top/">Agent Skill Guard</a> checks those for override attempts and risky permissions.</li>
+</ul>
+<h2 id="maintaining-it">Maintaining it</h2>
+<p>Treat the file as living documentation. When an agent makes the same mistake twice, the fix is usually one new line in <code>AGENTS.md</code>. When a line no longer matches the project, delete it; a wrong instruction is followed just as faithfully as a right one. A short file that is true is worth more than a long one that used to be.</p>
+<div class="guide-callout">
+<p>Start small: setup, verification and boundaries. Add a rule only when you have seen the problem it prevents. Files written from real corrections stay short and get followed.</p>
+</div>
+<section class="guide-faq" id="faq"><h2>Frequently asked questions</h2><h3>What is AGENTS.md?</h3><p>AGENTS.md is a plain Markdown file, placed in a repository, that gives AI coding agents the project-specific context a README does not: how to build and test, which conventions to follow, and what not to touch. It is an open convention with no required schema, supported by many coding agents.</p><h3>Where should AGENTS.md go?</h3><p>Put the main file at the repository root. In a monorepo you can add further AGENTS.md files inside packages; an agent working on a file uses the nearest one up the directory tree, so a package-level file can add to or override the root guidance for that package.</p><h3>What is the difference between AGENTS.md and README.md?</h3><p>A README is for people: what the project is, how to install it, how to contribute. AGENTS.md is for agents: exact commands, verification steps, boundaries and conventions, written as instructions. Keeping them separate keeps the README readable and the agent file precise.</p><h3>Does Claude Code read AGENTS.md?</h3><p>Claude Code's own instruction file is CLAUDE.md. A common setup is to keep the shared instructions in AGENTS.md and have CLAUDE.md import it with a line containing <code>@AGENTS.md</code>, so every agent reads one source of truth.</p></section>
+<div class="guide-next"><h3>Lint the file before you commit it</h3><p>Paste an AGENTS.md and get a review of its scope, commands, verification steps and conflicting instructions, with concrete fixes.</p><a href="https://agentslint.guagua-alvin.top/">Open AgentFile Check →</a></div>
+<section class="guide-sources"><h2>Sources and further reading</h2><ul><li><a href="https://agents.md/" rel="noopener">AGENTS.md: the open format</a></li><li><a href="https://developers.openai.com/codex/guides/agents-md" rel="noopener">Codex documentation: custom instructions with AGENTS.md</a></li><li><a href="https://docs.claude.com/en/docs/claude-code/memory" rel="noopener">Claude Code documentation: memory and CLAUDE.md</a></li><li><a href="https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions" rel="noopener">GitHub Copilot documentation: repository custom instructions</a></li></ul></section>
+<section class="guide-related"><h2>Keep reading</h2><ul><li><a href="/guides/mcp-config-file-locations">Where every MCP client keeps its config file</a><span>Exact MCP config file paths for Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, Codex, Gemini CLI, Cline and Zed on macOS, Windows and Linux, with the top-level key each one expects.</span></li><li><a href="/guides/mcp-server-not-connecting">Fix an MCP server that will not connect</a><span>Step-by-step fixes for MCP servers that fail to start: spawn npx ENOENT, &#x27;server disconnected&#x27;, startup timeouts, JSON parse errors from stdout logging, Windows npx issues and missing environment variables.</span></li><li><a href="/guides/block-ai-crawlers-robots-txt">Control AI crawlers with robots.txt and Content-Signal</a><span>A current list of AI crawler user agents (GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot and others), ready-to-copy robots.txt rules, the Content-Signal directive, and what robots.txt cannot do.</span></li></ul></section>
+<section class="guide-author"><p><strong>Written and maintained by Alvin Li</strong>, the developer behind Guagua Tools. First published November 12, 2026; last reviewed November 12, 2026. Found an error or an outdated detail? <a href="/contact">Report it</a> and it will be corrected. How pages are checked is described in the <a href="/testing-methodology">testing method</a>.</p></section>
+</article>
+</div>
+</main>
+<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a><p>Free MCP, AI agent and developer tools, with the guides to use them.</p><div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div><div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>
+</body>
+</html>
