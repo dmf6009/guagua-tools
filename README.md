@@ -33,10 +33,24 @@ Commit the generated HTML: the Pages build command is `exit 0`, so nothing is bu
 
 ## Games
 
-`/games/` holds three browser games (Sudoku, Minesweeper, Klondike Solitaire). Game logic is in `games/assets/*.js`; the pages are generated from `content/games/*.md` and the markup in `scripts/build-games.py`:
+Served at https://games.guagua-alvin.top/ from the `/games/` directory; `ops/worker-proxy.js` maps the host onto it, so every link inside `/games/` is relative.
+
+| Page | Script |
+|---|---|
+| `sudoku`, `daily-sudoku`, `easy-sudoku`, `medium-sudoku`, `hard-sudoku`, `expert-sudoku` | `games/assets/sudoku.js` (mode set by `window.GG_SUDOKU`) |
+| `minesweeper` | `games/assets/minesweeper.js` |
+| `solitaire` (Klondike) | `games/assets/solitaire.js` |
+| `freecell` | `games/assets/cards.js` + `freecell.js` (Windows-compatible numbered deals) |
+| `spider` | `games/assets/cards.js` + `spider.js` |
+
+`games/assets/common.js` handles the post-game panel and result sharing on every page.
+
+Page text lives in `content/games/*.md`; titles, FAQs and markup live in `scripts/build-games.py`. Rebuild with:
 
 ```bash
-python3 scripts/build-games.py && python3 scripts/build-guides.py
+python3 scripts/build-games.py    # writes games/*.html, games/sitemap.xml, games/robots.txt, games/manifest.webmanifest
 ```
 
-Links inside `/games/` are relative so the same files can be served at `games.guagua-alvin.top`. `ops/worker-proxy.js` already maps that host to the `/games/` directory; it takes effect after a proxied DNS record for `games` exists and the worker is redeployed (`cd ops && npx wrangler deploy`). After that, change `BASE` in `build-games.py` to the subdomain and rebuild so canonical URLs move.
+The daily Sudoku is generated from the date with a seeded random generator, so changing the generator in `sudoku.js` changes every past and future daily puzzle. Puzzle #1 is 16 November 2026.
+
+The worker also redirects `guagua-alvin.top/games/*` to the subdomain; that part takes effect the next time the worker is deployed (`cd ops && npx wrangler deploy`).

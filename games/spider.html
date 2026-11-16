@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Online Spider Solitaire: 1, 2 or 4 Suits | Guagua Games</title>
+<meta name="description" content="Play Spider Solitaire online for free with 1, 2 or 4 suits. Tap or drag to move, unlimited undo, hints and classic scoring. No download or sign-up, works on phone and desktop.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/spider">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Free Online Spider Solitaire: 1, 2 or 4 Suits | Guagua Games">
+<meta property="og:description" content="Play Spider Solitaire online for free with 1, 2 or 4 suits. Tap or drag to move, unlimited undo, hints and classic scoring. No download or sign-up, works on phone and desktop.">
+<meta property="og:url" content="https://games.guagua-alvin.top/spider">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Spider Solitaire", "url": "https://games.guagua-alvin.top/spider", "description": "Play Spider Solitaire online for free with 1, 2 or 4 suits. Tap or drag to move, unlimited undo, hints and classic scoring. No download or sign-up, works on phone and desktop.", "genre": "Card", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-16", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Spider Solitaire", "item": "https://games.guagua-alvin.top/spider"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which Spider Solitaire mode is easiest?", "acceptedAnswer": {"@type": "Answer", "text": "One suit. All cards are spades, so every descending stack can be moved, and most games can be won. Two suits is a good next step; four suits is the full challenge."}}, {"@type": "Question", "name": "Why can I not deal more cards?", "acceptedAnswer": {"@type": "Answer", "text": "A new row can only be dealt when every column has at least one card. Move a card into each empty column first."}}, {"@type": "Question", "name": "How is Spider Solitaire scored?", "acceptedAnswer": {"@type": "Answer", "text": "You start with 500 points, lose one for every move or deal, and gain 100 for each completed King-to-Ace run."}}, {"@type": "Question", "name": "Can I move cards of different suits together?", "acceptedAnswer": {"@type": "Answer", "text": "You can place any card on one of the next rank higher, but you can only pick up several cards together if they are all the same suit and in sequence."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku">Sudoku</a><a href="daily-sudoku">Daily</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="freecell">FreeCell</a><a href="spider" aria-current="page">Spider</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / Spider Solitaire</p>
+<h1>Spider Solitaire</h1>
+<p class="deck">Two decks, ten columns, eight runs to complete. Choose 1, 2 or 4 suits; tap or drag to move.</p>
+<section class="game" aria-label="Spider Solitaire game">
+<div class="bar"><div class="seg" id="suits" role="group" aria-label="Number of suits"><button type="button" data-suits="1">1 suit</button><button type="button" data-suits="2">2 suits</button><button type="button" data-suits="4">4 suits</button></div>
+<div class="stats"><span>Score <b id="score">500</b></span><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<div class="bar-group"><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div>
+<div class="sol-table" id="table"></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="freecell">FreeCell</a><a href="solitaire">Klondike Solitaire</a><a href="daily-sudoku">Today's daily Sudoku</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>How to play Spider Solitaire</h2>
+<p>Spider uses <strong>two decks</strong>, 104 cards in all. Fifty-four are dealt into ten columns (six cards in each of the first four, five in the rest) with only the bottom card face up. The other fifty form the stock at the top left, enough for five more deals.</p>
+<p>The goal is to build eight complete runs, each from <strong>King down to Ace in a single suit</strong>. As soon as a column contains a finished run, it is removed from the table automatically. Clear all eight and you win.</p>
+<h2>The rules</h2>
+<ol>
+<li>You may place a card on any card <strong>one rank higher</strong>, regardless of suit: a 7 of hearts on an 8 of spades is allowed.</li>
+<li>You may only move <strong>several cards together if they are all the same suit</strong> and in descending order.</li>
+<li>Any card or same-suit run can go into an empty column.</li>
+<li>When a face-down card is uncovered, it turns over.</li>
+<li>Clicking the stock deals <strong>one card onto every column</strong>. You cannot deal while any column is empty.</li>
+</ol>
+<p>Rule 1 is easy; rule 2 is what makes the game. Mixed-suit stacks are legal but frozen: you can add to them but cannot pick them up again as a unit.</p>
+<h2>Choosing 1, 2 or 4 suits</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Suits in play</th>
+<th>What it is like</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 suit</td>
+<td>Spades only</td>
+<td>Every stack is a single suit, so nearly everything can move. Most games can be won; good for learning</td>
+</tr>
+<tr>
+<td>2 suits</td>
+<td>Spades and hearts</td>
+<td>Real decisions begin. You must avoid burying runs under the wrong colour</td>
+</tr>
+<tr>
+<td>4 suits</td>
+<td>All four</td>
+<td>The full game. Careful players still lose a large share of deals</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Scoring</h2>
+<p>The game starts at 500 points. Every move and every deal from the stock costs one point; every completed run earns 100. A quick, clean win scores higher than a long one, so the score is a fair measure of how efficiently you played, and it is what the share button reports.</p>
+<h2>Controls</h2>
+<p><strong>Tap a card</strong> and it moves the run starting at that card to the best destination, preferring a card of the same suit. <strong>Drag</strong> to choose the column yourself. Undo has no limit, and Hint outlines a useful move, favouring same-suit joins and moves that uncover a face-down card.</p>
+<h2>Strategy</h2>
+<ul>
+<li><strong>Prefer same-suit moves.</strong> A 6 of spades on a 7 of spades keeps the run movable; on a 7 of hearts it does not. When both are available, take the same suit.</li>
+<li><strong>Uncover face-down cards.</strong> Each one turned over is new information and a new option. A move that reveals a card usually beats one that only tidies.</li>
+<li><strong>Empty columns are your strongest tool.</strong> Use one to take apart a mixed stack and rebuild it in suit order, then empty it again.</li>
+<li><strong>Do not deal from the stock too early.</strong> Each deal drops a random card on every column, burying your work. Make every useful move first.</li>
+<li><strong>Before dealing, fill gaps with your least useful cards.</strong> You must fill empty columns to deal, so put something there that you will not need soon.</li>
+<li><strong>Build down from Kings when you can.</strong> A King cannot go anywhere except an empty column, so stacks that start with a King are permanent; make them in one suit.</li>
+</ul>
+<h2>Background</h2>
+<p>Spider has been played with physical cards for at least a century and is one of the most popular patience games. Its name is usually explained by the eight legs of a spider, matching the eight runs you must complete. A version included with Windows from the late 1990s introduced it to millions of players and established the one-, two- and four-suit options used here.</p>
+<h2>Frequently asked questions</h2>
+<h3>Which Spider Solitaire mode is easiest?</h3><p>One suit. All cards are spades, so every descending stack can be moved, and most games can be won. Two suits is a good next step; four suits is the full challenge.</p><h3>Why can I not deal more cards?</h3><p>A new row can only be dealt when every column has at least one card. Move a card into each empty column first.</p><h3>How is Spider Solitaire scored?</h3><p>You start with 500 points, lose one for every move or deal, and gain 100 for each completed King-to-Ace run.</p><h3>Can I move cards of different suits together?</h3><p>You can place any card on one of the next rank higher, but you can only pick up several cards together if they are all the same suit and in sequence.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/common.js" defer></script>
+<script src="assets/cards.js" defer></script>
+<script src="assets/spider.js" defer></script>
+</body>
+</html>

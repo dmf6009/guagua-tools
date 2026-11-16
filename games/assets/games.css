@@ -119,3 +119,41 @@ kbd{font:13px ui-monospace,monospace;background:#eceae0;border:1px solid var(--l
 .g-footer a{color:var(--muted)}
 @media(max-width:760px){.sdk-wrap{grid-template-columns:1fr}.pad{grid-template-columns:repeat(9,1fr)}.pad button{font-size:18px;min-height:46px;padding:6px 0}.pad small{display:none}.game{padding:12px}main{padding:20px 12px 60px}.sol-table{padding:8px}.stats{gap:12px}}
 @media(prefers-reduced-motion:no-preference){.card{transition:top .12s,left .12s}}
+
+/* Card games with more columns */
+.sol-top.t8,.sol-tab.t8{grid-template-columns:repeat(8,minmax(0,1fr));gap:1.2%}
+.sol-top.t10,.sol-tab.t10{grid-template-columns:repeat(10,minmax(0,1fr));gap:1%}
+.pile.freecell{background:rgba(0,0,0,.12)}
+.t10 .card .big,.t8 .card .big{font-size:clamp(14px,3.4vw,32px)}
+.t10 .card .ix{font-size:clamp(10px,2.1vw,17px);left:6%}
+.stock-count{align-self:center;color:rgba(255,255,255,.75);font:12px ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.2}
+.pile.stock{cursor:pointer;padding:0}
+.done-slot{border-style:solid;border-color:rgba(255,255,255,.12)}
+.deal-pick{display:inline-flex;gap:6px;align-items:center}
+.deal-pick input{width:96px;border:1px solid var(--line);border-radius:7px;padding:8px 10px;font:14px ui-monospace,SFMono-Regular,Menlo,monospace;min-height:38px;background:#fff}
+
+/* Level links and daily stats */
+.seg a{padding:8px 12px;font-size:14px;font-weight:650;min-height:38px;display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
+.seg a+a{border-left:1px solid var(--line)}
+.seg a[aria-current]{background:var(--ink);color:#fff}
+.daily-strip{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;font:14px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.daily-strip b{color:var(--ink)}
+
+/* Post-game panel */
+.after{margin-top:14px;border-top:1px dashed var(--line);padding-top:16px;text-align:center}
+.after[hidden]{display:none}
+.after-title{font-weight:750;margin:0 0 12px}
+.after-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.after-links a{border:1px solid var(--line);border-radius:7px;padding:8px 13px;text-decoration:none;color:var(--ink);font-weight:650;font-size:14px;background:#fff}
+.after-links a:hover{border-color:var(--ink)}
+#share{background:var(--green);border-color:var(--green);color:#fff}
+#share[hidden]{display:none}
+
+/* Index: daily callout */
+.daily-cta{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;background:var(--ink);color:#fff;border-radius:10px;padding:20px 24px;margin:0 0 8px}
+.daily-cta b{font-size:20px;display:block}
+.daily-cta span{color:#c9cec4;font-size:15px}
+.daily-cta a{background:var(--lime);color:var(--ink);text-decoration:none;font-weight:800;padding:11px 18px;border-radius:7px}
+.hub-more{margin:-28px 0 40px;font-size:15px}
+.hub-more a{margin-right:14px}
+@media(max-width:760px){.sol-top.t10,.sol-tab.t10{gap:.6%}.stock-count{font-size:10px}.t10 .card{border-radius:4px}.t8 .card{border-radius:5px}}

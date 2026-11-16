@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hard Sudoku Online: Free Challenging Puzzles | Guagua Games</title>
+<meta name="description" content="Free hard Sudoku puzzles online. Unlimited challenging grids with notes and undo, and a guide to triples, hidden pairs and the X-Wing.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/hard-sudoku">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Hard Sudoku Online: Free Challenging Puzzles | Guagua Games">
+<meta property="og:description" content="Free hard Sudoku puzzles online. Unlimited challenging grids with notes and undo, and a guide to triples, hidden pairs and the X-Wing.">
+<meta property="og:url" content="https://games.guagua-alvin.top/hard-sudoku">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Hard Sudoku", "url": "https://games.guagua-alvin.top/hard-sudoku", "description": "Free hard Sudoku puzzles online. Unlimited challenging grids with notes and undo, and a guide to triples, hidden pairs and the X-Wing.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-16", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Sudoku", "item": "https://games.guagua-alvin.top/sudoku"}, {"@type": "ListItem", "position": 3, "name": "Hard Sudoku", "item": "https://games.guagua-alvin.top/hard-sudoku"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many givens does a hard Sudoku have?", "acceptedAnswer": {"@type": "Answer", "text": "About 28 of the 81 cells. Difficulty is set by removing givens while keeping exactly one solution."}}, {"@type": "Question", "name": "Does every puzzle have only one solution?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess."}}, {"@type": "Question", "name": "Is my progress saved?", "acceptedAnswer": {"@type": "Answer", "text": "The current puzzle, your notes and the timer are saved in this browser's local storage, so you can close the page and continue later. Nothing is sent to a server."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku" aria-current="page">Sudoku</a><a href="daily-sudoku">Daily</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="freecell">FreeCell</a><a href="spider">Spider</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / <a href="sudoku">Sudoku</a> / Hard Sudoku</p>
+<h1>Hard Sudoku</h1>
+<p class="deck">Around 28 givens. Expect to work from candidates for most of the puzzle.</p>
+<section class="game" aria-label="Hard Sudoku game">
+<div class="bar"><nav class="seg" aria-label="Difficulty"><a href="easy-sudoku">Easy</a><a href="medium-sudoku">Medium</a><a href="hard-sudoku" aria-current="page">Hard</a><a href="expert-sudoku">Expert</a></nav>
+<div class="stats"><span>Time <b id="time">00:00</b></span><span>Mistakes <b id="errors">0</b></span></div></div>
+<div class="sdk-wrap"><div class="sdk-grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
+<div class="sdk-side"><div class="pad" id="pad" role="group" aria-label="Number pad"></div>
+<div class="tools"><button type="button" class="btn" id="notes" aria-pressed="false">Notes</button><button type="button" class="btn" id="erase">Erase</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="hint">Hint</button></div>
+<button type="button" class="btn primary" id="new">New puzzle</button></div></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="expert-sudoku">Expert Sudoku</a><a href="daily-sudoku">Today's daily Sudoku</a><a href="freecell">FreeCell</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>What makes a Sudoku hard</h2>
+<p>Hard puzzles start with around <strong>28 givens</strong>. After the first few minutes, progress depends on candidates: you will spend more time reading notes than scanning. The puzzles are designed to need the same logic as medium ones, applied more often and in combination, plus a few new patterns.</p>
+<p>A note on how levels work here: difficulty is set by how many givens remain while the puzzle still has a single solution. That correlates well with real difficulty, but not perfectly, so an occasional hard puzzle will fall quickly and an occasional one will feel like expert.</p>
+<h2>Fill in candidates for the whole grid</h2>
+<p>On hard puzzles it pays to write candidates for <strong>every</strong> empty cell early on, once scanning stops giving answers. It takes a few minutes, but afterwards every technique below becomes a matter of looking for shapes rather than recalculating.</p>
+<h2>Techniques for hard puzzles</h2>
+<p><strong>Naked triples.</strong> Three cells in one unit whose candidates, taken together, are only three digits, such as {2, 5}, {5, 9} and {2, 9}. Those three digits are locked into those three cells; remove them from the rest of the unit. Note that no single cell needs all three candidates.</p>
+<p><strong>Hidden pairs.</strong> Two digits that, within one unit, appear as candidates in exactly the same two cells and nowhere else. Those cells must hold those digits, so every other candidate in those two cells can be erased.</p>
+<p><strong>Box-line reduction.</strong> The reverse of a pointing pair. If, within a row, a digit can only go in cells that all belong to one box, then it cannot go anywhere else in that box.</p>
+<p><strong>X-Wing.</strong> Look at one digit. If in two different rows it can only go in the same two columns, then the four cells form a rectangle and the digit must occupy two opposite corners. Either way, it fills both columns, so it can be removed from every other cell in those two columns. The same pattern works with rows and columns swapped.</p>
+<h2>When you are stuck</h2>
+<ul>
+<li>Recheck candidates in the area you last worked on. A single missed erasure hides most patterns.</li>
+<li>Look for bivalue cells (exactly two candidates). Pairs, X-Wings and chains all start from them.</li>
+<li>Pick one digit and look at all its candidate positions across the grid. Pointing pairs and X-Wings are much easier to see one digit at a time.</li>
+</ul>
+<h2>Typical times</h2>
+<p>Experienced players usually need <strong>15 to 30 minutes</strong>. Being stuck for several minutes is normal at this level and is where most of the satisfaction comes from.</p>
+<h2>Other levels</h2>
+<p>Ready for longer chains of logic? Try <a href="expert-sudoku">expert Sudoku</a>. Want something calmer? <a href="medium-sudoku">Medium Sudoku</a> uses the same notes with fewer patterns.</p>
+<h2>Frequently asked questions</h2>
+<h3>How many givens does a hard Sudoku have?</h3><p>About 28 of the 81 cells. Difficulty is set by removing givens while keeping exactly one solution.</p><h3>Does every puzzle have only one solution?</h3><p>Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess.</p><h3>Is my progress saved?</h3><p>The current puzzle, your notes and the timer are saved in this browser&#x27;s local storage, so you can close the page and continue later. Nothing is sent to a server.</p>
+<h2>More games</h2>
+<div class="more"><a href="daily-sudoku"><b>Daily Sudoku</b><span>One shared puzzle a day, with a streak to keep.</span></a><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script>window.GG_SUDOKU={"mode": "level", "level": "hard"};</script>
+<script src="assets/common.js" defer></script>
+<script src="assets/sudoku.js" defer></script>
+</body>
+</html>

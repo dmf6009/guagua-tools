@@ -1,105 +1,204 @@
 #!/usr/bin/env python3
-"""Build /games/*.html from content/games/*.md and the game markup below.
+"""Build the games site (served at https://games.guagua-alvin.top/) from content/games/*.md.
 
-Usage:  python3 scripts/build-games.py && python3 scripts/build-guides.py   (the second refreshes sitemap.xml)
+Usage:  python3 scripts/build-games.py
 
-All links inside /games/ are relative, so the same files work at guagua-alvin.top/games/ and,
-once a route maps it, at games.guagua-alvin.top/. Change BASE when the canonical host moves.
+Writes games/*.html, games/sitemap.xml, games/robots.txt and games/manifest.webmanifest.
+Files live in the /games/ directory of the Pages project; the proxy worker maps the games host onto it,
+so every link inside /games/ is relative.
 """
-import json, re, html, pathlib
+import json, html, pathlib
 import markdown
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-BASE = "https://guagua-alvin.top/games/"
+OUT = ROOT / "games"
+BASE = "https://games.guagua-alvin.top/"
 MAIN = "https://guagua-alvin.top"
-UPDATED = "2026-11-13"
+UPDATED = "2026-11-16"
 ADS = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>'
+LEVELS = [("easy", "Easy"), ("medium", "Medium"), ("hard", "Hard"), ("expert", "Expert")]
 
-GAMES = [
- {"slug": "sudoku", "name": "Sudoku", "title": "Free Online Sudoku: Easy to Expert, Notes &amp; Hints | Guagua Games",
-  "h1": "Sudoku", "desc": "Play free Sudoku online in your browser. Four difficulty levels, pencil notes, hints, undo and automatic saving. No download, no sign-up, works on phone and desktop.",
-  "deck": "A new puzzle every time, each with exactly one solution. Four levels, pencil notes, hints and undo.",
-  "tile": "Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.", "genre": "Puzzle",
-  "faq": [["Is this Sudoku free?", "Yes. Every puzzle is free, with no account and no download. The game runs entirely in your browser."],
-          ["Does every puzzle have only one solution?", "Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess."],
-          ["Is my progress saved?", "The current puzzle, your notes and the timer are saved in this browser's local storage. They stay on your device and are cleared if you clear site data."],
-          ["Can I play Sudoku on my phone?", "Yes. The grid and number pad are sized for touch screens, and the page works offline once loaded."]],
-  "mount": """<div class="bar"><div class="seg" id="levels" role="group" aria-label="Difficulty"><button type="button" data-level="easy">Easy</button><button type="button" data-level="medium">Medium</button><button type="button" data-level="hard">Hard</button><button type="button" data-level="expert">Expert</button></div>
+# Short labels for links between pages.
+LINKS = {
+    "sudoku": "Sudoku", "daily-sudoku": "Today's daily Sudoku", "easy-sudoku": "Easy Sudoku", "medium-sudoku": "Medium Sudoku",
+    "hard-sudoku": "Hard Sudoku", "expert-sudoku": "Expert Sudoku", "minesweeper": "Minesweeper", "solitaire": "Klondike Solitaire",
+    "freecell": "FreeCell", "spider": "Spider Solitaire",
+}
+
+
+def sudoku_mount(mode, level=None):
+    if mode == "free":
+        top = ('<div class="seg" id="levels" role="group" aria-label="Difficulty">'
+               + "".join(f'<button type="button" data-level="{k}">{v}</button>' for k, v in LEVELS) + "</div>")
+    elif mode == "level":
+        top = ('<nav class="seg" aria-label="Difficulty">'
+               + "".join(f'<a href="{k}-sudoku"{" aria-current=\"page\"" if k == level else ""}>{v}</a>' for k, v in LEVELS) + "</nav>")
+    else:
+        top = ('<div class="daily-strip"><span>Puzzle <b id="dnum">#1</b></span><span>Level <b id="dlevel">—</b></span>'
+               '<span>Streak <b id="dstreak">0</b></span><span>Solved <b id="dsolved">0</b></span></div>')
+    new = "" if mode == "daily" else '<button type="button" class="btn primary" id="new">New puzzle</button>'
+    return f"""<div class="bar">{top}
 <div class="stats"><span>Time <b id="time">00:00</b></span><span>Mistakes <b id="errors">0</b></span></div></div>
 <div class="sdk-wrap"><div class="sdk-grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
 <div class="sdk-side"><div class="pad" id="pad" role="group" aria-label="Number pad"></div>
 <div class="tools"><button type="button" class="btn" id="notes" aria-pressed="false">Notes</button><button type="button" class="btn" id="erase">Erase</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="hint">Hint</button></div>
-<button type="button" class="btn primary" id="new">New puzzle</button></div></div>
-<p class="msg" id="msg" role="status" aria-live="polite"></p>"""},
- {"slug": "minesweeper", "name": "Minesweeper", "title": "Free Online Minesweeper: Beginner, Intermediate &amp; Expert | Guagua Games",
-  "h1": "Minesweeper", "desc": "Play classic Minesweeper online for free. Beginner, Intermediate and Expert boards, safe first click, chording, flag mode for touch screens and best times. No download.",
-  "deck": "The classic three boards with a safe first click, chording, and a flag mode for touch screens.",
-  "tile": "Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.", "genre": "Puzzle",
-  "faq": [["Is the first click always safe?", "Yes. Mines are placed after your first click, and never on that square or the eight around it, so the first click always opens an area."],
-          ["How do I place a flag on a phone?", "Press and hold a square for about half a second, or turn on Flag mode and tap. Tap Flag mode again to go back to uncovering."],
-          ["Can every Minesweeper board be solved without guessing?", "No. Boards are random, and some reach a position where the numbers cannot tell two squares apart. The article below explains how to make the best guess."],
-          ["What is chording in Minesweeper?", "Clicking an uncovered number that already has the matching number of flags around it opens all its other neighbours at once. It is the main way experienced players save time."]],
-  "mount": """<div class="bar"><div class="seg" id="levels" role="group" aria-label="Board size"><button type="button" data-level="beginner">Beginner</button><button type="button" data-level="intermediate">Intermediate</button><button type="button" data-level="expert">Expert</button></div>
+{new}</div></div>"""
+
+
+MINES = """<div class="bar"><div class="seg" id="levels" role="group" aria-label="Board size"><button type="button" data-level="beginner">Beginner</button><button type="button" data-level="intermediate">Intermediate</button><button type="button" data-level="expert">Expert</button></div>
 <div class="stats"><span>Mines <b id="left">10</b></span><span>Time <b id="time">0</b></span><span>Best <b id="best">—</b></span></div>
 <div class="bar-group"><button type="button" class="btn" id="flagmode" aria-pressed="false">⚑ Flag mode</button><button type="button" class="btn primary" id="new">New game</button></div></div>
-<div class="ms-scroll"><div class="ms-grid" id="grid" role="grid" aria-label="Minesweeper board"></div></div>
-<p class="msg" id="msg" role="status" aria-live="polite"></p>"""},
- {"slug": "solitaire", "name": "Klondike Solitaire", "title": "Free Online Solitaire (Klondike): Draw 1 or Draw 3 | Guagua Games",
-  "h1": "Klondike Solitaire", "desc": "Play classic Klondike Solitaire online for free. Draw 1 or Draw 3, tap or drag to move, unlimited undo, hints and auto-finish. No download or sign-up, works on mobile.",
+<div class="ms-scroll"><div class="ms-grid" id="grid" role="grid" aria-label="Minesweeper board"></div></div>"""
+
+KLONDIKE = """<div class="bar"><div class="seg" id="draw" role="group" aria-label="Draw mode"><button type="button" data-draw="1">Draw 1</button><button type="button" data-draw="3">Draw 3</button></div>
+<div class="stats"><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<div class="bar-group"><button type="button" class="btn" id="auto" hidden>Auto-finish</button><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div>
+<div class="sol-table" id="table"></div>"""
+
+FREECELL = """<div class="bar"><div class="stats"><span>Deal <b id="dealno">#1</b></span><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<form class="deal-pick" id="pick"><label for="pickno" class="stats">Deal #</label><input id="pickno" type="number" min="1" max="1000000" inputmode="numeric" placeholder="e.g. 617"><button type="submit" class="btn">Play</button></form>
+<div class="bar-group"><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="restart">Restart</button><button type="button" class="btn primary" id="new">New deal</button></div></div>
+<div class="sol-table" id="table"></div>"""
+
+SPIDER = """<div class="bar"><div class="seg" id="suits" role="group" aria-label="Number of suits"><button type="button" data-suits="1">1 suit</button><button type="button" data-suits="2">2 suits</button><button type="button" data-suits="4">4 suits</button></div>
+<div class="stats"><span>Score <b id="score">500</b></span><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<div class="bar-group"><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div>
+<div class="sol-table" id="table"></div>"""
+
+SUDOKU_FAQ_COMMON = [
+    ["Does every puzzle have only one solution?", "Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess."],
+    ["Is my progress saved?", "The current puzzle, your notes and the timer are saved in this browser's local storage, so you can close the page and continue later. Nothing is sent to a server."],
+]
+
+PAGES = [
+ {"slug": "sudoku", "name": "Sudoku", "genre": "Puzzle", "js": ["sudoku"], "cfg": {"mode": "free"}, "mount": sudoku_mount("free"),
+  "title": "Free Online Sudoku: Easy to Expert, Notes &amp; Hints | Guagua Games", "h1": "Sudoku",
+  "desc": "Play free Sudoku online in your browser. Four difficulty levels, a daily puzzle, pencil notes, hints, undo and automatic saving. No download, no sign-up, works on phone and desktop.",
+  "deck": "A new puzzle every time, each with exactly one solution. Four levels, pencil notes, hints and undo. Prefer one shared puzzle a day? Try the <a href=\"daily-sudoku\">daily Sudoku</a>.",
+  "tile": "Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.",
+  "next": ["daily-sudoku", "hard-sudoku", "minesweeper", "freecell"],
+  "faq": [["Is this Sudoku free?", "Yes. Every puzzle is free, with no account and no download. The game runs entirely in your browser."]] + SUDOKU_FAQ_COMMON +
+         [["Can I play Sudoku on my phone?", "Yes. The grid and number pad are sized for touch screens."]]},
+ {"slug": "daily-sudoku", "name": "Daily Sudoku", "genre": "Puzzle", "js": ["sudoku"], "cfg": {"mode": "daily"}, "mount": sudoku_mount("daily"),
+  "title": "Daily Sudoku: A New Free Puzzle Every Day | Guagua Games", "h1": "Daily Sudoku",
+  "desc": "One free Sudoku a day, the same puzzle for everyone. Difficulty builds from easy on Monday to expert on Sunday. Track your streak and share your time. No sign-up.",
+  "deck": "Today's puzzle is the same for every player. Solve it, keep your streak going, and share your time.",
+  "next": ["medium-sudoku", "minesweeper", "solitaire", "freecell"],
+  "faq": [["When does the daily Sudoku change?", "At midnight in your own time zone. Everyone who opens the page on the same calendar date gets the same puzzle."],
+          ["How is my streak counted?", "The streak is the number of consecutive days on which you solved the daily puzzle in this browser. It stays alive until the end of today, so you have all day to keep it going."],
+          ["Can I play past daily puzzles?", "Not yet. Only today's puzzle is available. For unlimited puzzles, use the easy, medium, hard and expert pages."],
+          ["How difficult is the daily puzzle?", "It follows the week: easy on Monday and Tuesday, medium on Wednesday and Thursday, hard on Friday and Saturday, and expert on Sunday."]]},
+ {"slug": "minesweeper", "name": "Minesweeper", "genre": "Puzzle", "js": ["minesweeper"], "mount": MINES,
+  "title": "Free Online Minesweeper: Beginner, Intermediate &amp; Expert | Guagua Games", "h1": "Minesweeper",
+  "desc": "Play classic Minesweeper online for free. Beginner, Intermediate and Expert boards, safe first click, chording, flag mode for touch screens and best times. No download.",
+  "deck": "The classic three boards with a safe first click, chording, and a flag mode for touch screens.",
+  "tile": "Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.",
+  "next": ["sudoku", "daily-sudoku", "freecell"],
+  "faq": [["Is the first click always safe?", "Yes. Mines are placed after your first click, and never on that square or the eight around it, so the first click always opens an area."],
+          ["How do I place a flag on a phone?", "Press and hold a square for about half a second, or turn on Flag mode and tap. Tap Flag mode again to go back to uncovering."],
+          ["Can every Minesweeper board be solved without guessing?", "No. Boards are random, and some reach a position where the numbers cannot tell two squares apart. The guide on this page explains how to make the best guess."],
+          ["What is chording in Minesweeper?", "Clicking an uncovered number that already has the matching number of flags around it opens all its other neighbours at once. It is the main way experienced players save time."]]},
+ {"slug": "solitaire", "name": "Klondike Solitaire", "genre": "Card", "js": ["solitaire"], "mount": KLONDIKE,
+  "title": "Free Online Solitaire (Klondike): Draw 1 or Draw 3 | Guagua Games", "h1": "Klondike Solitaire",
+  "desc": "Play classic Klondike Solitaire online for free. Draw 1 or Draw 3, tap or drag to move, unlimited undo, hints and auto-finish. No download or sign-up, works on mobile.",
   "deck": "The classic patience game. Tap a card to move it, or drag it where you want. Draw 1 or Draw 3, unlimited undo.",
-  "tile": "Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.", "genre": "Card",
+  "tile": "Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.",
+  "next": ["freecell", "spider", "daily-sudoku"],
   "faq": [["Is this Solitaire free to play?", "Yes. It is free, needs no account or download, and runs entirely in your browser."],
           ["What is the difference between Draw 1 and Draw 3?", "In Draw 1 you turn one stock card at a time, so every card is reachable on each pass. In Draw 3 you turn three and can only play the top one, which makes the game harder and the order of play more important."],
           ["Can every Solitaire game be won?", "No. Deals are random and some cannot be solved. Analysis of Klondike with all cards visible suggests roughly four in five deals are solvable in principle, and real win rates are lower."],
-          ["How do I move cards on a phone?", "Tap a card to send it to the best legal position, or press and drag it to a column or foundation of your choice."]],
-  "mount": """<div class="bar"><div class="seg" id="draw" role="group" aria-label="Draw mode"><button type="button" data-draw="1">Draw 1</button><button type="button" data-draw="3">Draw 3</button></div>
-<div class="stats"><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
-<div class="bar-group"><button type="button" class="btn" id="auto" hidden>Auto-finish</button><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div>
-<div class="sol-table" id="table"></div>
-<p class="msg" id="msg" role="status" aria-live="polite"></p>"""},
+          ["How do I move cards on a phone?", "Tap a card to send it to the best legal position, or press and drag it to a column or foundation of your choice."]]},
+ {"slug": "freecell", "name": "FreeCell", "genre": "Card", "js": ["cards", "freecell"], "mount": FREECELL,
+  "title": "Free Online FreeCell Solitaire: Numbered Deals 1 to 1,000,000 | Guagua Games", "h1": "FreeCell",
+  "desc": "Play FreeCell Solitaire online for free. Classic numbered deals from 1 to 1,000,000, tap or drag to move, multi-card moves, unlimited undo and hints. No download, works on mobile.",
+  "deck": "Every card is face up, so every game is a puzzle you can think through. Classic numbered deals, unlimited undo.",
+  "tile": "All cards face up, four free cells, numbered deals. Nearly every game can be won.",
+  "next": ["spider", "solitaire", "daily-sudoku"],
+  "faq": [["Can every FreeCell game be won?", "Almost. Of the original 32,000 numbered deals, only deal #11982 is known to be unsolvable. Nearly every other deal can be won with careful play."],
+          ["Are the deal numbers the same as Windows FreeCell?", "Yes. Deals are generated with the same shuffle as the classic Windows version, so deal #1 here has the same layout as deal #1 there."],
+          ["How many cards can I move at once in FreeCell?", "As many as your free space allows: (empty free cells + 1) multiplied by 2 for each empty column. The game moves the whole run for you when there is room."],
+          ["How do I replay or share a specific deal?", "Type the number into the Deal # box and press Play, or share the page link with the deal number after a # sign."]]},
+ {"slug": "spider", "name": "Spider Solitaire", "genre": "Card", "js": ["cards", "spider"], "mount": SPIDER,
+  "title": "Free Online Spider Solitaire: 1, 2 or 4 Suits | Guagua Games", "h1": "Spider Solitaire",
+  "desc": "Play Spider Solitaire online for free with 1, 2 or 4 suits. Tap or drag to move, unlimited undo, hints and classic scoring. No download or sign-up, works on phone and desktop.",
+  "deck": "Two decks, ten columns, eight runs to complete. Choose 1, 2 or 4 suits; tap or drag to move.",
+  "tile": "Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.",
+  "next": ["freecell", "solitaire", "daily-sudoku"],
+  "faq": [["Which Spider Solitaire mode is easiest?", "One suit. All cards are spades, so every descending stack can be moved, and most games can be won. Two suits is a good next step; four suits is the full challenge."],
+          ["Why can I not deal more cards?", "A new row can only be dealt when every column has at least one card. Move a card into each empty column first."],
+          ["How is Spider Solitaire scored?", "You start with 500 points, lose one for every move or deal, and gain 100 for each completed King-to-Ace run."],
+          ["Can I move cards of different suits together?", "You can place any card on one of the next rank higher, but you can only pick up several cards together if they are all the same suit and in sequence."]]},
 ]
+for k, v in LEVELS:
+    PAGES.append({
+        "slug": f"{k}-sudoku", "name": f"{v} Sudoku", "genre": "Puzzle", "js": ["sudoku"], "cfg": {"mode": "level", "level": k}, "mount": sudoku_mount("level", k),
+        "title": {"easy": "Easy Sudoku Online: Free Puzzles for Beginners", "medium": "Medium Sudoku Online: Free Puzzles with Notes",
+                  "hard": "Hard Sudoku Online: Free Challenging Puzzles", "expert": "Expert Sudoku Online: Free Very Hard Puzzles"}[k] + " | Guagua Games",
+        "h1": f"{v} Sudoku",
+        "desc": {"easy": "Free easy Sudoku puzzles for beginners, solvable by scanning alone. Unlimited puzzles, hints, undo and saving, plus a guide to the two techniques you need.",
+                 "medium": "Free medium Sudoku puzzles online. Unlimited puzzles with pencil notes and hints, and a guide to candidates, naked pairs and pointing pairs.",
+                 "hard": "Free hard Sudoku puzzles online. Unlimited challenging grids with notes and undo, and a guide to triples, hidden pairs and the X-Wing.",
+                 "expert": "Free expert Sudoku puzzles online for advanced solvers. Unlimited very hard grids with notes, plus a guide to Swordfish, XY-Wing and colouring."}[k],
+        "deck": {"easy": "Around 40 givens, solvable by scanning alone. The best place to learn or to work on speed.",
+                 "medium": "Around 33 givens. Scanning gets you started; pencil notes finish the job.",
+                 "hard": "Around 28 givens. Expect to work from candidates for most of the puzzle.",
+                 "expert": "About 24 givens. Full notes and advanced patterns, but never a guess."}[k],
+        "next": {"easy": ["medium-sudoku", "daily-sudoku", "minesweeper"], "medium": ["hard-sudoku", "daily-sudoku", "freecell"],
+                 "hard": ["expert-sudoku", "daily-sudoku", "freecell"], "expert": ["daily-sudoku", "freecell", "spider"]}[k],
+        "faq": [[f"How many givens does an {v.lower()} Sudoku have?" if k in ("easy", "expert") else f"How many givens does a {v.lower()} Sudoku have?",
+                 {"easy": "About 40 of the 81 cells.", "medium": "About 33 of the 81 cells.", "hard": "About 28 of the 81 cells.", "expert": "About 24, sometimes a few more."}[k]
+                 + " Difficulty is set by removing givens while keeping exactly one solution."]] + SUDOKU_FAQ_COMMON,
+    })
+BY = {p["slug"]: p for p in PAGES}
+TILES = ["sudoku", "minesweeper", "solitaire", "freecell", "spider"]
 
 ART = {
  "sudoku": '<svg viewBox="0 0 90 90" width="96" height="96" aria-hidden="true"><rect x="3" y="3" width="84" height="84" fill="#fff" stroke="#151712" stroke-width="3"/><path d="M31 3v84M59 3v84M3 31h84M3 59h84" stroke="#151712" stroke-width="2"/><g font-family="Inter,system-ui,sans-serif" font-size="18" font-weight="700" text-anchor="middle"><text x="17" y="24">5</text><text x="45" y="52" fill="#315f49">9</text><text x="73" y="24">2</text><text x="17" y="80">7</text><text x="73" y="80" fill="#315f49">4</text></g></svg>',
  "minesweeper": '<svg viewBox="0 0 90 90" width="96" height="96" aria-hidden="true"><g fill="#b9c8bb"><rect x="3" y="3" width="26" height="26" rx="3"/><rect x="32" y="3" width="26" height="26" rx="3"/><rect x="3" y="32" width="26" height="26" rx="3"/><rect x="61" y="61" width="26" height="26" rx="3"/></g><g fill="#fff" stroke="#d9d7cd"><rect x="61" y="3" width="26" height="26" rx="3"/><rect x="32" y="32" width="26" height="26" rx="3"/><rect x="61" y="32" width="26" height="26" rx="3"/><rect x="3" y="61" width="26" height="26" rx="3"/><rect x="32" y="61" width="26" height="26" rx="3"/></g><g font-family="ui-monospace,monospace" font-size="17" font-weight="800" text-anchor="middle"><text x="45" y="51" fill="#1f5fbf">1</text><text x="74" y="51" fill="#2a7a45">2</text><text x="45" y="80" fill="#c33c22">3</text><text x="16" y="22" fill="#d9532b">⚑</text></g></svg>',
  "solitaire": '<svg viewBox="0 0 100 90" width="106" height="96" aria-hidden="true"><g stroke="#9aa39a" fill="#fff"><rect x="8" y="14" width="44" height="62" rx="5" transform="rotate(-10 30 45)"/><rect x="28" y="12" width="44" height="62" rx="5"/><rect x="48" y="14" width="44" height="62" rx="5" transform="rotate(10 70 45)"/></g><g font-family="Georgia,serif" font-weight="700" text-anchor="middle"><text x="50" y="52" font-size="26" fill="#c22d18">♥</text><text x="80" y="34" font-size="13" fill="#151712">K</text><text x="19" y="36" font-size="13" fill="#151712">A</text></g></svg>',
+ "freecell": '<svg viewBox="0 0 110 90" width="116" height="96" aria-hidden="true"><g fill="none" stroke="#315f49" stroke-dasharray="4 3" stroke-width="2"><rect x="4" y="8" width="22" height="30" rx="3"/><rect x="30" y="8" width="22" height="30" rx="3"/></g><g stroke="#9aa39a" fill="#fff"><rect x="58" y="8" width="22" height="30" rx="3"/><rect x="84" y="8" width="22" height="30" rx="3"/><rect x="20" y="46" width="22" height="30" rx="3"/><rect x="20" y="56" width="22" height="30" rx="3"/><rect x="62" y="46" width="22" height="30" rx="3"/><rect x="62" y="56" width="22" height="30" rx="3"/></g><g font-family="Georgia,serif" font-weight="700" font-size="13"><text x="62" y="22" fill="#151712">A♠</text><text x="88" y="22" fill="#c22d18">A♥</text><text x="23" y="70" fill="#c22d18">7♦</text><text x="65" y="70" fill="#151712">9♣</text></g></svg>',
+ "spider": '<svg viewBox="0 0 110 90" width="116" height="96" aria-hidden="true"><g stroke="#9aa39a" fill="#fff">' + "".join(f'<rect x="{6+i*20}" y="{10+j*12}" width="18" height="26" rx="3"/>' for i in range(5) for j in range(3)) + '</g><g font-family="Georgia,serif" font-weight="700" font-size="11" fill="#151712">' + "".join(f'<text x="{8+i*20}" y="45">{r}♠</text>' for i, r in enumerate(["K", "Q", "J", "10", "9"])) + '</g><text x="55" y="80" text-anchor="middle" font-family="Georgia,serif" font-size="22" fill="#151712">♠</text></svg>',
 }
 
 
-def header(current=""):
-    def a(slug, label):
-        cur = ' aria-current="page"' if slug == current else ""
-        return f'<a href="{slug}"{cur}>{label}</a>'
+def nav(current=""):
+    items = [("sudoku", "Sudoku"), ("daily-sudoku", "Daily"), ("minesweeper", "Minesweeper"), ("solitaire", "Solitaire"), ("freecell", "FreeCell"), ("spider", "Spider")]
+    cur = "sudoku" if current.endswith("-sudoku") and current != "daily-sudoku" else current
+    links = "".join(f'<a href="{s}"{" aria-current=\"page\"" if s == cur else ""}>{n}</a>' for s, n in items)
     return ('<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a>'
-            '<nav aria-label="Games">' + a("sudoku", "Sudoku") + a("minesweeper", "Minesweeper") + a("solitaire", "Solitaire")
-            + f'<a href="{MAIN}/">Developer tools ↗</a></nav></header>')
+            f'<nav aria-label="Games">{links}</nav></header>')
 
 
-FOOTER = (f'<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span>'
-          f'<div><a href="./">All games</a><a href="{MAIN}/about">About</a><a href="{MAIN}/contact">Contact</a>'
+FOOTER = ('<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span>'
+          f'<div><a href="./">All games</a><a href="{MAIN}/">Developer tools</a><a href="{MAIN}/about">About</a><a href="{MAIN}/contact">Contact</a>'
           f'<a href="{MAIN}/privacy">Privacy</a><a href="{MAIN}/terms">Terms</a><a href="{MAIN}/cookies">Cookies</a></div></footer>')
 
 
 def head(title, desc, url, ld):
+    d = html.escape(desc, quote=True)
     return f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title>
-<meta name="description" content="{html.escape(desc, quote=True)}">
+<meta name="description" content="{d}">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <meta name="theme-color" content="#f7f5ed">
 <link rel="canonical" href="{url}">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="assets/games.css">
 {ADS}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Guagua Games">
 <meta property="og:title" content="{title}">
-<meta property="og:description" content="{html.escape(desc, quote=True)}">
+<meta property="og:description" content="{d}">
 <meta property="og:url" content="{url}">
-<meta property="og:image" content="{MAIN}/assets/social-card.svg">
+<meta property="og:image" content="{BASE}assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 </head>
@@ -107,29 +206,47 @@ def head(title, desc, url, ld):
 """
 
 
-def game_page(g):
-    body = markdown.markdown((ROOT / "content" / "games" / f"{g['slug']}.md").read_text(encoding="utf-8"), extensions=["tables", "sane_lists"])
+def after_panel(p):
+    links = "".join(f'<a href="{s}">{LINKS[s]}</a>' for s in p["next"])
+    return (f'<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p>'
+            f'<div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button>{links}</div></div>')
+
+
+def game_page(p):
+    body = markdown.markdown((ROOT / "content" / "games" / f"{p['slug']}.md").read_text(encoding="utf-8"), extensions=["tables", "sane_lists"])
     body = body.replace("<table>", '<div class="tw"><table>').replace("</table>", "</table></div>")
-    url = BASE + g["slug"]
-    faq = "".join(f"<h3>{html.escape(q)}</h3><p>{html.escape(a)}</p>" for q, a in g["faq"])
-    others = "".join(f'<a href="{o["slug"]}"><b>{o["name"]}</b><span>{o["tile"]}</span></a>' for o in GAMES if o["slug"] != g["slug"])
+    url = BASE + p["slug"]
+    faq = "".join(f"<h3>{html.escape(q)}</h3><p>{html.escape(a)}</p>" for q, a in p["faq"])
+    others = "".join(f'<a href="{s}"><b>{BY[s]["name"]}</b><span>{BY[s]["tile"]}</span></a>' for s in TILES if s != p["slug"])
+    if p["slug"].endswith("sudoku"):
+        others = ('<a href="daily-sudoku"><b>Daily Sudoku</b><span>One shared puzzle a day, with a streak to keep.</span></a>' if p["slug"] != "daily-sudoku" else "") + others
+        if p["slug"] == "sudoku" or p["slug"] == "daily-sudoku":
+            levels = " · ".join(f'<a href="{k}-sudoku">{v}</a>' for k, v in LEVELS)
+            body = body + f"<p><strong>Play by difficulty:</strong> {levels}</p>"
+    crumbs = '<a href="./">Games</a> / ' + (f'<a href="sudoku">Sudoku</a> / {p["name"]}' if p["slug"].endswith("-sudoku") and p["slug"] != "daily-sudoku" else p["name"])
+    ld_items = [{"@type": "ListItem", "position": 1, "name": "Games", "item": BASE}]
+    if p["slug"].endswith("-sudoku") and p["slug"] != "daily-sudoku":
+        ld_items.append({"@type": "ListItem", "position": 2, "name": "Sudoku", "item": BASE + "sudoku"})
+    ld_items.append({"@type": "ListItem", "position": len(ld_items) + 1, "name": p["name"], "item": url})
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": ["VideoGame", "WebApplication"], "name": g["name"], "url": url, "description": g["desc"], "genre": g["genre"],
+        {"@type": ["VideoGame", "WebApplication"], "name": p["name"], "url": url, "description": p["desc"], "genre": p["genre"],
          "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en",
          "playMode": "SinglePlayer", "isAccessibleForFree": True, "dateModified": UPDATED,
          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
          "author": {"@type": "Person", "name": "Alvin Li", "url": MAIN + "/about"}},
-        {"@type": "BreadcrumbList", "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Games", "item": BASE},
-            {"@type": "ListItem", "position": 2, "name": g["name"], "item": url}]},
-        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in g["faq"]]}]}
-    return (head(g["title"], g["desc"], url, ld) + header(g["slug"]) + f"""
+        {"@type": "BreadcrumbList", "itemListElement": ld_items},
+        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p["faq"]]}]}
+    cfg = f'<script>window.GG_SUDOKU={json.dumps(p["cfg"])};</script>\n' if p.get("cfg") else ""
+    scripts = cfg + '<script src="assets/common.js" defer></script>\n' + "".join(f'<script src="assets/{j}.js" defer></script>\n' for j in p["js"])
+    return (head(p["title"], p["desc"], url, ld) + nav(p["slug"]) + f"""
 <main id="main">
-<p class="crumbs"><a href="./">Games</a> / {g['name']}</p>
-<h1>{g['h1']}</h1>
-<p class="deck">{g['deck']}</p>
-<section class="game" aria-label="{g['name']} game">
-{g['mount']}
+<p class="crumbs">{crumbs}</p>
+<h1>{p['h1']}</h1>
+<p class="deck">{p['deck']}</p>
+<section class="game" aria-label="{p['name']} game">
+{p['mount']}
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+{after_panel(p)}
 <noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
 </section>
 <article class="article">
@@ -138,44 +255,49 @@ def game_page(g):
 {faq}
 <h2>More games</h2>
 <div class="more">{others}</div>
-<p class="note">Written and built by Alvin Li. Last updated November 13, 2026. Found a bug or a rule that behaves oddly? <a href="{MAIN}/contact">Report it</a>.</p>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="{MAIN}/contact">Report it</a>.</p>
 </article>
 </main>
 {FOOTER}
-<script src="assets/{g['slug']}.js" defer></script>
-</body>
+{scripts}</body>
 </html>
 """)
 
 
 def index_page():
-    desc = "Free classic puzzle and card games that run in your browser: Sudoku, Minesweeper and Klondike Solitaire. No download, no account, saved progress, works on phone and desktop."
-    tiles = "".join(f'<a class="tile" href="{g["slug"]}"><div class="art">{ART[g["slug"]]}</div><div class="txt"><b>{g["name"]}</b><span>{g["tile"]}</span><br><em>Play {g["name"]} →</em></div></a>' for g in GAMES)
+    desc = "Free classic puzzle and card games in your browser: Sudoku with a daily puzzle, Minesweeper, Klondike Solitaire, FreeCell and Spider Solitaire. No download, no account, saved progress."
+    tiles = "".join(f'<a class="tile" href="{s}"><div class="art">{ART[s]}</div><div class="txt"><b>{BY[s]["name"]}</b><span>{BY[s]["tile"]}</span><br><em>Play {BY[s]["name"]} →</em></div></a>' for s in TILES)
     ld = {"@context": "https://schema.org", "@type": ["CollectionPage", "ItemList"], "name": "Guagua Games", "url": BASE, "description": desc,
-          "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": g["name"], "url": BASE + g["slug"]} for i, g in enumerate(GAMES)]}
-    return (head("Free Online Puzzle &amp; Card Games: Sudoku, Minesweeper, Solitaire | Guagua Games", desc, BASE, ld) + header() + f"""
+          "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": BY[s]["name"], "url": BASE + s} for i, s in enumerate(TILES + ["daily-sudoku"])]}
+    levels = "".join(f'<a href="{k}-sudoku">{v} Sudoku</a>' for k, v in LEVELS)
+    return (head("Free Online Puzzle &amp; Card Games: Sudoku, Solitaire, FreeCell, Minesweeper | Guagua Games", desc, BASE, ld) + nav() + f"""
 <main id="main">
 <h1>Classic games, nothing in the way.</h1>
-<p class="deck">Three games you already know, built to load fast and stay out of your way. No download, no sign-up, and your game in progress is still there when you come back.</p>
+<p class="deck">Games you already know, built to load fast and stay out of your way. No download, no sign-up, and your game in progress is still there when you come back.</p>
+<div class="daily-cta"><div><b>Daily Sudoku</b><span>One puzzle a day, the same for everyone. Keep your streak going.</span></div><a href="daily-sudoku">Play today's puzzle →</a></div>
 <div class="hub">{tiles}</div>
+<p class="hub-more"><strong>Sudoku by difficulty:</strong> {levels}</p>
 <article class="article">
 <h2>What you get</h2>
 <ul>
-<li><strong>Proper rules.</strong> Every Sudoku has exactly one solution. Minesweeper's first click is always safe and uses the classic board sizes. Solitaire is standard Klondike with Draw 1 and Draw 3.</li>
-<li><strong>Works on a phone.</strong> Touch targets are sized for fingers: a number pad for Sudoku, long-press and a flag mode for Minesweeper, tap-to-move and drag for Solitaire.</li>
-<li><strong>Keyboard support.</strong> Arrow keys and number keys in Sudoku, arrow keys and <kbd>F</kbd> in Minesweeper, <kbd>Ctrl</kbd>+<kbd>Z</kbd> to undo.</li>
-<li><strong>Saved on your device.</strong> Progress and best times are kept in your browser's local storage. Nothing about your play is sent to a server.</li>
+<li><strong>Proper rules.</strong> Every Sudoku has exactly one solution. Minesweeper's first click is always safe. FreeCell uses the classic numbered deals. Klondike and Spider follow the standard rules and scoring.</li>
+<li><strong>Works on a phone.</strong> Touch targets are sized for fingers: a number pad for Sudoku, long-press and a flag mode for Minesweeper, tap-to-move and drag for the card games.</li>
+<li><strong>Keyboard support.</strong> Arrow keys and number keys in Sudoku, arrow keys and <kbd>F</kbd> in Minesweeper, <kbd>Ctrl</kbd>+<kbd>Z</kbd> to undo everywhere.</li>
+<li><strong>Saved on your device.</strong> Progress, streaks and best times are kept in your browser's local storage. Nothing about your play is sent to a server.</li>
 <li><strong>A guide under every game.</strong> Each page explains the rules and the techniques that actually improve your results.</li>
 </ul>
 <h2>Which game should I play?</h2>
 <div class="tw"><table><thead><tr><th>Game</th><th>Typical length</th><th>Luck</th><th>Good for</th></tr></thead><tbody>
 <tr><td><a href="sudoku">Sudoku</a></td><td>5 to 30 minutes</td><td>None: pure logic</td><td>Calm, focused thinking</td></tr>
+<tr><td><a href="daily-sudoku">Daily Sudoku</a></td><td>5 to 30 minutes</td><td>None</td><td>A daily habit and comparing times with friends</td></tr>
 <tr><td><a href="minesweeper">Minesweeper</a></td><td>1 to 5 minutes</td><td>Some: occasional forced guesses</td><td>Quick rounds and beating your best time</td></tr>
+<tr><td><a href="freecell">FreeCell</a></td><td>5 to 15 minutes</td><td>Very little: almost every deal can be won</td><td>Planning ahead with nothing hidden</td></tr>
 <tr><td><a href="solitaire">Klondike Solitaire</a></td><td>5 to 10 minutes</td><td>A lot: not every deal can be won</td><td>Relaxed play with a few real decisions</td></tr>
+<tr><td><a href="spider">Spider Solitaire</a></td><td>10 to 30 minutes</td><td>Moderate, more with 4 suits</td><td>Long sessions with adjustable difficulty</td></tr>
 </tbody></table></div>
 <h2>About these games</h2>
-<p>Guagua Games is a small independent project by Alvin Li, who also maintains the developer tools at <a href="{MAIN}/">guagua-alvin.top</a>. The games are written from scratch in plain JavaScript with no game engine, which is why each page is only a few tens of kilobytes. More games will be added one at a time, when each is finished properly.</p>
-<p class="note">Last updated November 13, 2026. Questions or bug reports: <a href="{MAIN}/contact">contact</a>. See the <a href="{MAIN}/privacy">privacy policy</a> for how advertising and local storage work on this site.</p>
+<p>Guagua Games is a small independent project by Alvin Li, who also maintains the developer tools at <a href="{MAIN}/">guagua-alvin.top</a>. The games are written from scratch in plain JavaScript with no game engine, so each page loads quickly even on a slow connection. New games are added one at a time, when each is finished properly.</p>
+<p class="note">Last updated November 16, 2026. Questions or bug reports: <a href="{MAIN}/contact">contact</a>. See the <a href="{MAIN}/privacy">privacy policy</a> for how advertising and local storage work on this site.</p>
 </article>
 </main>
 {FOOTER}
@@ -185,17 +307,21 @@ def index_page():
 
 
 def main():
-    out = ROOT / "games"
-    for g in GAMES:
-        (out / f"{g['slug']}.html").write_text(game_page(g), encoding="utf-8")
-    (out / "index.html").write_text(index_page(), encoding="utf-8")
-    lm = ROOT / "content" / "sitemap-lastmod.json"
-    d = json.loads(lm.read_text())
-    d["/games/"] = UPDATED
-    for g in GAMES:
-        d["/games/" + g["slug"]] = UPDATED
-    lm.write_text(json.dumps(d, indent=1))
-    print("built", len(GAMES), "games + index")
+    for p in PAGES:
+        (OUT / f"{p['slug']}.html").write_text(game_page(p), encoding="utf-8")
+    (OUT / "index.html").write_text(index_page(), encoding="utf-8")
+    urls = [BASE] + [BASE + s for s in ["daily-sudoku", "sudoku"] + [f"{k}-sudoku" for k, _ in LEVELS] + ["minesweeper", "solitaire", "freecell", "spider"]]
+    (OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                                     + "".join(f"  <url><loc>{u}</loc><lastmod>{UPDATED}</lastmod></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n", encoding="utf-8")
+    (OUT / "manifest.webmanifest").write_text(json.dumps({
+        "name": "Guagua Games", "short_name": "Guagua Games", "description": "Free Sudoku, Minesweeper and card games.",
+        "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#f7f5ed", "theme_color": "#f7f5ed",
+        "icons": [{"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png"},
+                  {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png"},
+                  {"src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml"}],
+        "shortcuts": [{"name": "Daily Sudoku", "url": "daily-sudoku"}, {"name": "FreeCell", "url": "freecell"}]}, indent=1), encoding="utf-8")
+    print(f"built {len(PAGES)} game pages + index, sitemap with {len(urls)} URLs")
 
 
 if __name__ == "__main__":

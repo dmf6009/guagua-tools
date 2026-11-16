@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Online FreeCell Solitaire: Numbered Deals 1 to 1,000,000 | Guagua Games</title>
+<meta name="description" content="Play FreeCell Solitaire online for free. Classic numbered deals from 1 to 1,000,000, tap or drag to move, multi-card moves, unlimited undo and hints. No download, works on mobile.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/freecell">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Free Online FreeCell Solitaire: Numbered Deals 1 to 1,000,000 | Guagua Games">
+<meta property="og:description" content="Play FreeCell Solitaire online for free. Classic numbered deals from 1 to 1,000,000, tap or drag to move, multi-card moves, unlimited undo and hints. No download, works on mobile.">
+<meta property="og:url" content="https://games.guagua-alvin.top/freecell">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "FreeCell", "url": "https://games.guagua-alvin.top/freecell", "description": "Play FreeCell Solitaire online for free. Classic numbered deals from 1 to 1,000,000, tap or drag to move, multi-card moves, unlimited undo and hints. No download, works on mobile.", "genre": "Card", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-16", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "FreeCell", "item": "https://games.guagua-alvin.top/freecell"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Can every FreeCell game be won?", "acceptedAnswer": {"@type": "Answer", "text": "Almost. Of the original 32,000 numbered deals, only deal #11982 is known to be unsolvable. Nearly every other deal can be won with careful play."}}, {"@type": "Question", "name": "Are the deal numbers the same as Windows FreeCell?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Deals are generated with the same shuffle as the classic Windows version, so deal #1 here has the same layout as deal #1 there."}}, {"@type": "Question", "name": "How many cards can I move at once in FreeCell?", "acceptedAnswer": {"@type": "Answer", "text": "As many as your free space allows: (empty free cells + 1) multiplied by 2 for each empty column. The game moves the whole run for you when there is room."}}, {"@type": "Question", "name": "How do I replay or share a specific deal?", "acceptedAnswer": {"@type": "Answer", "text": "Type the number into the Deal # box and press Play, or share the page link with the deal number after a # sign."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku">Sudoku</a><a href="daily-sudoku">Daily</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="freecell" aria-current="page">FreeCell</a><a href="spider">Spider</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / FreeCell</p>
+<h1>FreeCell</h1>
+<p class="deck">Every card is face up, so every game is a puzzle you can think through. Classic numbered deals, unlimited undo.</p>
+<section class="game" aria-label="FreeCell game">
+<div class="bar"><div class="stats"><span>Deal <b id="dealno">#1</b></span><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<form class="deal-pick" id="pick"><label for="pickno" class="stats">Deal #</label><input id="pickno" type="number" min="1" max="1000000" inputmode="numeric" placeholder="e.g. 617"><button type="submit" class="btn">Play</button></form>
+<div class="bar-group"><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="restart">Restart</button><button type="button" class="btn primary" id="new">New deal</button></div></div>
+<div class="sol-table" id="table"></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="spider">Spider Solitaire</a><a href="solitaire">Klondike Solitaire</a><a href="daily-sudoku">Today's daily Sudoku</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>How to play FreeCell</h2>
+<p>FreeCell uses one 52-card deck, dealt <strong>face up</strong> into eight columns: the first four get seven cards, the other four get six. Nothing is hidden, so every game is a puzzle you can think through rather than a gamble on what lies underneath.</p>
+<p>The goal is to move all 52 cards to the four <strong>foundations</strong> at the top right, one per suit, from Ace up to King.</p>
+<p>You have three places to move a card:</p>
+<ul>
+<li><strong>Free cells.</strong> The four spaces at the top left each hold any single card. They are your working room, and running out of them is how most games are lost.</li>
+<li><strong>Foundations.</strong> A card goes up when the card below it in the same suit is already there.</li>
+<li><strong>Tableau.</strong> Build down in alternating colours: a black 8 on a red 9, a red Jack on a black Queen. Any card can go into an empty column.</li>
+</ul>
+<h2>Controls</h2>
+<p><strong>Tap or click a card</strong> and it moves to the best legal spot: a foundation, then a column, then an empty column, then a free cell. <strong>Drag</strong> when you want to choose the destination yourself. Undo has no limit (<kbd>Ctrl</kbd>+<kbd>Z</kbd> works too), and Hint outlines a card worth moving.</p>
+<p>Cards that can never be needed again in the tableau go to the foundations automatically. A card is sent up only once both foundations of the opposite colour have reached one rank below it, so the automatic move can never strand a card you might still want to build on.</p>
+<h2>Moving several cards at once</h2>
+<p>The rules only allow one card to move at a time, but moving a run through free cells and empty columns is tedious, so the game does it for you when there is room. The largest run you can move is:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Free cells empty</th>
+<th>Empty columns</th>
+<th>Cards you can move</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>6</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1</td>
+<td>10</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></div>
+<p>The formula is (empty free cells + 1) × 2 to the power of the empty columns. When the destination is itself an empty column, that column does not count. If a tap does nothing on a long run, this limit is usually why, and the game says so.</p>
+<h2>Numbered deals</h2>
+<p>Every deal has a number from 1 to 1,000,000, shown above the table. The numbers use the same shuffle as the version of FreeCell that came with Windows, so deal #1 here is the same layout as deal #1 there. Type a number into <strong>Deal #</strong> to replay a deal, or share a link ending in <code>#</code> and the number so a friend can play the identical game.</p>
+<p>Of the original 32,000 Windows deals, only one, <strong>#11982</strong>, is known to have no solution. Every other deal in that range can be won, which makes FreeCell unusual among patience games: a loss is almost always a mistake you can find.</p>
+<h2>Strategy</h2>
+<ul>
+<li><strong>Free the Aces and Twos early.</strong> Look at where they are buried before the first move, and plan to dig towards them.</li>
+<li><strong>Treat free cells as a loan.</strong> Each card you park is one less way out. Before filling the last cell, check that you have a way to empty one again.</li>
+<li><strong>An empty column is worth two free cells.</strong> It doubles the length of run you can move. Clearing a short column is often the best move on the board.</li>
+<li><strong>Do not fill an empty column with one low card</strong> unless it unlocks something immediately. Save it for a long run or a King.</li>
+<li><strong>Build long runs.</strong> A tidy descending run is easy to move later; scattered single cards are not.</li>
+<li><strong>Use undo to look ahead.</strong> Since nothing is hidden, trying a line and taking it back costs nothing and teaches you how the deal is structured.</li>
+</ul>
+<h2>A short history</h2>
+<p>Paul Alfille wrote the first computer version of FreeCell in 1978 on the PLATO educational system at the University of Illinois. A later version by Jim Horne was distributed with Microsoft Windows in the 1990s, and its numbered deals became a shared reference: players could compare notes on the same game by quoting its number. That is why the numbers are kept here.</p>
+<h2>Frequently asked questions</h2>
+<h3>Can every FreeCell game be won?</h3><p>Almost. Of the original 32,000 numbered deals, only deal #11982 is known to be unsolvable. Nearly every other deal can be won with careful play.</p><h3>Are the deal numbers the same as Windows FreeCell?</h3><p>Yes. Deals are generated with the same shuffle as the classic Windows version, so deal #1 here has the same layout as deal #1 there.</p><h3>How many cards can I move at once in FreeCell?</h3><p>As many as your free space allows: (empty free cells + 1) multiplied by 2 for each empty column. The game moves the whole run for you when there is room.</p><h3>How do I replay or share a specific deal?</h3><p>Type the number into the Deal # box and press Play, or share the page link with the deal number after a # sign.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/common.js" defer></script>
+<script src="assets/cards.js" defer></script>
+<script src="assets/freecell.js" defer></script>
+</body>
+</html>

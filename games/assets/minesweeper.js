@@ -35,6 +35,7 @@
       gridEl.appendChild(b); cells.push(b);
     }
     fit(); msg(""); render();
+    if (window.GG) GG.reset();
     Array.prototype.forEach.call(document.querySelectorAll("#levels button"), function (b) { b.setAttribute("aria-pressed", b.dataset.level === level); });
   }
   function fit() {
@@ -76,6 +77,7 @@
     over = true; clearInterval(timer); render();
     cells[i].classList.add("boom");
     msg("You hit a mine. Press New game to try again.", "lose");
+    if (window.GG) GG.done({ lost: true });
   }
   function check() {
     for (var i = 0; i < W * H; i++) if (!mines[i] && !open[i]) return;
@@ -84,6 +86,8 @@
     var rec = !best[level] || seconds < best[level];
     if (rec) { best[level] = seconds; try { localStorage.setItem(KEY, JSON.stringify(best)); } catch (e) {} }
     msg("Cleared in " + seconds + " second" + (seconds === 1 ? "" : "s") + (rec ? ". New best time." : "."), "win");
+    var names = { beginner: "Beginner", intermediate: "Intermediate", expert: "Expert" };
+    if (window.GG) GG.done({ share: "I cleared a " + names[level] + " Minesweeper board in " + seconds + " second" + (seconds === 1 ? "" : "s") + ".\n" + location.origin + location.pathname });
   }
   function render() {
     var flags = 0;
@@ -140,6 +144,6 @@
   $("levels").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) start(b.dataset.level); });
   window.addEventListener("resize", fit);
 
-  start(window.matchMedia("(max-width: 760px)").matches ? "beginner" : "beginner");
+  start("beginner");
   window.__mines = { state: function () { return { W: W, H: H, M: M, mines: mines, open: open, flag: flag, over: over, won: won }; } };
 })();

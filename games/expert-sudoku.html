@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expert Sudoku Online: Free Very Hard Puzzles | Guagua Games</title>
+<meta name="description" content="Free expert Sudoku puzzles online for advanced solvers. Unlimited very hard grids with notes, plus a guide to Swordfish, XY-Wing and colouring.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/expert-sudoku">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Expert Sudoku Online: Free Very Hard Puzzles | Guagua Games">
+<meta property="og:description" content="Free expert Sudoku puzzles online for advanced solvers. Unlimited very hard grids with notes, plus a guide to Swordfish, XY-Wing and colouring.">
+<meta property="og:url" content="https://games.guagua-alvin.top/expert-sudoku">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Expert Sudoku", "url": "https://games.guagua-alvin.top/expert-sudoku", "description": "Free expert Sudoku puzzles online for advanced solvers. Unlimited very hard grids with notes, plus a guide to Swordfish, XY-Wing and colouring.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-16", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Sudoku", "item": "https://games.guagua-alvin.top/sudoku"}, {"@type": "ListItem", "position": 3, "name": "Expert Sudoku", "item": "https://games.guagua-alvin.top/expert-sudoku"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many givens does an expert Sudoku have?", "acceptedAnswer": {"@type": "Answer", "text": "About 24, sometimes a few more. Difficulty is set by removing givens while keeping exactly one solution."}}, {"@type": "Question", "name": "Does every puzzle have only one solution?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess."}}, {"@type": "Question", "name": "Is my progress saved?", "acceptedAnswer": {"@type": "Answer", "text": "The current puzzle, your notes and the timer are saved in this browser's local storage, so you can close the page and continue later. Nothing is sent to a server."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku" aria-current="page">Sudoku</a><a href="daily-sudoku">Daily</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="freecell">FreeCell</a><a href="spider">Spider</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / <a href="sudoku">Sudoku</a> / Expert Sudoku</p>
+<h1>Expert Sudoku</h1>
+<p class="deck">About 24 givens. Full notes and advanced patterns, but never a guess.</p>
+<section class="game" aria-label="Expert Sudoku game">
+<div class="bar"><nav class="seg" aria-label="Difficulty"><a href="easy-sudoku">Easy</a><a href="medium-sudoku">Medium</a><a href="hard-sudoku">Hard</a><a href="expert-sudoku" aria-current="page">Expert</a></nav>
+<div class="stats"><span>Time <b id="time">00:00</b></span><span>Mistakes <b id="errors">0</b></span></div></div>
+<div class="sdk-wrap"><div class="sdk-grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
+<div class="sdk-side"><div class="pad" id="pad" role="group" aria-label="Number pad"></div>
+<div class="tools"><button type="button" class="btn" id="notes" aria-pressed="false">Notes</button><button type="button" class="btn" id="erase">Erase</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="hint">Hint</button></div>
+<button type="button" class="btn primary" id="new">New puzzle</button></div></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="daily-sudoku">Today's daily Sudoku</a><a href="freecell">FreeCell</a><a href="spider">Spider Solitaire</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>What to expect from expert puzzles</h2>
+<p>Expert puzzles start with <strong>about 24 givens</strong>, sometimes a few more, which is close to the fewest a generator can reliably leave while keeping a unique solution. (The proven minimum for any Sudoku with a unique solution is 17.) With so little to start from, almost every step depends on full candidate notes and on spotting patterns that span several units at once.</p>
+<p>You will not need to guess. Every puzzle has exactly one solution, and logic always leads there, though at this level the logic can take a while to find.</p>
+<h2>Set-up for an expert puzzle</h2>
+<ol>
+<li>Scan for the obvious singles first; there are usually a few.</li>
+<li>Write candidates in every empty cell. Be meticulous: one missing candidate can make a correct pattern look impossible.</li>
+<li>Look for pairs, triples, pointing pairs and box-line reductions, as in <a href="hard-sudoku">hard Sudoku</a>, before searching for anything more advanced.</li>
+</ol>
+<h2>Advanced techniques</h2>
+<p><strong>Swordfish.</strong> An X-Wing with three rows instead of two. If a digit's candidates in three rows all fall within the same three columns, the digit must occupy those three columns within those rows, and can be removed from the rest of those columns. Each row needs only two or three of the positions, not all three.</p>
+<p><strong>XY-Wing.</strong> Three bivalue cells. A pivot with candidates {A, B} sees two pincers, one {A, C} and one {B, C}. Whatever the pivot turns out to be, one of the pincers must be C. So C can be removed from any cell that sees both pincers.</p>
+<p><strong>XYZ-Wing.</strong> As above, but the pivot holds {A, B, C}. C can then be removed only from cells that see the pivot and both pincers.</p>
+<p><strong>Simple colouring.</strong> Choose one digit and find units where it has exactly two candidate cells. Link those cells, and alternately colour the chain in two colours. One colour is all true, the other all false. If two cells of the same colour see each other, that colour is false everywhere; if a cell sees both colours, the digit can be removed from it.</p>
+<p><strong>Unique rectangles.</strong> Because the puzzle has one solution, four cells in two rows, two columns and two boxes cannot all end up as the same pair of digits. If three corners are a pair {A, B} and the fourth has {A, B} plus extras, the fourth cell cannot be A or B.</p>
+<h2>Working habits that help</h2>
+<ul>
+<li>Tackle one digit at a time when searching for fish and colouring patterns.</li>
+<li>Keep notes tidy. After each placement, glance at the cell's row, column and box to confirm candidates were cleared.</li>
+<li>Take a break. Patterns that are invisible after twenty minutes often jump out after two minutes away.</li>
+</ul>
+<h2>Typical times</h2>
+<p>Expect <strong>30 minutes to an hour</strong> or more. Speed matters less here than finishing without hints; the mistake and hint counters show how cleanly you solved.</p>
+<p>For a different pace, <a href="hard-sudoku">hard Sudoku</a> uses most of the same tools with more help from the givens.</p>
+<h2>Frequently asked questions</h2>
+<h3>How many givens does an expert Sudoku have?</h3><p>About 24, sometimes a few more. Difficulty is set by removing givens while keeping exactly one solution.</p><h3>Does every puzzle have only one solution?</h3><p>Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess.</p><h3>Is my progress saved?</h3><p>The current puzzle, your notes and the timer are saved in this browser&#x27;s local storage, so you can close the page and continue later. Nothing is sent to a server.</p>
+<h2>More games</h2>
+<div class="more"><a href="daily-sudoku"><b>Daily Sudoku</b><span>One shared puzzle a day, with a streak to keep.</span></a><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script>window.GG_SUDOKU={"mode": "level", "level": "expert"};</script>
+<script src="assets/common.js" defer></script>
+<script src="assets/sudoku.js" defer></script>
+</body>
+</html>

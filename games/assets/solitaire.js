@@ -16,6 +16,7 @@
     st = { draw: draw, stock: [], waste: [], fnd: [[], [], [], []], tab: [[], [], [], [], [], [], []], moves: 0, seconds: 0, won: false };
     for (var c = 0; c < 7; c++) for (var k = 0; k <= c; k++) { var card = deck.pop(); card.up = k === c; st.tab[c].push(card); }
     st.stock = deck; history = []; hintId = null;
+    if (window.GG) GG.reset();
     msg(""); save(); render(); startTimer();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
@@ -52,8 +53,10 @@
   }
   function after() {
     st.moves++; hintId = null;
-    if (st.fnd.every(function (f) { return f.length === 13; })) { st.won = true; msg("Solved in " + st.moves + " moves and " + fmt(st.seconds) + ".", "win"); }
-    else msg("");
+    if (st.fnd.every(function (f) { return f.length === 13; })) {
+      st.won = true; msg("Solved in " + st.moves + " moves and " + fmt(st.seconds) + ".", "win");
+      if (window.GG) GG.done({ share: "I won a game of Klondike Solitaire (Draw " + st.draw + ") in " + st.moves + " moves and " + fmt(st.seconds) + ".\n" + location.origin + location.pathname });
+    } else msg("");
     save(); render();
   }
   function drawStock() {

@@ -23,7 +23,7 @@ HEADER = ('<header class="site-header"><a class="brand" href="/" aria-label="Gua
           '<span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a>' + NAV + '</header>')
 FOOTER = ('<footer><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">G</span><span>GUAGUA <b>TOOLS</b></span></a>'
           '<p>Free MCP, AI agent and developer tools, with the guides to use them.</p>'
-          '<div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="/games/">Games</a>'
+          '<div><a href="/mcp-tools">MCP tools</a><a href="/guides/">Guides</a><a href="/agents/">Agent skills</a><a href="https://games.guagua-alvin.top/">Games</a>'
           '<a href="/testing-methodology">Testing method</a><a href="https://github.com/dmf6009/guagua-tools" rel="noopener">GitHub</a><a href="/sitemap.xml">Sitemap</a></div>'
           '<div class="trust-links" aria-label="Site policies"><a href="/about">About</a><a href="/contact">Contact</a>'
           '<a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/cookies">Cookies</a></div></footer>')
@@ -228,7 +228,7 @@ def build_sitemap(guides):
     if overrides_path.exists():
         for k, v in json.loads(overrides_path.read_text()).items():
             entries[SITE + k] = v
-    entries = {k: v for k, v in entries.items() if "/guides/" not in k}
+    entries = {k: v for k, v in entries.items() if "/guides/" not in k and "/games" not in k}
     newest = max(g["updated"] for g in guides)
     entries[SITE + "/guides/"] = newest
     for g in guides:

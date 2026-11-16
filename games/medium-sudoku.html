@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Medium Sudoku Online: Free Puzzles with Notes | Guagua Games</title>
+<meta name="description" content="Free medium Sudoku puzzles online. Unlimited puzzles with pencil notes and hints, and a guide to candidates, naked pairs and pointing pairs.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/medium-sudoku">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Medium Sudoku Online: Free Puzzles with Notes | Guagua Games">
+<meta property="og:description" content="Free medium Sudoku puzzles online. Unlimited puzzles with pencil notes and hints, and a guide to candidates, naked pairs and pointing pairs.">
+<meta property="og:url" content="https://games.guagua-alvin.top/medium-sudoku">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Medium Sudoku", "url": "https://games.guagua-alvin.top/medium-sudoku", "description": "Free medium Sudoku puzzles online. Unlimited puzzles with pencil notes and hints, and a guide to candidates, naked pairs and pointing pairs.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-16", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Sudoku", "item": "https://games.guagua-alvin.top/sudoku"}, {"@type": "ListItem", "position": 3, "name": "Medium Sudoku", "item": "https://games.guagua-alvin.top/medium-sudoku"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How many givens does a medium Sudoku have?", "acceptedAnswer": {"@type": "Answer", "text": "About 33 of the 81 cells. Difficulty is set by removing givens while keeping exactly one solution."}}, {"@type": "Question", "name": "Does every puzzle have only one solution?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess."}}, {"@type": "Question", "name": "Is my progress saved?", "acceptedAnswer": {"@type": "Answer", "text": "The current puzzle, your notes and the timer are saved in this browser's local storage, so you can close the page and continue later. Nothing is sent to a server."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku" aria-current="page">Sudoku</a><a href="daily-sudoku">Daily</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="freecell">FreeCell</a><a href="spider">Spider</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / <a href="sudoku">Sudoku</a> / Medium Sudoku</p>
+<h1>Medium Sudoku</h1>
+<p class="deck">Around 33 givens. Scanning gets you started; pencil notes finish the job.</p>
+<section class="game" aria-label="Medium Sudoku game">
+<div class="bar"><nav class="seg" aria-label="Difficulty"><a href="easy-sudoku">Easy</a><a href="medium-sudoku" aria-current="page">Medium</a><a href="hard-sudoku">Hard</a><a href="expert-sudoku">Expert</a></nav>
+<div class="stats"><span>Time <b id="time">00:00</b></span><span>Mistakes <b id="errors">0</b></span></div></div>
+<div class="sdk-wrap"><div class="sdk-grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
+<div class="sdk-side"><div class="pad" id="pad" role="group" aria-label="Number pad"></div>
+<div class="tools"><button type="button" class="btn" id="notes" aria-pressed="false">Notes</button><button type="button" class="btn" id="erase">Erase</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="hint">Hint</button></div>
+<button type="button" class="btn primary" id="new">New puzzle</button></div></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="hard-sudoku">Hard Sudoku</a><a href="daily-sudoku">Today's daily Sudoku</a><a href="freecell">FreeCell</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>What changes at medium difficulty</h2>
+<p>Medium puzzles start with around <strong>33 givens</strong>. Scanning still does much of the work, but you will reach points where no cell can be filled by looking alone. That is the moment to start writing <strong>candidates</strong>: the small pencil marks that list which digits are still possible in a cell. Learning to use them well is the main skill medium puzzles teach.</p>
+<h2>Using pencil notes efficiently</h2>
+<p>Press <strong>Notes</strong> (or <kbd>N</kbd>) and the number pad writes small digits instead of answers. Two habits make notes useful rather than cluttered:</p>
+<ul>
+<li><strong>Note only cells with two or three candidates at first.</strong> A cell with seven possibilities tells you nothing yet.</li>
+<li><strong>Let the game clean up for you.</strong> When you place a correct digit, the same digit is erased from notes in its row, column and box automatically, so your notes stay accurate.</li>
+</ul>
+<h2>Techniques you will need</h2>
+<p><strong>Hidden singles in notes.</strong> Within one row, column or box, a digit may appear as a candidate in only one cell, even if that cell lists other candidates too. That cell must hold the digit.</p>
+<p><strong>Naked pairs.</strong> If two cells in the same row, column or box both contain exactly the same two candidates, for example {3, 8}, those two digits must go in those two cells, in some order. Remove 3 and 8 from every other cell in that unit. This often turns another cell into a single.</p>
+<p><strong>Pointing pairs.</strong> If, inside one box, every possible place for a digit lies in a single row, that digit must be in that row within the box. It can therefore be removed from the rest of that row outside the box. The same works for columns.</p>
+<p>These three cover almost every medium puzzle.</p>
+<h2>A good order of work</h2>
+<ol>
+<li>Scan for singles as you would in an easy puzzle until nothing more appears.</li>
+<li>Write candidates in one box, row or column that is nearly full.</li>
+<li>Look in those notes for hidden singles and naked pairs.</li>
+<li>Each new digit you place may open more scanning; return to step 1.</li>
+</ol>
+<h2>Typical times</h2>
+<p>Regular players finish medium puzzles in about <strong>8 to 15 minutes</strong>. Your first few may take half an hour, mostly spent learning to read notes.</p>
+<h2>When to move up</h2>
+<p>When you can solve medium puzzles without hints and the naked pair has become something you notice without searching, try <a href="hard-sudoku">hard Sudoku</a>. If medium is too much today, <a href="easy-sudoku">easy Sudoku</a> is a good place to build speed.</p>
+<h2>Frequently asked questions</h2>
+<h3>How many givens does a medium Sudoku have?</h3><p>About 33 of the 81 cells. Difficulty is set by removing givens while keeping exactly one solution.</p><h3>Does every puzzle have only one solution?</h3><p>Yes. Each puzzle is generated in your browser and checked by a solver so that exactly one solution exists. You never need to guess.</p><h3>Is my progress saved?</h3><p>The current puzzle, your notes and the timer are saved in this browser&#x27;s local storage, so you can close the page and continue later. Nothing is sent to a server.</p>
+<h2>More games</h2>
+<div class="more"><a href="daily-sudoku"><b>Daily Sudoku</b><span>One shared puzzle a day, with a streak to keep.</span></a><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script>window.GG_SUDOKU={"mode": "level", "level": "medium"};</script>
+<script src="assets/common.js" defer></script>
+<script src="assets/sudoku.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Sudoku: A New Free Puzzle Every Day | Guagua Games</title>
+<meta name="description" content="One free Sudoku a day, the same puzzle for everyone. Difficulty builds from easy on Monday to expert on Sunday. Track your streak and share your time. No sign-up.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/daily-sudoku">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Daily Sudoku: A New Free Puzzle Every Day | Guagua Games">
+<meta property="og:description" content="One free Sudoku a day, the same puzzle for everyone. Difficulty builds from easy on Monday to expert on Sunday. Track your streak and share your time. No sign-up.">
+<meta property="og:url" content="https://games.guagua-alvin.top/daily-sudoku">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Daily Sudoku", "url": "https://games.guagua-alvin.top/daily-sudoku", "description": "One free Sudoku a day, the same puzzle for everyone. Difficulty builds from easy on Monday to expert on Sunday. Track your streak and share your time. No sign-up.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-16", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Daily Sudoku", "item": "https://games.guagua-alvin.top/daily-sudoku"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When does the daily Sudoku change?", "acceptedAnswer": {"@type": "Answer", "text": "At midnight in your own time zone. Everyone who opens the page on the same calendar date gets the same puzzle."}}, {"@type": "Question", "name": "How is my streak counted?", "acceptedAnswer": {"@type": "Answer", "text": "The streak is the number of consecutive days on which you solved the daily puzzle in this browser. It stays alive until the end of today, so you have all day to keep it going."}}, {"@type": "Question", "name": "Can I play past daily puzzles?", "acceptedAnswer": {"@type": "Answer", "text": "Not yet. Only today's puzzle is available. For unlimited puzzles, use the easy, medium, hard and expert pages."}}, {"@type": "Question", "name": "How difficult is the daily puzzle?", "acceptedAnswer": {"@type": "Answer", "text": "It follows the week: easy on Monday and Tuesday, medium on Wednesday and Thursday, hard on Friday and Saturday, and expert on Sunday."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="sudoku">Sudoku</a><a href="daily-sudoku" aria-current="page">Daily</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="freecell">FreeCell</a><a href="spider">Spider</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / Daily Sudoku</p>
+<h1>Daily Sudoku</h1>
+<p class="deck">Today's puzzle is the same for every player. Solve it, keep your streak going, and share your time.</p>
+<section class="game" aria-label="Daily Sudoku game">
+<div class="bar"><div class="daily-strip"><span>Puzzle <b id="dnum">#1</b></span><span>Level <b id="dlevel">—</b></span><span>Streak <b id="dstreak">0</b></span><span>Solved <b id="dsolved">0</b></span></div>
+<div class="stats"><span>Time <b id="time">00:00</b></span><span>Mistakes <b id="errors">0</b></span></div></div>
+<div class="sdk-wrap"><div class="sdk-grid" id="grid" role="grid" aria-label="Sudoku grid"></div>
+<div class="sdk-side"><div class="pad" id="pad" role="group" aria-label="Number pad"></div>
+<div class="tools"><button type="button" class="btn" id="notes" aria-pressed="false">Notes</button><button type="button" class="btn" id="erase">Erase</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn" id="hint">Hint</button></div>
+</div></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="medium-sudoku">Medium Sudoku</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Klondike Solitaire</a><a href="freecell">FreeCell</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+<article class="article">
+<h2>How the daily puzzle works</h2>
+<p>There is <strong>one puzzle per day, and it is the same for everyone.</strong> It is generated from the date, so a friend on the other side of the world who opens this page on the same calendar day gets the identical grid, and you can compare times fairly.</p>
+<p>A new puzzle appears at midnight in your own time zone. If you leave a puzzle half finished, your progress is kept until the end of the day.</p>
+<h2>The weekly difficulty cycle</h2>
+<p>The difficulty follows the week, starting gentle and building to a weekend challenge:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Difficulty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monday, Tuesday</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Wednesday, Thursday</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>Friday, Saturday</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Sunday</td>
+<td>Expert</td>
+</tr>
+</tbody>
+</table></div>
+<p>If a day's level feels too hard or too easy, the regular <a href="easy-sudoku">easy</a>, <a href="medium-sudoku">medium</a>, <a href="hard-sudoku">hard</a> and <a href="expert-sudoku">expert</a> pages give you unlimited puzzles at a fixed level.</p>
+<h2>Streaks and sharing</h2>
+<p>Solve the daily puzzle and the page records it in this browser. The <strong>streak</strong> counts consecutive days solved, and stays alive until the end of today even if you have not played yet. The <strong>solved</strong> count is your total. Nothing is sent to a server, so clearing your browser data resets both.</p>
+<p>After you finish, the <strong>Share result</strong> button gives you a short summary to paste into a message or a group chat: the puzzle number, its difficulty, your time, and whether you used any mistakes or hints. A clean solve gets a tick. The link takes your friends to today's puzzle.</p>
+<h2>Making a habit of it</h2>
+<p>A short puzzle every day is a pleasant routine, and some people use it as a fixed point in the morning or a way to end the evening. A few suggestions:</p>
+<ul>
+<li><strong>Same time, same place.</strong> Habits stick when they are attached to something you already do, such as a first coffee.</li>
+<li><strong>Play the easy days fast and the hard days carefully.</strong> On Monday, try to beat your time. On Sunday, try to finish without hints.</li>
+<li><strong>Use notes from the start on hard days.</strong> Writing in candidates early is slower for the first minute and much faster afterwards.</li>
+<li><strong>Avoid the hint button for a week.</strong> You will find that most "stuck" moments end within a minute of looking at the grid differently.</li>
+</ul>
+<h2>Fair play</h2>
+<p>Each puzzle has exactly one solution and can be solved by logic alone. Mistakes are counted when you place a digit that contradicts the solution; they are shown in orange and you can erase them. Hints fill in one correct digit and are reported in your result, so a shared score always says how it was earned.</p><p><strong>Play by difficulty:</strong> <a href="easy-sudoku">Easy</a> · <a href="medium-sudoku">Medium</a> · <a href="hard-sudoku">Hard</a> · <a href="expert-sudoku">Expert</a></p>
+<h2>Frequently asked questions</h2>
+<h3>When does the daily Sudoku change?</h3><p>At midnight in your own time zone. Everyone who opens the page on the same calendar date gets the same puzzle.</p><h3>How is my streak counted?</h3><p>The streak is the number of consecutive days on which you solved the daily puzzle in this browser. It stays alive until the end of today, so you have all day to keep it going.</p><h3>Can I play past daily puzzles?</h3><p>Not yet. Only today&#x27;s puzzle is available. For unlimited puzzles, use the easy, medium, hard and expert pages.</p><h3>How difficult is the daily puzzle?</h3><p>It follows the week: easy on Monday and Tuesday, medium on Wednesday and Thursday, hard on Friday and Saturday, and expert on Sunday.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 16, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script>window.GG_SUDOKU={"mode": "daily"};</script>
+<script src="assets/common.js" defer></script>
+<script src="assets/sudoku.js" defer></script>
+</body>
+</html>

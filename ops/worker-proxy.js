@@ -9,6 +9,10 @@ export default {
       incoming.hostname = "guagua-alvin.top";
       return Response.redirect(incoming.toString(), 301);
     }
+    if (incoming.hostname === "guagua-alvin.top" && (incoming.pathname === "/games" || incoming.pathname.startsWith("/games/"))) {
+      const rest = incoming.pathname.slice("/games".length) || "/";
+      return Response.redirect("https://" + GAMES_HOST + rest + incoming.search, 301);
+    }
     // games.guagua-alvin.top/<path> is served from the /games/ directory of the same Pages project.
     const isGames = incoming.hostname === GAMES_HOST;
     const path = isGames ? "/games" + incoming.pathname : incoming.pathname;
