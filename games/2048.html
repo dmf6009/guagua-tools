@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Play 2048 Online Free: Classic Number Puzzle with Undo | Guagua Games</title>
+<meta name="description" content="Play 2048 online for free. Slide and merge numbered tiles to reach 2048 with arrow keys or swipes. One-move undo, best score saved, works on phone and desktop. No download.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/2048">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Play 2048 Online Free: Classic Number Puzzle with Undo | Guagua Games">
+<meta property="og:description" content="Play 2048 online for free. Slide and merge numbered tiles to reach 2048 with arrow keys or swipes. One-move undo, best score saved, works on phone and desktop. No download.">
+<meta property="og:url" content="https://games.guagua-alvin.top/2048">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "2048", "url": "https://games.guagua-alvin.top/2048", "description": "Play 2048 online for free. Slide and merge numbered tiles to reach 2048 with arrow keys or swipes. One-move undo, best score saved, works on phone and desktop. No download.", "genre": "Puzzle", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-17", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "2048", "item": "https://games.guagua-alvin.top/2048"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do you win 2048?", "acceptedAnswer": {"@type": "Answer", "text": "Merge tiles until one shows 2048. You can then keep playing for a higher score or a bigger tile."}}, {"@type": "Question", "name": "What is the best strategy for 2048?", "acceptedAnswer": {"@type": "Answer", "text": "Keep your largest tile in one corner, mostly use three directions so it stays there, and build a descending chain of tiles along the edge next to it."}}, {"@type": "Question", "name": "Is there an undo in this 2048?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, one move. It fixes a slip but cannot replay a whole game, so scores stay comparable."}}, {"@type": "Question", "name": "Does 2048 work on a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Swipe on the board in the direction you want the tiles to move. The page does not scroll while your finger is on the board."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="daily-sudoku">Daily</a><a href="sudoku">Sudoku</a><a href="2048" aria-current="page">2048</a><a href="minesweeper">Minesweeper</a><a href="solitaire">Solitaire</a><a href="./">All games</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / 2048</p>
+<h1>2048</h1>
+<p class="deck">Slide the tiles, merge equal numbers, and reach 2048. Arrow keys on a keyboard, swipes on a phone.</p>
+<section class="game" aria-label="2048 game">
+<div class="bar"><div class="stats"><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span></div><div class="bar-group"><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div><div class="g2048" id="board" role="application" aria-label="2048 board"><div class="g2048-layer"><div class="bg" style="--x:0;--y:0"></div><div class="bg" style="--x:1;--y:0"></div><div class="bg" style="--x:2;--y:0"></div><div class="bg" style="--x:3;--y:0"></div><div class="bg" style="--x:0;--y:1"></div><div class="bg" style="--x:1;--y:1"></div><div class="bg" style="--x:2;--y:1"></div><div class="bg" style="--x:3;--y:1"></div><div class="bg" style="--x:0;--y:2"></div><div class="bg" style="--x:1;--y:2"></div><div class="bg" style="--x:2;--y:2"></div><div class="bg" style="--x:3;--y:2"></div><div class="bg" style="--x:0;--y:3"></div><div class="bg" style="--x:1;--y:3"></div><div class="bg" style="--x:2;--y:3"></div><div class="bg" style="--x:3;--y:3"></div></div><div class="g2048-layer" id="tiles"></div></div><p class="g2048-help">Use the arrow keys or swipe on the board.</p>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="daily-sudoku">Today's daily Sudoku</a><a href="minesweeper">Minesweeper</a><a href="freecell">FreeCell</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+
+<article class="article">
+<h2>How to play 2048</h2>
+<p>The board is a 4 × 4 grid. Each move slides <strong>every tile</strong> as far as it can go in one direction. When two tiles with the same number collide, they merge into one tile showing their sum: two 2s make a 4, two 4s make an 8, and so on. After every move a new tile, a 2 or occasionally a 4, appears in an empty square.</p>
+<p>Reach a tile showing <strong>2048</strong> and you have won. You can keep playing for a bigger tile; the game ends when the board is full and no move can merge anything.</p>
+<h2>Controls</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Keyboard</th>
+<th>Touch</th>
+<th>Mouse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Slide tiles</td>
+<td>Arrow keys, or <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></td>
+<td>Swipe on the board</td>
+<td>Click and drag on the board</td>
+</tr>
+<tr>
+<td>Take back one move</td>
+<td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td>
+<td>Undo button</td>
+<td>Undo button</td>
+</tr>
+</tbody>
+</table></div>
+<p>Undo takes back only your last move, so it fixes a slip but cannot be used to replay a whole game. The game in progress and your best score are saved in this browser.</p>
+<h2>How scoring works</h2>
+<p>Every merge adds the value of the new tile to your score. Joining two 512s into 1024 is worth 1,024 points. Spawned tiles earn nothing. Reaching 2048 usually takes about a thousand moves and scores around 20,000 points; the score therefore measures how far you got, not how fast.</p>
+<h2>The corner strategy</h2>
+<p>Almost every strong player uses some version of the same plan:</p>
+<ol>
+<li><strong>Choose a corner</strong> for your largest tile, for example the bottom left, and keep it there for the whole game.</li>
+<li><strong>Use only three directions</strong> most of the time: for a bottom-left corner, left, down and right. Moving up pulls the big tile out of its corner and lets a small tile drop in behind it.</li>
+<li><strong>Keep the bottom row full.</strong> A full row cannot shift sideways, so your big tiles stay put when you press left or right.</li>
+<li><strong>Build a descending chain</strong> along the bottom row and then up the next row in a snake: 1024, 512, 256, 128 along the bottom, then 64 and 32 above the 128. Each merge can then cascade along the chain towards the corner.</li>
+<li><strong>When you must press the fourth direction,</strong> do it once and immediately press the opposite direction to repair the corner.</li>
+</ol>
+<h2>Common mistakes</h2>
+<ul>
+<li><strong>Chasing merges anywhere on the board.</strong> A merge in the wrong place can break your chain. Ask whether it helps the corner before taking it.</li>
+<li><strong>Letting small tiles get trapped</strong> between large ones. A lone 2 stuck beside a 256 can block the chain for dozens of moves.</li>
+<li><strong>Pressing keys quickly in a fixed rhythm.</strong> Patterns like "down, left, down, left" work early on and fail badly in the mid-game, when every move needs thought.</li>
+</ul>
+<h2>A little history</h2>
+<p>2048 was written by Italian developer Gabriele Cirulli and released in March 2014 as an open-source web game. It was inspired by the earlier games <em>1024</em> and <em>Threes!</em>, and became one of the most played browser games of that year. The largest tile that is possible on a 4 × 4 board is 131,072, which needs every square filled with a different power of two at the right moment; few players ever see 8192.</p>
+<h2>Frequently asked questions</h2>
+<h3>How do you win 2048?</h3><p>Merge tiles until one shows 2048. You can then keep playing for a higher score or a bigger tile.</p><h3>What is the best strategy for 2048?</h3><p>Keep your largest tile in one corner, mostly use three directions so it stays there, and build a descending chain of tiles along the edge next to it.</p><h3>Is there an undo in this 2048?</h3><p>Yes, one move. It fixes a slip but cannot replay a whole game, so scores stay comparable.</p><h3>Does 2048 work on a phone?</h3><p>Yes. Swipe on the board in the direction you want the tiles to move. The page does not scroll while your finger is on the board.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a><a href="pyramid"><b>Pyramid Solitaire</b><span>Pair cards that add up to 13 to clear the pyramid. Quick to learn, hard to win.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 17, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/common.js" defer></script>
+<script src="assets/2048.js" defer></script>
+</body>
+</html>

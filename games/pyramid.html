@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Online Pyramid Solitaire: Pair Cards to 13 | Guagua Games</title>
+<meta name="description" content="Play Pyramid Solitaire online for free. Pair uncovered cards that add up to 13 and clear the pyramid. Three passes through the stock, hints and unlimited undo. No download.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="theme-color" content="#f7f5ed">
+<link rel="canonical" href="https://games.guagua-alvin.top/pyramid">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/games.css">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3191558815455000" crossorigin="anonymous"></script>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Guagua Games">
+<meta property="og:title" content="Free Online Pyramid Solitaire: Pair Cards to 13 | Guagua Games">
+<meta property="og:description" content="Play Pyramid Solitaire online for free. Pair uncovered cards that add up to 13 and clear the pyramid. Three passes through the stock, hints and unlimited undo. No download.">
+<meta property="og:url" content="https://games.guagua-alvin.top/pyramid">
+<meta property="og:image" content="https://games.guagua-alvin.top/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["VideoGame", "WebApplication"], "name": "Pyramid Solitaire", "url": "https://games.guagua-alvin.top/pyramid", "description": "Play Pyramid Solitaire online for free. Pair uncovered cards that add up to 13 and clear the pyramid. Three passes through the stock, hints and unlimited undo. No download.", "genre": "Card", "applicationCategory": "GameApplication", "operatingSystem": "Any (web browser)", "gamePlatform": "Web browser", "inLanguage": "en", "playMode": "SinglePlayer", "isAccessibleForFree": true, "dateModified": "2026-11-17", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Alvin Li", "url": "https://guagua-alvin.top/about"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Games", "item": "https://games.guagua-alvin.top/"}, {"@type": "ListItem", "position": 2, "name": "Pyramid Solitaire", "item": "https://games.guagua-alvin.top/pyramid"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Which cards add up to 13 in Pyramid Solitaire?", "acceptedAnswer": {"@type": "Answer", "text": "Queen and Ace, Jack and 2, 10 and 3, 9 and 4, 8 and 5, and 7 and 6. A King is worth 13 by itself and is removed alone."}}, {"@type": "Question", "name": "Which cards can I use?", "acceptedAnswer": {"@type": "Answer", "text": "Any pyramid card that is not covered by a card in the row below it, plus the top card of the waste pile."}}, {"@type": "Question", "name": "How many times can I go through the stock?", "acceptedAnswer": {"@type": "Answer", "text": "Three times. When the stock is empty, click it to turn the waste pile back over."}}, {"@type": "Question", "name": "Can every game of Pyramid Solitaire be won?", "acceptedAnswer": {"@type": "Answer", "text": "No. Many deals cannot be cleared even with perfect play, so a low win rate is normal for this game."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="g-header"><a class="g-brand" href="./"><i aria-hidden="true">G</i><span>GUAGUA <b>GAMES</b></span></a><nav aria-label="Games"><a href="daily-sudoku">Daily</a><a href="sudoku">Sudoku</a><a href="2048">2048</a><a href="minesweeper">Minesweeper</a><a href="solitaire" aria-current="page">Solitaire</a><a href="./">All games</a></nav></header>
+<main id="main">
+<p class="crumbs"><a href="./">Games</a> / Pyramid Solitaire</p>
+<h1>Pyramid Solitaire</h1>
+<p class="deck">Remove pairs of cards that add up to 13 and clear all 28 cards from the pyramid. Kings go on their own.</p><p class="crumbs">Solitaire games: <a href="solitaire">Klondike</a> · <a href="freecell">FreeCell</a> · <a href="spider">Spider</a> · <b>Pyramid</b></p>
+<section class="game" aria-label="Pyramid Solitaire game">
+<div class="bar"><div class="stats"><span>Left <b id="left">28</b></span><span>Pass <b id="pass">1 of 3</b></span><span>Moves <b id="moves">0</b></span><span>Time <b id="time">00:00</b></span></div>
+<div class="bar-group"><button type="button" class="btn" id="hint">Hint</button><button type="button" class="btn" id="undo">Undo</button><button type="button" class="btn primary" id="new">New game</button></div></div>
+<div class="sol-table" id="table"></div>
+<p class="msg" id="msg" role="status" aria-live="polite"></p>
+<div class="after" id="after" hidden><p class="after-title" id="after-title">Nicely done. What next?</p><div class="after-links"><button type="button" class="btn" id="share" hidden>Share result</button><a href="solitaire">Klondike Solitaire</a><a href="freecell">FreeCell</a><a href="2048">2048</a></div></div>
+<noscript><p class="msg">This game needs JavaScript. The rules and strategy guide below can be read without it.</p></noscript>
+</section>
+
+<article class="article">
+<h2>How to play Pyramid Solitaire</h2>
+<p>Twenty-eight cards are dealt face up in a pyramid of seven rows. The other 24 cards form the stock. The goal is to <strong>clear every card from the pyramid</strong> by removing cards in pairs that add up to <strong>13</strong>.</p>
+<p>Card values are: Ace = 1, number cards their number, Jack = 11, Queen = 12 and King = 13. So the pairs are:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Pairs with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Queen (12)</td>
+<td>Ace (1)</td>
+</tr>
+<tr>
+<td>Jack (11)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>10</td>
+<td>3</td>
+</tr>
+<tr>
+<td>9</td>
+<td>4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+</tr>
+<tr>
+<td>King (13)</td>
+<td>Removed on its own</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Which cards you can use</h2>
+<p>A card in the pyramid is <strong>available only when it is not covered</strong>, which means both cards that overlap it from the row below are gone. At the start, only the seven cards in the bottom row are available. Covered cards are shown slightly darker.</p>
+<p>The <strong>top card of the waste pile</strong> is also available. Click the stock to turn over a new card onto the waste. You can go through the stock <strong>three times</strong> in all: when it runs out, click the empty stock to turn the waste back over.</p>
+<h2>Controls</h2>
+<p>Click or tap one card, then a second card that adds up to 13 with it; both are removed. Click a King to remove it straight away. Clicking a card that does not make 13 simply selects that card instead. Undo has no limit, and Hint outlines an available pair.</p>
+<h2>Strategy</h2>
+<ul>
+<li><strong>Look before you pair.</strong> Each rank has four cards. If two 6s are buried and two 7s are available, decide which 7 should clear which 6 rather than taking the first match.</li>
+<li><strong>Prefer pairs inside the pyramid.</strong> Using a waste card to remove a pyramid card spends a stock card. Pairing two pyramid cards removes two cards from the pyramid in one move.</li>
+<li><strong>Uncover the most cards.</strong> When choosing between pairs, take the one that frees cards higher up, especially on the side that is falling behind.</li>
+<li><strong>Watch the peak.</strong> The top card is the last to become available. Plan to have its partner available near the end, rather than discovering that every card that could clear it is gone.</li>
+<li><strong>Use all three passes.</strong> Cards you skip on the first pass come round again, so there is no need to force a weak pair from the waste early.</li>
+</ul>
+<h2>How often can you win?</h2>
+<p>Pyramid is one of the harder patience games. The pyramid's top cards are covered until late, and a single rank whose partners have all been used up can make a deal impossible. Many deals cannot be cleared even with perfect play, so a low win rate is normal; three passes through the stock, as here, makes the game considerably more forgiving than versions with a single pass.</p>
+<h2>Background</h2>
+<p>Pyramid is a long-established patience game, played with physical cards long before computers. Its simple arithmetic rule made it a favourite in collections of solitaire games, and versions bundled with computers in the 1990s and 2000s introduced it to a wide audience.</p>
+<h2>Frequently asked questions</h2>
+<h3>Which cards add up to 13 in Pyramid Solitaire?</h3><p>Queen and Ace, Jack and 2, 10 and 3, 9 and 4, 8 and 5, and 7 and 6. A King is worth 13 by itself and is removed alone.</p><h3>Which cards can I use?</h3><p>Any pyramid card that is not covered by a card in the row below it, plus the top card of the waste pile.</p><h3>How many times can I go through the stock?</h3><p>Three times. When the stock is empty, click it to turn the waste pile back over.</p><h3>Can every game of Pyramid Solitaire be won?</h3><p>No. Many deals cannot be cleared even with perfect play, so a low win rate is normal for this game.</p>
+<h2>More games</h2>
+<div class="more"><a href="sudoku"><b>Sudoku</b><span>Fill the grid so every row, column and box holds 1 to 9. Four levels with notes and hints.</span></a><a href="2048"><b>2048</b><span>Slide and merge tiles to reach 2048. Quick rounds, arrow keys or swipe.</span></a><a href="minesweeper"><b>Minesweeper</b><span>Clear the board without touching a mine. Classic sizes, safe first click, touch-friendly flags.</span></a><a href="solitaire"><b>Klondike Solitaire</b><span>Build four suits from Ace to King. Draw 1 or Draw 3, tap or drag, unlimited undo.</span></a><a href="freecell"><b>FreeCell</b><span>All cards face up, four free cells, numbered deals. Nearly every game can be won.</span></a><a href="spider"><b>Spider Solitaire</b><span>Build eight King-to-Ace runs. Choose 1, 2 or 4 suits for easy to expert play.</span></a></div>
+<p class="note">Written and built by Alvin Li. Last updated November 17, 2026. Found a bug or a rule that behaves oddly? <a href="https://guagua-alvin.top/contact">Report it</a>.</p>
+</article>
+</main>
+<footer class="g-footer"><span>Guagua Games · free browser games by Alvin Li. No download, no account.</span><div><a href="./">All games</a><a href="https://guagua-alvin.top/">Developer tools</a><a href="https://guagua-alvin.top/about">About</a><a href="https://guagua-alvin.top/contact">Contact</a><a href="https://guagua-alvin.top/privacy">Privacy</a><a href="https://guagua-alvin.top/terms">Terms</a><a href="https://guagua-alvin.top/cookies">Cookies</a></div></footer>
+<script src="assets/common.js" defer></script>
+<script src="assets/cards.js" defer></script>
+<script src="assets/pyramid.js" defer></script>
+</body>
+</html>

@@ -30,6 +30,10 @@
    "url": "daily-sudoku"
   },
   {
+   "name": "2048",
+   "url": "2048"
+  },
+  {
    "name": "FreeCell",
    "url": "freecell"
   }

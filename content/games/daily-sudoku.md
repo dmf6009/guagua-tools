@@ -17,6 +17,12 @@ The difficulty follows the week, starting gentle and building to a weekend chall
 
 If a day's level feels too hard or too easy, the regular [easy](easy-sudoku), [medium](medium-sudoku), [hard](hard-sudoku) and [expert](expert-sudoku) pages give you unlimited puzzles at a fixed level.
 
+## Playing past puzzles
+
+Missed a day? The list of **previous puzzles** below the grid covers the last 30 days. Each entry shows the puzzle number, its difficulty and whether you have solved it, with your time. Progress on each past puzzle is saved separately, so you can start several and come back to them.
+
+Past puzzles count towards your total of solved puzzles but not towards your streak: the streak only counts puzzles solved on their own day.
+
 ## Streaks and sharing
 
 Solve the daily puzzle and the page records it in this browser. The **streak** counts consecutive days solved, and stays alive until the end of today even if you have not played yet. The **solved** count is your total. Nothing is sent to a server, so clearing your browser data resets both.

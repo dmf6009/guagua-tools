@@ -6,73 +6,16 @@
   //   window.GG_SUDOKU = { mode: "daily" }                    one shared puzzle per calendar day
   var CFG = window.GG_SUDOKU || { mode: "free" };
   var MODE = CFG.mode || "free";
-  var KEY = MODE === "daily" ? "gg.sudoku.daily.v1" : MODE === "level" ? "gg.sudoku.v1." + CFG.level : "gg.sudoku.v1";
-  var CLUES = { easy: 40, medium: 33, hard: 28, expert: 24 };
+  var KEY = MODE === "level" ? "gg.sudoku.v1." + CFG.level : "gg.sudoku.v1";
   var LABEL = { easy: "Easy", medium: "Medium", hard: "Hard", expert: "Expert" };
   var DAILY_LEVEL = ["expert", "easy", "easy", "medium", "medium", "hard", "hard"];   // by weekday, Sunday first
-  var DAILY_EPOCH = Date.UTC(2026, 10, 16);                                              // puzzle #1 = 16 Nov 2026
+  var DAILY_EPOCH = Date.UTC(2026, 0, 1);                                                // puzzle #1 = 1 Jan 2026
   var $ = function (id) { return document.getElementById(id); };
   var gridEl = $("grid"), padEl = $("pad"), msgEl = $("msg"), timeEl = $("time"), errEl = $("errors");
   var st = null, sel = -1, notesMode = false, timer = null;
 
-  // ---------- random numbers: Math.random, or a seeded generator for the daily puzzle ----------
-  var rand = Math.random;
-  function seeded(seed) {           // mulberry32
-    var a = seed >>> 0;
-    return function () {
-      a = (a + 0x6d2b79f5) >>> 0;
-      var t = a;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  // ---------- solver / generator ----------
-  var ROW = [], COL = [], BOX = [], PEERS = [];
-  for (var i = 0; i < 81; i++) { ROW[i] = Math.floor(i / 9); COL[i] = i % 9; BOX[i] = Math.floor(ROW[i] / 3) * 3 + Math.floor(COL[i] / 3); }
-  for (i = 0; i < 81; i++) { PEERS[i] = []; for (var j = 0; j < 81; j++) if (j !== i && (ROW[i] === ROW[j] || COL[i] === COL[j] || BOX[i] === BOX[j])) PEERS[i].push(j); }
-  function bits(n) { var c = 0; while (n) { n &= n - 1; c++; } return c; }
-  function shuffle(a) { for (var k = a.length - 1; k > 0; k--) { var r = Math.floor(rand() * (k + 1)); var t = a[k]; a[k] = a[r]; a[r] = t; } return a; }
-
-  // Counts solutions up to `limit`. If `out` is given, the first solution is written into it.
-  function solve(g, limit, out, randomize) {
-    var rows = new Array(9).fill(0), cols = new Array(9).fill(0), boxes = new Array(9).fill(0), k;
-    for (k = 0; k < 81; k++) if (g[k]) { var b = 1 << g[k]; rows[ROW[k]] |= b; cols[COL[k]] |= b; boxes[BOX[k]] |= b; }
-    var count = 0;
-    (function rec() {
-      var best = -1, bestMask = 0, bestN = 10;
-      for (var c = 0; c < 81; c++) {
-        if (g[c]) continue;
-        var m = 0x3fe & ~(rows[ROW[c]] | cols[COL[c]] | boxes[BOX[c]]), n = bits(m);
-        if (n === 0) return;
-        if (n < bestN) { bestN = n; best = c; bestMask = m; if (n === 1) break; }
-      }
-      if (best < 0) { count++; if (out && count === 1) for (var q = 0; q < 81; q++) out[q] = g[q]; return; }
-      var ds = []; for (var d = 1; d <= 9; d++) if (bestMask & (1 << d)) ds.push(d);
-      if (randomize) shuffle(ds);
-      for (var x = 0; x < ds.length && count < limit; x++) {
-        var v = ds[x], bit = 1 << v;
-        g[best] = v; rows[ROW[best]] |= bit; cols[COL[best]] |= bit; boxes[BOX[best]] |= bit;
-        rec();
-        g[best] = 0; rows[ROW[best]] &= ~bit; cols[COL[best]] &= ~bit; boxes[BOX[best]] &= ~bit;
-      }
-    })();
-    return count;
-  }
-  function generate(level, seed) {
-    rand = seed == null ? Math.random : seeded(seed);
-    var sol = new Array(81).fill(0);
-    solve(new Array(81).fill(0), 1, sol, true);
-    var puz = sol.slice(), order = shuffle(Array.from({ length: 81 }, function (_, n) { return n; })), clues = 81, target = CLUES[level];
-    for (var k = 0; k < 81 && clues > target; k++) {
-      var c = order[k], keep = puz[c];
-      puz[c] = 0;
-      if (solve(puz.slice(), 2) !== 1) puz[c] = keep; else clues--;
-    }
-    rand = Math.random;
-    return { puzzle: puz, solution: sol };
-  }
+  var Core = window.SudokuCore, solve = Core.solve, generate = Core.generate;
+  var ROW = Core.ROW, COL = Core.COL, BOX = Core.BOX, PEERS = Core.PEERS;
 
   // ---------- daily puzzle ----------
   function today() {
@@ -83,14 +26,23 @@
     var p = dateStr.split("-").map(Number), utc = Date.UTC(p[0], p[1] - 1, p[2]);
     return { date: dateStr, number: Math.round((utc - DAILY_EPOCH) / 864e5) + 1, level: DAILY_LEVEL[new Date(utc).getUTCDay()], seed: p[0] * 10000 + p[1] * 100 + p[2] };
   }
+  function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  // The daily page plays today's puzzle, or a past one when the URL says ?d=YYYY-MM-DD.
+  var PLAY_DATE = today(), ARCHIVE = false;
+  if (MODE === "daily") {
+    var want = new URLSearchParams(location.search).get("d");
+    if (want && /^\d{4}-\d{2}-\d{2}$/.test(want) && want >= "2026-01-01" && want < today() && !isNaN(Date.parse(want))) { PLAY_DATE = want; ARCHIVE = true; }
+    KEY = "gg.sudoku.daily.v1" + (ARCHIVE ? "." + PLAY_DATE : "");
+  }
   var DONE_KEY = "gg.sudoku.daily.done.v1";
   function doneLog() { try { return JSON.parse(localStorage.getItem(DONE_KEY)) || {}; } catch (e) { return {}; } }
   function streak(log) {
     var n = 0, d = new Date();
-    if (!log[today()]) d.setDate(d.getDate() - 1);           // today not yet solved: count up to yesterday
+    var onTime = function (k) { return log[k] && !log[k].late; };
+    if (!onTime(today())) d.setDate(d.getDate() - 1);         // today not yet solved: count up to yesterday
     for (;;) {
-      var k = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-      if (!log[k]) return n;
+      var k = ymd(d);
+      if (!onTime(k)) return n;
       n++; d.setDate(d.getDate() - 1);
     }
   }
@@ -101,13 +53,41 @@
     if ($("dlevel")) $("dlevel").textContent = LABEL[info.level];
     if ($("dstreak")) $("dstreak").textContent = streak(log);
     if ($("dsolved")) $("dsolved").textContent = Object.keys(log).length;
+    var note = $("darchive");
+    if (note) { note.hidden = !ARCHIVE; if (ARCHIVE) note.innerHTML = "Playing " + nice(PLAY_DATE) + ' · <a href="daily-sudoku">Back to today</a>'; }
+    renderArchive(log);
+  }
+  function nice(dateStr) {
+    var p = dateStr.split("-").map(Number);
+    return new Date(Date.UTC(p[0], p[1] - 1, p[2])).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+  }
+  var archiveDrawn = "";
+  function renderArchive(log) {
+    var list = $("archive-list"); if (!list) return;
+    var d = new Date(), rows = [], sig = JSON.stringify(log) + PLAY_DATE;
+    if (sig === archiveDrawn) return;
+    archiveDrawn = sig;
+    for (var n = 0; n < 30; n++) {
+      var k = ymd(d); if (k < "2026-01-01") break;
+      var info = dailyInfo(k), done = log[k], status;
+      if (done) status = '<span class="ok">✓ ' + fmt(done.s || 0) + "</span>";
+      else {
+        var saved = null;
+        try { saved = JSON.parse(localStorage.getItem("gg.sudoku.daily.v1" + (n ? "." + k : ""))); } catch (e) {}
+        status = saved && saved.date === k && !saved.done ? "In progress" : "Not played";
+      }
+      var href = n ? "daily-sudoku?d=" + k : "daily-sudoku";
+      rows.push('<li' + (k === PLAY_DATE ? ' class="cur"' : "") + '><a href="' + href + '">' + (n ? nice(k) : "Today") + "</a><span>#" + info.number + " · " + LABEL[info.level] + "</span><span>" + status + "</span></li>");
+      d.setDate(d.getDate() - 1);
+    }
+    list.innerHTML = rows.join("");
   }
 
   // ---------- state ----------
   function newGame(level) {
     var g, extra = {};
     if (MODE === "daily") {
-      var info = dailyInfo(today());
+      var info = dailyInfo(PLAY_DATE);
       level = info.level; g = generate(level, info.seed); extra = { date: info.date };
     } else g = generate(level);
     st = { level: level, puzzle: g.puzzle, solution: g.solution, values: g.puzzle.slice(), notes: new Array(81).fill(0), seconds: 0, errors: 0, hints: 0, history: [], done: false };
@@ -124,7 +104,7 @@
   function startTimer() {
     clearInterval(timer);
     timer = setInterval(function () {
-      if (MODE === "daily" && st && st.date !== today()) { newGame(); return; }   // rolled over midnight
+      if (MODE === "daily" && !ARCHIVE && st && st.date !== today()) { PLAY_DATE = today(); newGame(); return; }   // rolled over midnight
       if (st && !st.done && !document.hidden) { st.seconds++; timeEl.textContent = fmt(st.seconds); if (st.seconds % 5 === 0) save(); }
     }, 1000);
   }
@@ -197,7 +177,7 @@
     if (MODE === "daily") {
       var info = dailyInfo(st.date);
       return "Guagua Daily Sudoku #" + info.number + " (" + LABEL[st.level] + ")\nSolved " + summary() + (st.errors || st.hints ? "" : " ✅") +
-        "\nStreak: " + streak(doneLog()) + " day" + (streak(doneLog()) === 1 ? "" : "s") + "\n" + location.origin + location.pathname;
+        (ARCHIVE ? "" : "\nStreak: " + streak(doneLog()) + " day" + (streak(doneLog()) === 1 ? "" : "s")) + "\n" + location.origin + location.pathname + (ARCHIVE ? "?d=" + PLAY_DATE : "");
     }
     return "I solved a " + LABEL[st.level] + " Sudoku " + summary() + ".\n" + location.origin + location.pathname;
   }
@@ -207,9 +187,10 @@
       st.done = true; sel = -1;
       if (MODE === "daily" && first) {
         var log = doneLog(); log[st.date] = { s: st.seconds, e: st.errors, h: st.hints };
+        if (ARCHIVE) log[st.date].late = true;
         try { localStorage.setItem(DONE_KEY, JSON.stringify(log)); } catch (e) {}
       }
-      msg("Solved " + summary() + "." + (MODE === "daily" ? " A new daily puzzle appears at midnight." : ""), "win");
+      msg("Solved " + summary() + "." + (MODE === "daily" ? (ARCHIVE ? " Pick another day from the list below." : " A new daily puzzle appears at midnight.") : ""), "win");
       if (window.GG) GG.done({ share: shareText() });
     }
     save(); render();
@@ -253,13 +234,13 @@
 
   build();
   st = load();
-  if (st && MODE === "daily" && st.date !== today()) st = null;            // yesterday's daily: start today's
+  if (st && MODE === "daily" && st.date !== PLAY_DATE) st = null;          // a different day's puzzle: start this one
   if (st && MODE === "level" && st.level !== CFG.level) st = null;
   if (st) {
     sel = st.done ? -1 : st.values.findIndex(function (v, c) { return v !== st.solution[c]; });
     render(); startTimer();
     if (st.done) {
-      msg(MODE === "daily" ? "You solved today's puzzle " + summary() + ". Come back tomorrow for the next one." : "Solved. Start a new puzzle when you are ready.", "win");
+      msg(MODE === "daily" ? (ARCHIVE ? "You solved this puzzle " + summary() + ". Pick another day from the list below." : "You solved today's puzzle " + summary() + ". Come back tomorrow for the next one.") : "Solved. Start a new puzzle when you are ready.", "win");
       if (window.GG) GG.done({ share: shareText() });
     }
   } else newGame(MODE === "level" ? CFG.level : "easy");
